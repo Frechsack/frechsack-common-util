@@ -5,6 +5,9 @@ plugins {
 group 'com.frechsack.dev'
 version '1.0-SNAPSHOT'
 
+targetCompatibility = '12'
+sourceCompatibility = '12'
+
 repositories {
     mavenCentral()
 }
