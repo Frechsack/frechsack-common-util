@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 /**
  * Returns an object of a given type.
- * @param <E> The type of this result.
+ * @param <E> The type of this result
  */
 @FunctionalInterface
 public interface Result<E> extends Function<Object,E>
