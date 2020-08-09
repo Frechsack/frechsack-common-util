@@ -1,4 +1,4 @@
-package com.frechsack.dev.common.util;
+package com.frechsack.common.util;
 
 import java.util.function.Function;
 
