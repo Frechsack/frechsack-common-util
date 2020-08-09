@@ -6,7 +6,7 @@ group 'com.frechsack.dev'
 version '1.0-SNAPSHOT'
 
 compileJava {
-    sourceCompatibility = 12
+    sourceCompatibility = 8
     targetCompatibility = 12
 }
 
