@@ -5,8 +5,10 @@ plugins {
 group 'com.frechsack.dev'
 version '1.0-SNAPSHOT'
 
-targetCompatibility = '12'
-sourceCompatibility = '12'
+compileJava   {
+    sourceCompatibility = '12'
+    targetCompatibility = '12'
+}
 
 repositories {
     mavenCentral()
