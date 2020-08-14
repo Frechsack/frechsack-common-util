@@ -6,8 +6,8 @@ group 'com.frechsack.dev'
 version '1.0-SNAPSHOT'
 
 compileJava {
-    sourceCompatibility = JavaVersion.VERSION_1_9
-    targetCompatibility = JavaVersion.VERSION_1_9
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 repositories {
