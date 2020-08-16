@@ -18,10 +18,28 @@ public class CachedField<E> implements Result<E>
         this.generator = generator;
     }
 
+    /**
+     * Creates a new CachedField. If this constructor is used the function {@link #generate()} must be overridden.
+     */
+    public CachedField()
+    {
+        generator = null;
+    }
+
+    /**
+     * Generates the value of this {@code CachedField}. This function must be overridden if no function is given at the constructor.
+     * @return The value.
+     */
+    protected E generate()
+    {
+        return generator.obtain();
+    }
+
+
     @Override
     public E obtain()
     {
-        if(field==null) field = generator.obtain();
+        if(field==null) field = generate();
         return field;
     }
 }
