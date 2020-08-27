@@ -1,45 +1,50 @@
 package com.frechsack.dev.common.util;
 
 /**
- * A {@code CachedField} buffers a value and just creates it, if it is required.
- * @param <E> The type of this field.
+ * Caches a value. A value is created only when it is required.
+ * @param <E> The value type.
  */
-public class CachedField<E> implements Result<E>
+public abstract class CachedField<E> implements Result<E>,Disposable
 {
-    private       E         field;
-    private final Result<E> generator;
+    private boolean isValue;
+    private E value;
 
     /**
-     * Creates a new CachedField.
-     * @param generator The generator that will generate the value of the {@code CachedField}.
-     */
-    public CachedField(Result<E> generator)
-    {
-        this.generator = generator;
-    }
-
-    /**
-     * Creates a new CachedField. If this constructor is used the function {@link #generate()} must be overridden.
-     */
-    public CachedField()
-    {
-        generator = null;
-    }
-
-    /**
-     * Generates the value of this {@code CachedField}. This function must be overridden if no function is given at the constructor.
+     * Creates a new instance of the required type.
      * @return The value.
      */
-    protected E generate()
-    {
-        return generator.obtain();
-    }
+    protected abstract E generate();
 
+    /**
+     * Disposes the current value, if it's set. The next time - the value is required - it will be created again.
+     */
+    @Override
+    public void dispose()
+    {
+        if(!isValue)return;
+        if(value instanceof Disposable)
+            ((Disposable) value).dispose();
+        value=null;
+        isValue = false;
+    }
 
     @Override
     public E obtain()
     {
-        if(field==null) field = generate();
-        return field;
+        if(!isValue)
+        {
+            value = generate();
+            isValue = true;
+        }
+        return value;
+    }
+
+    /**
+     * Checks if the value is created.
+     * @return True if the value is created, else false.
+     */
+    public boolean isValue()
+    {
+        return isValue;
     }
 }
