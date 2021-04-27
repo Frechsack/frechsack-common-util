@@ -1,15 +1,15 @@
-package com.frechsack.dev.cursor;
+package com.frechsack.dev.util.cursor;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public class CollectionCursor<E> implements Cursor<E>
+public class CollectionRoute<E> implements Route<E>
 {
     private Collection<? extends E> collection;
     private Object[] array;
     private int index = -1;
 
-    public CollectionCursor(Collection<? extends E> collection)
+    public CollectionRoute(Collection<? extends E> collection)
     {
         setCollection(collection);
     }

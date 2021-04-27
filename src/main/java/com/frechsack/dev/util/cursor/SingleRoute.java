@@ -1,13 +1,13 @@
-package com.frechsack.dev.cursor;
+package com.frechsack.dev.util.cursor;
 
 import java.util.function.Consumer;
 
-public class SingleCursor<E> implements Cursor<E>
+public class SingleRoute<E> implements Route<E>
 {
     private E single;
     private boolean isInitial = true;
 
-    public SingleCursor(E value)
+    public SingleRoute(E value)
     {
         setSingle(value);
     }

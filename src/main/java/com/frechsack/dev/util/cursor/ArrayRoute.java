@@ -1,13 +1,13 @@
-package com.frechsack.dev.cursor;
+package com.frechsack.dev.util.cursor;
 
 import java.util.function.Consumer;
 
-public class ArrayCursor<E> implements Cursor<E>
+public class ArrayRoute<E> implements Route<E>
 {
     private E[] array;
     private int index;
 
-    public ArrayCursor(E[] array)
+    public ArrayRoute(E[] array)
     {
         setArray(array);
     }

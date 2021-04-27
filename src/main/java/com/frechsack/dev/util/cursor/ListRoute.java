@@ -1,14 +1,14 @@
-package com.frechsack.dev.cursor;
+package com.frechsack.dev.util.cursor;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ListCursor<E> implements com.frechsack.dev.cursor.Cursor<E>
+public class ListRoute<E> implements Route<E>
 {
     private List<E> list;
     private int index = -1;
 
-    public ListCursor(List<E> list)
+    public ListRoute(List<E> list)
     {
         setList(list);
     }

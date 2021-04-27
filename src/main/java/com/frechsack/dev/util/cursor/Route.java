@@ -1,4 +1,4 @@
-package com.frechsack.dev.cursor;
+package com.frechsack.dev.util.cursor;
 
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -11,7 +11,7 @@ import java.util.Iterator;
  *
  * @param <E> The type of this sequence.
  */
-public interface Cursor<E> extends Iterator<E>, Enumeration<E>
+public interface Route<E> extends Iterator<E>, Enumeration<E>
 {
     /**
      * {@inheritDoc}
