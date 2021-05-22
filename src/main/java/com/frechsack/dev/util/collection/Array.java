@@ -1,5 +1,6 @@
 package com.frechsack.dev.util.collection;
 
+import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.route.IndexRoute;
 import com.frechsack.dev.util.route.Routable;
 import com.frechsack.dev.util.route.Route;
@@ -370,11 +371,12 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
     public void fill(E e, int start, int end)
     {
         Objects.checkFromToIndex(start, end, length());
-        IntStream.range(start,end).parallel().forEach(index -> set(index,e));
+        IntStream.range(start, end).parallel().forEach(index -> set(index, e));
     }
 
     /**
      * Checks if this Array contains any Object that equals the specified Object.
+     *
      * @param o The Object.
      * @return Returns true if the specified Object is found in this Array, else false.
      */
@@ -390,6 +392,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
 
     /**
      * Returns the index of the specified Object in this Array. If the specified Object is not present in this Array, -1 is returned.
+     *
      * @param o The Object.
      * @return Returns the index of the specified Object, else -1.
      */
@@ -402,6 +405,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
 
     /**
      * Returns an {@link Spliterator} for this Array through the whole range of this Array.
+     *
      * @return The Spliterator.
      */
     public Spliterator<E> spliterator()
@@ -411,6 +415,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
 
     /**
      * Streams the whole content of this Array.
+     *
      * @return The Stream.
      * @see Stream
      */
@@ -420,7 +425,19 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
     }
 
     /**
+     * Returns an index based Stream of this Array.
+     *
+     * @return The Stream.
+     * @see Stream
+     */
+    public Stream<Pair<Integer, E>> indexStream()
+    {
+        return IntStream.range(0, length()).mapToObj(i -> Pair.of(i, get(i)));
+    }
+
+    /**
      * Streams the whole content of this Array parallel.
+     *
      * @return The Stream.
      * @see Stream
      */
@@ -431,6 +448,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
 
     /**
      * Returns an {@link IntFunction} that acts like a generator for this Array´s type.
+     *
      * @return The generator.
      */
     public IntFunction<E[]> generator()

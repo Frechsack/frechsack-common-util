@@ -11,6 +11,8 @@ public class ArrayTest
         stringArray.set(0,"A");
         stringArray.set(1,"B");
 
+        stringArray.indexStream().forEach(System.out::println);
+
 
         List<String> stringList = stringArray.list();
         stringList.remove("A");
