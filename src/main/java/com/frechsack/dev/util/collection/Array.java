@@ -16,8 +16,14 @@ import java.util.stream.StreamSupport;
 
 /**
  * This class wraps a native Java Array to an Object.
- * This Object allows to wrap primitive arrays as well.
- * Their values will be translated to their Wrapper class.
+ * <p>
+ * Primitive arrays and generic Object arrays are allowed. If a primitive or an Object type will be used is specified by the constructor.
+ * <p>
+ * The "native" array can be obtained by {@link #array()}. The returned array must be casted to the requested type.
+ * <p>
+ * This Array is compatible with the Java Collections Framework by {@link #list()}. This Array will be wrapped into a List. Changes in it will be reflected in this Array.
+ * <p>
+ * Common Array access operations are supported by {@link #set(int, Object)}, {@link #get(int)} and {@link #length()}. In case this Array uses a primitive type model, values can be set and obtained by special operations like {@link #setInt(int, int)}.
  *
  * @param <E> This Array´s class type.
  */
@@ -333,22 +339,45 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
         this.model = modelForLength(componentType, length);
     }
 
+    /**
+     * Fills the whole Array with the specified value.
+     *
+     * @param e The value.
+     */
     public void fill(E e)
     {
         fill(e, 0, length());
     }
 
+    /**
+     * Fills the whole Array with the specified value.
+     *
+     * @param e     The value.
+     * @param start The inclusive start index.
+     */
     public void fill(E e, int start)
     {
         fill(e, start, length());
     }
 
+    /**
+     * Fills the whole Array with the specified value.
+     *
+     * @param e     The value.
+     * @param start The inclusive start index.
+     * @param end   The exclusive end index.
+     */
     public void fill(E e, int start, int end)
     {
         Objects.checkFromToIndex(start, end, length());
-        for (int i = start; i < end; i++) set(i, e);
+        IntStream.range(start,end).parallel().forEach(index -> set(index,e));
     }
 
+    /**
+     * Checks if this Array contains any Object that equals the specified Object.
+     * @param o The Object.
+     * @return Returns true if the specified Object is found in this Array, else false.
+     */
     public boolean contains(Object o)
     {
         if (length() < 8)
@@ -359,6 +388,11 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
         return streamParallel().anyMatch(e -> Objects.equals(o, e));
     }
 
+    /**
+     * Returns the index of the specified Object in this Array. If the specified Object is not present in this Array, -1 is returned.
+     * @param o The Object.
+     * @return Returns the index of the specified Object, else -1.
+     */
     public int indexOf(Object o)
     {
         int length = length();
@@ -366,21 +400,39 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
         return -1;
     }
 
+    /**
+     * Returns an {@link Spliterator} for this Array through the whole range of this Array.
+     * @return The Spliterator.
+     */
     public Spliterator<E> spliterator()
     {
         return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.SIZED);
     }
 
+    /**
+     * Streams the whole content of this Array.
+     * @return The Stream.
+     * @see Stream
+     */
     public Stream<E> stream()
     {
         return StreamSupport.stream(spliterator(), false);
     }
 
+    /**
+     * Streams the whole content of this Array parallel.
+     * @return The Stream.
+     * @see Stream
+     */
     public Stream<E> streamParallel()
     {
         return StreamSupport.stream(spliterator(), true);
     }
 
+    /**
+     * Returns an {@link IntFunction} that acts like a generator for this Array´s type.
+     * @return The generator.
+     */
     public IntFunction<E[]> generator()
     {
         return model.generator();
@@ -602,7 +654,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
     @Override
     public E apply(Integer index)
     {
-        return get(index == null ? 0: index);
+        return get(index == null ? 0 : index);
     }
 
     /**
@@ -630,6 +682,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
 
     /**
      * Returns the length of this Array.
+     *
      * @return The length
      */
     public int length()
@@ -650,6 +703,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
 
     /**
      * Returns the native model of this array as a primitive int array. This will work only, if this Array uses a primitive int model.
+     *
      * @return The model.
      */
     public int[] intArray()
@@ -659,118 +713,147 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
 
     /**
      * Returns a copy of the primitive int model from this array. This will work only, if this Array uses a primitive int model.
+     *
      * @return The model.
      */
     public int[] toIntArray()
     {
         return model.toIntArray();
     }
+
     /**
      * Returns the native model of this array as a primitive boolean array. This will work only, if this Array uses a primitive boolean model.
+     *
      * @return The model.
      */
     public boolean[] booleanArray()
     {
         return model.booleanArray();
     }
+
     /**
      * Returns a copy of the primitive boolean model from this array. This will work only, if this Array uses a primitive boolean model.
+     *
      * @return The model.
      */
     public boolean[] toBooleanArray()
     {
         return model.toBooleanArray();
     }
+
     /**
      * Returns the native model of this array as a primitive byte array. This will work only, if this Array uses a primitive byte model.
+     *
      * @return The model.
      */
     public byte[] byteArray()
     {
         return model.byteArray();
     }
+
     /**
      * Returns a copy of the primitive byte model from this array. This will work only, if this Array uses a primitive byte model.
+     *
      * @return The model.
      */
     public byte[] toByteArray()
     {
         return model.toByteArray();
     }
+
     /**
      * Returns the native model of this array as a primitive short array. This will work only, if this Array uses a primitive short model.
+     *
      * @return The model.
      */
     public short[] shortArray()
     {
         return model.shortArray();
     }
+
     /**
      * Returns a copy of the primitive short model from this array. This will work only, if this Array uses a primitive short model.
+     *
      * @return The model.
      */
     public short[] toShortArray()
     {
         return model.toShortArray();
     }
+
     /**
      * Returns the native model of this array as a primitive float array. This will work only, if this Array uses a primitive float model.
+     *
      * @return The model.
      */
     public float[] floatArray()
     {
         return model.floatArray();
     }
+
     /**
      * Returns a copy of the primitive float model from this array. This will work only, if this Array uses a primitive float model.
+     *
      * @return The model.
      */
     public float[] toFloatArray()
     {
         return model.toFloatArray();
     }
+
     /**
      * Returns the native model of this array as a primitive double array. This will work only, if this Array uses a primitive double model.
+     *
      * @return The model.
      */
     public double[] doubleArray()
     {
         return model.doubleArray();
     }
+
     /**
      * Returns a copy of the primitive double model from this array. This will work only, if this Array uses a primitive double model.
+     *
      * @return The model.
      */
     public double[] toDoubleArray()
     {
         return model.toDoubleArray();
     }
+
     /**
      * Returns the native model of this array as a primitive long array. This will work only, if this Array uses a primitive long model.
+     *
      * @return The model.
      */
     public long[] longArray()
     {
         return model.longArray();
     }
+
     /**
      * Returns a copy of the primitive long model from this array. This will work only, if this Array uses a primitive long model.
+     *
      * @return The model.
      */
     public long[] toLongArray()
     {
         return model.toLongArray();
     }
+
     /**
      * Returns the native model of this array as a primitive char array. This will work only, if this Array uses a primitive char model.
+     *
      * @return The model.
      */
     public char[] charArray()
     {
         return model.charArray();
     }
+
     /**
      * Returns a copy of the primitive char model from this array. This will work only, if this Array uses a primitive char model.
+     *
      * @return The model.
      */
     public char[] toCharArray()
@@ -780,14 +863,17 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
 
     /**
      * Returns the native model of this array.
+     *
      * @return The model.
      */
     public Object array()
     {
         return model.array();
     }
+
     /**
      * Returns a copy of the native model of this array.
+     *
      * @return The model.
      */
     public Object toArray()
@@ -797,6 +883,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
 
     /**
      * Returns a generic copy of this arrays model. This will be different from {@link #toArray()}, if this array uses a primitive type model.
+     *
      * @return The generic copy.
      */
     public E[] toGenericArray()
@@ -806,6 +893,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
 
     /**
      * Checks if this Array uses a primitive array type.
+     *
      * @return True if this Array uses a primitive array type, else false.
      */
     public boolean isPrimitive()
@@ -850,56 +938,118 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
         return Arrays.equals(array, (E[]) model.array());
     }
 
+    /**
+     * Compares this arrays primitive boolean array to the specified array. This will work only, if this Array uses a primitive boolean array model.
+     *
+     * @param array The array that will be compared with this Array.
+     * @return Returns true if the passed array content equals this Array model, else false.
+     */
     public boolean equals(boolean[] array)
     {
         return Arrays.equals(array, booleanArray());
     }
 
+    /**
+     * Compares this arrays primitive short array to the specified array. This will work only, if this Array uses a primitive short array model.
+     *
+     * @param array The array that will be compared with this Array.
+     * @return Returns true if the passed array content equals this Array model, else false.
+     */
     public boolean equals(short[] array)
     {
         return Arrays.equals(array, shortArray());
     }
 
+    /**
+     * Compares this arrays primitive byte array to the specified array. This will work only, if this Array uses a primitive byte array model.
+     *
+     * @param array The array that will be compared with this Array.
+     * @return Returns true if the passed array content equals this Array model, else false.
+     */
     public boolean equals(byte[] array)
     {
         return Arrays.equals(array, byteArray());
     }
 
+    /**
+     * Compares this arrays primitive int array to the specified array. This will work only, if this Array uses a primitive int array model.
+     *
+     * @param array The array that will be compared with this Array.
+     * @return Returns true if the passed array content equals this Array model, else false.
+     */
     public boolean equals(int[] array)
     {
         return Arrays.equals(array, intArray());
     }
 
+    /**
+     * Compares this arrays primitive double array to the specified array. This will work only, if this Array uses a primitive double array model.
+     *
+     * @param array The array that will be compared with this Array.
+     * @return Returns true if the passed array content equals this Array model, else false.
+     */
     public boolean equals(double[] array)
     {
         return Arrays.equals(array, doubleArray());
     }
 
+    /**
+     * Compares this arrays primitive long array to the specified array. This will work only, if this Array uses a primitive long array model.
+     *
+     * @param array The array that will be compared with this Array.
+     * @return Returns true if the passed array content equals this Array model, else false.
+     */
     public boolean equals(long[] array)
     {
         return Arrays.equals(array, longArray());
     }
 
+    /**
+     * Compares this arrays primitive char array to the specified array. This will work only, if this Array uses a primitive char array model.
+     *
+     * @param array The array that will be compared with this Array.
+     * @return Returns true if the passed array content equals this Array model, else false.
+     */
     public boolean equals(char[] array)
     {
         return Arrays.equals(array, charArray());
     }
 
+    /**
+     * Compares this arrays primitive float array to the specified array. This will work only, if this Array uses a primitive float array model.
+     *
+     * @param array The array that will be compared with this Array.
+     * @return Returns true if the passed array content equals this Array model, else false.
+     */
     public boolean equals(float[] array)
     {
         return Arrays.equals(array, floatArray());
     }
 
+    /**
+     * Sorts this array. It is mandatory that this Array´s generic type implements {@link Comparable} or is a primitive type.
+     */
     public void sort()
     {
         model.sort();
     }
 
-    public void sort(Comparator<? super E> c)
+    /**
+     * Sorts this array with the specified comparator. It is mandatory that this Array´s generic type is not a primitive. Primitives should be sorted by their natural order with {@link #sort()}.
+     *
+     * @param comparator The comparator.
+     * @see Arrays#sort(E[])
+     */
+    public void sort(Comparator<? super E> comparator)
     {
-        model.sort(c);
+        model.sort(comparator);
     }
 
+    /**
+     * Returns a {@link List} representation of this Array. Changes in the returned List will be reflected in this array.
+     *
+     * @return Returns a List representation of this Array.
+     */
     public List<E> list()
     {
         List<E> toList = toListRef == null ? null : toListRef.get();
@@ -1002,8 +1152,6 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
         while (type.isArray()) type = type.getComponentType();
         return (Class<E>) type;
     }
-
-
 
     @SuppressWarnings("unchecked")
     private static class GenericModel<E> extends Model<E>
