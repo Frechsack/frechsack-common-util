@@ -1,4 +1,4 @@
-package com.frechsack.dev.util.cursor;
+package com.frechsack.dev.util.route;
 
 public interface Routable<E> extends Iterable<E>
 {

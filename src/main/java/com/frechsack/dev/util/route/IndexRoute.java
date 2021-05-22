@@ -1,4 +1,4 @@
-package com.frechsack.dev.util.cursor;
+package com.frechsack.dev.util.route;
 
 import com.frechsack.dev.util.function.NumberSupplier;
 
@@ -18,44 +18,60 @@ public class IndexRoute<E> implements Route<E>
     }
 
     @Override
-    public boolean hasNext()
+    public final void remove()
+    {
+        index = remove(index);
+    }
+
+    /**
+     * Attempt to remove an element from the underlying model.
+     * @param index The index that should be removed.
+     * @return Returns the new index. List based models should modify the index after removing an element.
+     */
+    protected int remove(int index)
+    {
+        throw new UnsupportedOperationException("remove");
+    }
+
+    @Override
+    public final boolean hasNext()
     {
         return size.getAsInt() > index + 1;
     }
 
     @Override
-    public boolean hasPrevious()
+    public final boolean hasPrevious()
     {
         return index - 1 >= 0;
     }
 
     @Override
-    public E next()
+    public final E next()
     {
-        int index = this.index+1;
+        int index = this.index + 1;
         Objects.checkIndex(index, size.getAsInt());
         this.index = index;
         return items.apply(index);
     }
 
     @Override
-    public E previous()
+    public final E previous()
     {
-        int index = this.index-1;
-        Objects.checkIndex(index , size.getAsInt());
+        int index = this.index - 1;
+        Objects.checkIndex(index, size.getAsInt());
         this.index = index;
         return items.apply(index);
     }
 
     @Override
-    public E last()
+    public final E last()
     {
-        this.index = size.getAsInt()-2;
+        this.index = size.getAsInt() - 2;
         return next();
     }
 
     @Override
-    public E first()
+    public final E first()
     {
         this.index = -1;
         return next();
