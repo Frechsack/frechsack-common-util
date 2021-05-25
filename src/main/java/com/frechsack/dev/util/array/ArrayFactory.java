@@ -1,12 +1,12 @@
 package com.frechsack.dev.util.array;
 
-import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.route.Route;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.function.IntFunction;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -15,11 +15,20 @@ class ArrayFactory
 {
 
 
-    private static class GenericArray<E> extends AbstractArray<E>
+    static class GenericArray<E> extends AbstractArray<E>
     {
         private final E[] data;
 
-        private GenericArray(E[] data) {this.data = data;}
+        @SuppressWarnings("unchecked")
+        GenericArray(E[] data, boolean isReference)
+        {
+            if (isReference) this.data = data;
+            else
+            {
+                this.data = (E[]) Array.newInstance(data.getClass().getComponentType(), data.length);
+                System.arraycopy(data, 0, this.data, 0, data.length);
+            }
+        }
 
         @SuppressWarnings("unchecked")
         private GenericArray(int length, Class<E> type)
@@ -115,14 +124,22 @@ class ArrayFactory
         }
     }
 
-    private static class LongArray extends AbstractNumericArray<Long>
+    static class LongArray extends AbstractNumericArray<Long>
     {
 
         private final long[] data;
 
-        private LongArray(long[] data) {this.data = data;}
+         LongArray(long[] data, boolean isReference)
+        {
+            if (isReference) this.data = data;
+            else
+            {
+                this.data = new long[data.length];
+                System.arraycopy(data, 0, this.data, 0, data.length);
+            }
+        }
 
-        private LongArray(int length) {this.data = new long[length];}
+         LongArray(int length) {this.data = new long[length];}
 
         @Override
         protected Long getVoid()
@@ -293,11 +310,19 @@ class ArrayFactory
         }
     }
 
-    private static class DoubleArray extends AbstractNumericArray<Double>
+    static class DoubleArray extends AbstractNumericArray<Double>
     {
         private final double[] data;
 
-        private DoubleArray(double[] data) {this.data = data;}
+        private DoubleArray(double[] data, boolean isReference)
+        {
+            if (isReference) this.data = data;
+            else
+            {
+                this.data = new double[data.length];
+                System.arraycopy(data, 0, this.data, 0, data.length);
+            }
+        }
 
         private DoubleArray(int length) {this.data = new double[length];}
 
@@ -472,13 +497,19 @@ class ArrayFactory
         }
     }
 
-    private static class FloatArray extends AbstractNumericArray<Float>
+    static class FloatArray extends AbstractNumericArray<Float>
     {
         private final float[] data;
 
-        private FloatArray(float[] data) {this.data = data;}
+         FloatArray(float[] data, boolean isReference) {
+            if(isReference) this.data = data;
+            else {
+                this.data = new float[data.length];
+                System.arraycopy(data,0,this.data,0,data.length);
+            }
+        }
 
-        private FloatArray(int length) {this.data = new float[length];}
+         FloatArray(int length) {this.data = new float[length];}
 
         @Override
         protected Float getVoid()
@@ -644,13 +675,20 @@ class ArrayFactory
         }
     }
 
-    private static class IntArray extends AbstractNumericArray<Integer>
+    static class IntArray extends AbstractNumericArray<Integer>
     {
         private final int[] data;
 
-        private IntArray(int[] data) {this.data = data;}
+         IntArray(int[] data, boolean isReference)
+        {
+            if(isReference) this.data = data;
+            else {
+                this.data = new int[data.length];
+                System.arraycopy(data,0,this.data,0,data.length);
+            }
+        }
 
-        private IntArray(int length) {this.data = new int[length];}
+         IntArray(int length) {this.data = new int[length];}
 
         @Override
         protected Integer getVoid()
@@ -816,14 +854,21 @@ class ArrayFactory
         }
     }
 
-    private static class ShortArray extends AbstractNumericArray<Short>
+    static class ShortArray extends AbstractNumericArray<Short>
     {
 
         private final short[] data;
 
-        private ShortArray(short[] data) {this.data = data;}
+         ShortArray(short[] data, boolean isReference)
+        {
+            if(isReference) this.data = data;
+            else {
+                this.data = new short[data.length];
+                System.arraycopy(data,0,this.data,0,data.length);
+            }
+        }
 
-        private ShortArray(int length) {this.data = new short[length];}
+         ShortArray(int length) {this.data = new short[length];}
 
         @Override
         protected Short getVoid()
@@ -989,13 +1034,19 @@ class ArrayFactory
         }
     }
 
-    private static class ByteArray extends AbstractNumericArray<Byte>
+    static class ByteArray extends AbstractNumericArray<Byte>
     {
         private final byte[] data;
 
-        private ByteArray(byte[] data) {this.data = data;}
+         ByteArray(byte[] data, boolean isReference) {
+            if(isReference) this.data = data;
+            else {
+                this.data = new byte[data.length];
+                System.arraycopy(data,0,this.data,0,data.length);
+            }
+        }
 
-        private ByteArray(int length) {this.data = new byte[length];}
+         ByteArray(int length) {this.data = new byte[length];}
 
         @Override
         protected Byte getVoid()
@@ -1169,14 +1220,19 @@ class ArrayFactory
         }
     }
 
-    private static class CharArray extends AbstractArray<Character> implements com.frechsack.dev.util.array.CharArray
+    static class CharArray extends AbstractArray<Character> implements com.frechsack.dev.util.array.CharArray
     {
-
         private final char[] data;
 
-        private CharArray(char[] data) {this.data = data;}
+         CharArray(char[] data, boolean isReference) {
+            if(isReference) this.data = data;
+            else {
+                this.data = new char[data.length];
+                System.arraycopy(data,0,this.data,0,data.length);
+            }
+        }
 
-        private CharArray(int length) {this.data = new char[length];}
+         CharArray(int length) {this.data = new char[length];}
 
         @Override
         protected Character getVoid()
@@ -1280,14 +1336,20 @@ class ArrayFactory
 
     }
 
-    private static class BooleanArray extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.BooleanArray
+    static class BooleanArray extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.BooleanArray
     {
 
         private final boolean[] data;
 
-        private BooleanArray(boolean[] data) {this.data = data;}
+         BooleanArray(boolean[] data, boolean isReference) {
+            if(isReference) this.data = data;
+            else {
+                this.data = new boolean[data.length];
+                System.arraycopy(data,0,this.data,0,data.length);
+            }
+        }
 
-        private BooleanArray(int length) {this.data = new boolean[length];}
+         BooleanArray(int length) {this.data = new boolean[length];}
 
 
         @Override

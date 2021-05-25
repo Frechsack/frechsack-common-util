@@ -15,7 +15,7 @@ public abstract class AbstractArray<E> implements Array<E>
 
     protected abstract E getVoid();
 
-    protected static final int STREAM_PREFERRED_LENGTH = 10;
+    protected static final int STREAM_PREFERRED_LENGTH = 32;
 
     @Override
     public int indexOf(Object element)
@@ -56,7 +56,14 @@ public abstract class AbstractArray<E> implements Array<E>
     public void clear()
     {
         E voidValue = getVoid();
-        for (int i = 0; i < length(); i++) set(i, voidValue);
+        if (length() < STREAM_PREFERRED_LENGTH)
+        {
+            for (int i = 0; i < length(); i++) set(i, voidValue);
+        }
+        else
+        {
+            IntStream.range(0,length()).parallel().forEach(index -> set(index,voidValue));
+        }
     }
 
     @Override

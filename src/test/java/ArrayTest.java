@@ -1,14 +1,9 @@
-import com.frechsack.dev.util.collection.Array;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class ArrayTest
-{
+{ /*
     private static final int ARRAY_SIZE = 1024;
     private static final int TEST_COUNT = 32;
     private static final long TEST_SLEEP = 2L;
+
 
     public static void main(String[] bca)
     {
@@ -126,5 +121,5 @@ public class ArrayTest
         return end - start;
 
     }
-
+*/
 }
