@@ -4,7 +4,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
-public abstract class AbstractNumericArray <E extends Number> extends AbstractArray<E> implements NumericArray<E>
+public abstract class AbstractNumArray<E extends Number> extends AbstractArray<E> implements NumArray<E>
 {
     @Override
     public IntStream intStream()

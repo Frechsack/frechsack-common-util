@@ -11,19 +11,21 @@ import java.util.stream.Stream;
 
 public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
 {
+    // TODO: Generic char array
+
     static <E> Array<E> of(E... array)
     {
-        return new ArrayFactory.GenericArray<>(array, true);
+        return new Factory.GenericArray<>(array, true);
     }
 
     static <E> Array<E> of(boolean isReference, E... array)
     {
-        return new ArrayFactory.GenericArray<>(array, isReference);
+        return new Factory.GenericArray<>(array, isReference);
     }
 
     static <E> Array<E> ofGeneric(Class<E> type, int length)
     {
-        return new ArrayFactory.GenericArray<>(length, type);
+        return new Factory.GenericArray<>(length, type);
     }
 
     /**
@@ -34,159 +36,159 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      * @param <E>
      * @return
      */
-    static <E extends Number> NumericArray<E> of(Function<Number, E> converter, E... array)
+    static <E extends Number> NumArray<E> of(Function<Number, E> converter, E... array)
     {
-        return new ArrayFactory.GenericNumericArray<>(array, true, converter);
+        return new Factory.GenericNumArray<>(array, true, converter);
     }
 
-    static <E extends Number> NumericArray<E> of(boolean isReference, Function<Number, E> converter, E... array)
+    static <E extends Number> NumArray<E> of(boolean isReference, Function<Number, E> converter, E... array)
     {
-        return new ArrayFactory.GenericNumericArray<>(array, isReference, converter);
+        return new Factory.GenericNumArray<>(array, isReference, converter);
     }
 
-    static NumericArray<Number> of(boolean isReference, Number... array)
+    static NumArray<Number> of(boolean isReference, Number... array)
     {
-        return new ArrayFactory.GenericNumericArray<>(array, isReference, number -> number == null ? 0 : number);
+        return new Factory.GenericNumArray<>(array, isReference, number -> number == null ? 0 : number);
     }
 
-    static NumericArray<Number> ofGenericNumber(int length)
+    static NumArray<Number> ofGenericNumber(int length)
     {
-        return new ArrayFactory.GenericNumericArray<>(length, Number.class, number -> number == null ? 0 : number);
+        return new Factory.GenericNumArray<>(length, Number.class, number -> number == null ? 0 : number);
     }
 
-    static <E extends Number> NumericArray<E> ofGenericNumber(int length, Class<E> type, Function<Number, E> converter)
+    static <E extends Number> NumArray<E> ofGenericNumber(int length, Class<E> type, Function<Number, E> converter)
     {
-        return new ArrayFactory.GenericNumericArray<>(length, type, converter);
+        return new Factory.GenericNumArray<>(length, type, converter);
     }
 
-    static BooleanArray of(Boolean[] array){
-        return new ArrayFactory.GenericBooleanArray(array,true);
+    static BoolArray of(Boolean[] array){
+        return new Factory.GenericBoolArray(array, true);
     }
-    static BooleanArray of(boolean isReference,Boolean[] array){
-        return new ArrayFactory.GenericBooleanArray(array,isReference);
+    static BoolArray of(boolean isReference, Boolean[] array){
+        return new Factory.GenericBoolArray(array, isReference);
     }
-    static BooleanArray ofGenericBoolean(int length){
-        return new ArrayFactory.GenericBooleanArray(length);
-    }
-
-    static NumericArray<Integer> of(boolean isReference, int... array)
-    {
-        return new ArrayFactory.IntArray(array, isReference);
+    static BoolArray ofGenericBoolean(int length){
+        return new Factory.GenericBoolArray(length);
     }
 
-    static NumericArray<Integer> of(int... array)
+    static NumArray<Integer> of(boolean isReference, int... array)
     {
-        return new ArrayFactory.IntArray(array, true);
+        return new Factory.IntArray(array, isReference);
     }
 
-    static NumericArray<Integer> ofInt(int length)
+    static NumArray<Integer> of(int... array)
     {
-        return new ArrayFactory.IntArray(length);
+        return new Factory.IntArray(array, true);
     }
 
-    static NumericArray<Byte> of(boolean isReference, byte... array)
+    static NumArray<Integer> ofInt(int length)
     {
-        return new ArrayFactory.ByteArray(array, isReference);
+        return new Factory.IntArray(length);
     }
 
-    static NumericArray<Byte> of(byte... array)
+    static NumArray<Byte> of(boolean isReference, byte... array)
     {
-        return new ArrayFactory.ByteArray(array, true);
+        return new Factory.ByteArray(array, isReference);
     }
 
-    static NumericArray<Byte> ofByte(int length)
+    static NumArray<Byte> of(byte... array)
     {
-        return new ArrayFactory.ByteArray(length);
+        return new Factory.ByteArray(array, true);
     }
 
-    static NumericArray<Short> of(boolean isReference, short... array)
+    static NumArray<Byte> ofByte(int length)
     {
-        return new ArrayFactory.ShortArray(array, isReference);
+        return new Factory.ByteArray(length);
     }
 
-    static NumericArray<Short> of(short... array)
+    static NumArray<Short> of(boolean isReference, short... array)
     {
-        return new ArrayFactory.ShortArray(array, true);
+        return new Factory.ShortArray(array, isReference);
     }
 
-    static NumericArray<Short> ofShort(int length)
+    static NumArray<Short> of(short... array)
     {
-        return new ArrayFactory.ShortArray(length);
+        return new Factory.ShortArray(array, true);
     }
 
-    static NumericArray<Float> of(boolean isReference, float... array)
+    static NumArray<Short> ofShort(int length)
     {
-        return new ArrayFactory.FloatArray(array, isReference);
+        return new Factory.ShortArray(length);
     }
 
-    static NumericArray<Float> of(float... array)
+    static NumArray<Float> of(boolean isReference, float... array)
     {
-        return new ArrayFactory.FloatArray(array, true);
+        return new Factory.FloatArray(array, isReference);
     }
 
-    static NumericArray<Float> ofFloat(int length)
+    static NumArray<Float> of(float... array)
     {
-        return new ArrayFactory.FloatArray(length);
+        return new Factory.FloatArray(array, true);
     }
 
-    static NumericArray<Double> of(boolean isReference, double... array)
+    static NumArray<Float> ofFloat(int length)
     {
-        return new ArrayFactory.DoubleArray(array, isReference);
+        return new Factory.FloatArray(length);
     }
 
-    static NumericArray<Double> of(double... array)
+    static NumArray<Double> of(boolean isReference, double... array)
     {
-        return new ArrayFactory.DoubleArray(array, true);
+        return new Factory.DoubleArray(array, isReference);
     }
 
-    static NumericArray<Double> ofDouble(int length)
+    static NumArray<Double> of(double... array)
     {
-        return new ArrayFactory.DoubleArray(length);
+        return new Factory.DoubleArray(array, true);
     }
 
-    static NumericArray<Long> of(boolean isReference, long... array)
+    static NumArray<Double> ofDouble(int length)
     {
-        return new ArrayFactory.LongArray(array, isReference);
+        return new Factory.DoubleArray(length);
     }
 
-    static NumericArray<Long> of(long... array)
+    static NumArray<Long> of(boolean isReference, long... array)
     {
-        return new ArrayFactory.LongArray(array, true);
+        return new Factory.LongArray(array, isReference);
     }
 
-    static NumericArray<Long> ofLong(int length)
+    static NumArray<Long> of(long... array)
     {
-        return new ArrayFactory.LongArray(length);
+        return new Factory.LongArray(array, true);
     }
 
-    static BooleanArray of(boolean isReference, boolean... array)
+    static NumArray<Long> ofLong(int length)
     {
-        return new ArrayFactory.BooleanArray(array, isReference);
+        return new Factory.LongArray(length);
     }
 
-    static BooleanArray of(boolean... array)
+    static BoolArray of(boolean isReference, boolean... array)
     {
-        return new ArrayFactory.BooleanArray(array, true);
+        return new Factory.BoolArray(array, isReference);
     }
 
-    static ArrayFactory.BooleanArray ofBoolean(int length)
+    static BoolArray of(boolean... array)
     {
-        return new ArrayFactory.BooleanArray(length);
+        return new Factory.BoolArray(array, true);
+    }
+
+    static Factory.BoolArray ofBoolean(int length)
+    {
+        return new Factory.BoolArray(length);
     }
 
     static Array<Character> of(boolean isReference, char... array)
     {
-        return new ArrayFactory.CharArray(array, isReference);
+        return new Factory.CharArray(array, isReference);
     }
 
     static Array<Character> of(char... array)
     {
-        return new ArrayFactory.CharArray(array, true);
+        return new Factory.CharArray(array, true);
     }
 
     static Array<Character> of(int length)
     {
-        return new ArrayFactory.CharArray(length);
+        return new Factory.CharArray(length);
     }
 
     int indexOf(Object element);

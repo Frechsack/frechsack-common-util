@@ -2,7 +2,7 @@ package com.frechsack.dev.util.array;
 
 import java.util.Comparator;
 
-public interface BooleanArray extends Array<Boolean>
+public interface BoolArray extends Array<Boolean>
 {
     boolean getBoolean(int index);
 

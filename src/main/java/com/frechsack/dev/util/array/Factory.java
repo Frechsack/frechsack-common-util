@@ -13,14 +13,14 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
-class ArrayFactory
+class Factory
 {
 
-    static class GenericBooleanArray extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.BooleanArray
+    static class GenericBoolArray extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.BoolArray
     {
         private final Boolean[] data;
 
-        GenericBooleanArray(Boolean[] data, boolean isReference)
+        GenericBoolArray(Boolean[] data, boolean isReference)
         {
             if (isReference) this.data = data;
             else
@@ -30,7 +30,7 @@ class ArrayFactory
             }
         }
 
-        GenericBooleanArray(int length) {this.data = new Boolean[length];}
+        GenericBoolArray(int length) {this.data = new Boolean[length];}
 
         @Override
         protected Boolean getVoid()
@@ -138,13 +138,13 @@ class ArrayFactory
         }
     }
 
-    static class GenericNumericArray<E extends Number> extends AbstractNumericArray<E>
+    static class GenericNumArray<E extends Number> extends AbstractNumArray<E>
     {
         private final E[] data;
         private final Function<Number, E> converter;
 
         @SuppressWarnings("unchecked")
-        GenericNumericArray(E[] data, boolean isReference, Function<Number, E> converter)
+        GenericNumArray(E[] data, boolean isReference, Function<Number, E> converter)
         {
             this.converter = converter;
             if (isReference) this.data = data;
@@ -156,7 +156,7 @@ class ArrayFactory
         }
 
         @SuppressWarnings("unchecked")
-        GenericNumericArray(int length, Class<E> type, Function<Number, E> converter)
+        GenericNumArray(int length, Class<E> type, Function<Number, E> converter)
         {
             this.converter = converter;
             this.data = (E[]) Array.newInstance(type, length);
@@ -428,7 +428,7 @@ class ArrayFactory
         }
     }
 
-    static class LongArray extends AbstractNumericArray<Long>
+    static class LongArray extends AbstractNumArray<Long>
     {
 
         private final long[] data;
@@ -602,7 +602,7 @@ class ArrayFactory
         }
     }
 
-    static class DoubleArray extends AbstractNumericArray<Double>
+    static class DoubleArray extends AbstractNumArray<Double>
     {
         private final double[] data;
 
@@ -777,7 +777,7 @@ class ArrayFactory
         }
     }
 
-    static class FloatArray extends AbstractNumericArray<Float>
+    static class FloatArray extends AbstractNumArray<Float>
     {
         private final float[] data;
 
@@ -945,7 +945,7 @@ class ArrayFactory
         }
     }
 
-    static class IntArray extends AbstractNumericArray<Integer>
+    static class IntArray extends AbstractNumArray<Integer>
     {
         private final int[] data;
 
@@ -1113,7 +1113,7 @@ class ArrayFactory
         }
     }
 
-    static class ShortArray extends AbstractNumericArray<Short>
+    static class ShortArray extends AbstractNumArray<Short>
     {
 
         private final short[] data;
@@ -1282,7 +1282,7 @@ class ArrayFactory
         }
     }
 
-    static class ByteArray extends AbstractNumericArray<Byte>
+    static class ByteArray extends AbstractNumArray<Byte>
     {
         private final byte[] data;
 
@@ -1576,12 +1576,12 @@ class ArrayFactory
 
     }
 
-    static class BooleanArray extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.BooleanArray
+    static class BoolArray extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.BoolArray
     {
 
         private final boolean[] data;
 
-        BooleanArray(boolean[] data, boolean isReference)
+        BoolArray(boolean[] data, boolean isReference)
         {
             if (isReference) this.data = data;
             else
@@ -1591,7 +1591,7 @@ class ArrayFactory
             }
         }
 
-        BooleanArray(int length) {this.data = new boolean[length];}
+        BoolArray(int length) {this.data = new boolean[length];}
 
 
         @Override
