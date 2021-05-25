@@ -84,7 +84,7 @@ public abstract class AbstractNumericArray <E extends Number> extends AbstractAr
             }
             return true;
         }
-        return IntStream.range(0, length()).noneMatch(index -> getInt(index) == array[index]);
+        return IntStream.range(0, length()).allMatch(index -> getInt(index) == array[index]);
     }
 
     @Override
@@ -99,7 +99,7 @@ public abstract class AbstractNumericArray <E extends Number> extends AbstractAr
             }
             return true;
         }
-        return IntStream.range(0, length()).noneMatch(index -> getFloat(index) == array[index]);
+        return IntStream.range(0, length()).allMatch(index -> getFloat(index) == array[index]);
     }
 
     @Override
@@ -114,7 +114,7 @@ public abstract class AbstractNumericArray <E extends Number> extends AbstractAr
             }
             return true;
         }
-        return IntStream.range(0, length()).noneMatch(index -> getDouble(index) == array[index]);
+        return IntStream.range(0, length()).allMatch(index -> getDouble(index) == array[index]);
     }
 
     @Override
@@ -129,7 +129,7 @@ public abstract class AbstractNumericArray <E extends Number> extends AbstractAr
             }
             return true;
         }
-        return IntStream.range(0, length()).noneMatch(index -> getLong(index) == array[index]);
+        return IntStream.range(0, length()).allMatch(index -> getLong(index) == array[index]);
     }
 
     @Override
@@ -144,7 +144,7 @@ public abstract class AbstractNumericArray <E extends Number> extends AbstractAr
             }
             return true;
         }
-        return IntStream.range(0, length()).noneMatch(index -> getShort(index) == array[index]);
+        return IntStream.range(0, length()).allMatch(index -> getShort(index) == array[index]);
     }
 
     @Override
@@ -159,6 +159,6 @@ public abstract class AbstractNumericArray <E extends Number> extends AbstractAr
             }
             return true;
         }
-        return IntStream.range(0, length()).noneMatch(index -> getByte(index) == array[index]);
+        return IntStream.range(0, length()).allMatch(index -> getByte(index) == array[index]);
     }
 }

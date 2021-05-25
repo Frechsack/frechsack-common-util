@@ -18,6 +18,14 @@ public abstract class AbstractArray<E> implements Array<E>
     protected static final int STREAM_PREFERRED_LENGTH = 32;
 
     @Override
+    public E getAndSet(int index, E element)
+    {
+        E last = get(index);
+        set(index,element);
+        return last;
+    }
+
+    @Override
     public int indexOf(Object element)
     {
         if (length() < STREAM_PREFERRED_LENGTH)
@@ -137,7 +145,7 @@ public abstract class AbstractArray<E> implements Array<E>
         @Override
         public E set(int index, E element)
         {
-            return AbstractArray.this.set(index, element);
+            return AbstractArray.this.getAndSet(index, element);
         }
 
         @Override

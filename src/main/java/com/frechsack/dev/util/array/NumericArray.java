@@ -18,17 +18,17 @@ public interface NumericArray<E extends Number> extends Array<E>
 
     long getLong(int index);
 
-    byte setByte(int index, byte element);
+    void setByte(int index, byte element);
 
-    short setShort(int index, short element);
+    void setShort(int index, short element);
 
-    int setInt(int index, int element);
+    void setInt(int index, int element);
 
-    float setFloat(int index, float element);
+    void setFloat(int index, float element);
 
-    double setDouble(int index, double element);
+    void setDouble(int index, double element);
 
-    long setLong(int index, long element);
+    void setLong(int index, long element);
 
     byte[] toByteArray();
 

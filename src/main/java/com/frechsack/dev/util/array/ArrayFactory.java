@@ -6,6 +6,8 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -13,6 +15,310 @@ import java.util.stream.LongStream;
 
 class ArrayFactory
 {
+
+    static class GenericBooleanArray extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.BooleanArray
+    {
+        private final Boolean[] data;
+
+        GenericBooleanArray(Boolean[] data, boolean isReference)
+        {
+            if (isReference) this.data = data;
+            else
+            {
+                this.data = new Boolean[data.length];
+                System.arraycopy(data, 0, this.data, 0, data.length);
+            }
+        }
+
+        GenericBooleanArray(int length) {this.data = new Boolean[length];}
+
+        @Override
+        protected Boolean getVoid()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean getBoolean(int index)
+        {
+            Boolean value = data[index];
+            return value != null && value;
+        }
+
+        @Override
+        public boolean setBoolean(int index, boolean element)
+        {
+            boolean last = getBoolean(index);
+            data[index] = element;
+            return last;
+        }
+
+        @Override
+        public boolean[] toBooleanArray()
+        {
+            boolean[] clone = new boolean[data.length];
+            IntStream.range(0, data.length).parallel().forEach(index -> clone[index] = getBoolean(index));
+            return clone;
+        }
+
+        @Override
+        public boolean equals(boolean[] array)
+        {
+            if (length() != array.length) return false;
+            if (length() < STREAM_PREFERRED_LENGTH)
+            {
+                for (int i = 0; i < length(); i++)
+                {
+                    if (getBoolean(i) != array[i]) return false;
+                }
+                return true;
+            }
+            return IntStream.range(0, length()).allMatch(index -> getBoolean(index) == array[index]);
+        }
+
+        @Override
+        public Object asArray()
+        {
+            return data;
+        }
+
+        @Override
+        public int length()
+        {
+            return data.length;
+        }
+
+        @Override
+        public Boolean get(int index)
+        {
+            Boolean value = data[index];
+            return value != null && value;
+        }
+
+        @Override
+        public void set(int index, Boolean element)
+        {
+            data[index] = element != null && element;
+        }
+
+        @Override
+        public boolean isPrimitive()
+        {
+            return false;
+        }
+
+        @Override
+        public IntFunction<Boolean[]> generator()
+        {
+            return Boolean[]::new;
+        }
+
+        @Override
+        public Route<Boolean> route()
+        {
+            return Route.of(data);
+        }
+
+        @Override
+        public Iterator<Boolean> iterator()
+        {
+            return Route.of(data);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "GenericBooleanArray{" +  Arrays.toString(data) + '}';
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Arrays.hashCode(data);
+        }
+    }
+
+    static class GenericNumericArray<E extends Number> extends AbstractNumericArray<E>
+    {
+        private final E[] data;
+        private final Function<Number, E> converter;
+
+        @SuppressWarnings("unchecked")
+        GenericNumericArray(E[] data, boolean isReference, Function<Number, E> converter)
+        {
+            this.converter = converter;
+            if (isReference) this.data = data;
+            else
+            {
+                this.data = (E[]) Array.newInstance(data.getClass().getComponentType(), data.length);
+                System.arraycopy(data, 0, this.data, 0, data.length);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        GenericNumericArray(int length, Class<E> type, Function<Number, E> converter)
+        {
+            this.converter = converter;
+            this.data = (E[]) Array.newInstance(type, length);
+            // Fill with void
+            E voidValue = getVoid();
+            IntStream.range(0, length).parallel().forEach(index -> data[index] = voidValue);
+        }
+
+        @Override
+        protected E getVoid()
+        {
+            return converter.apply(0);
+        }
+
+        @Override
+        public byte getByte(int index)
+        {
+            return get(index).byteValue();
+        }
+
+        @Override
+        public short getShort(int index)
+        {
+            return get(index).shortValue();
+        }
+
+        @Override
+        public int getInt(int index)
+        {
+            return get(index).intValue();
+        }
+
+        @Override
+        public float getFloat(int index)
+        {
+            return get(index).floatValue();
+        }
+
+        @Override
+        public double getDouble(int index)
+        {
+            return get(index).doubleValue();
+        }
+
+        @Override
+        public long getLong(int index)
+        {
+            return get(index).longValue();
+        }
+
+        @Override
+        public void setByte(int index, byte element)
+        {
+            data[index] = converter.apply(element);
+        }
+
+        @Override
+        public void setShort(int index, short element)
+        {
+            data[index] = converter.apply(element);
+        }
+
+        @Override
+        public void setInt(int index, int element)
+        {
+            data[index] = converter.apply(element);
+        }
+
+        @Override
+        public void setFloat(int index, float element)
+        {
+            data[index] = converter.apply(element);
+        }
+
+        @Override
+        public void setDouble(int index, double element)
+        {
+            data[index] = converter.apply(element);
+        }
+
+        @Override
+        public void setLong(int index, long element)
+        {
+            data[index] = converter.apply(element);
+        }
+
+        @Override
+        public Object asArray()
+        {
+            return data;
+        }
+
+        @Override
+        public int length()
+        {
+            return data.length;
+        }
+
+        @Override
+        public E get(int index)
+        {
+            E value = data[index];
+            return value == null ? getVoid() : value;
+        }
+
+        @Override
+        public void set(int index, E element)
+        {
+            data[index] = element == null ? getVoid() : element;
+        }
+
+        @Override
+        public boolean isPrimitive()
+        {
+            return false;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public IntFunction<E[]> generator()
+        {
+            return length -> (E[]) Array.newInstance(data.getClass().getComponentType(), length);
+        }
+
+        @Override
+        public void sort()
+        {
+            Arrays.sort(data);
+        }
+
+        @Override
+        public void sort(Comparator<? super E> c)
+        {
+            Arrays.sort(data, c);
+        }
+
+        @Override
+        public Route<E> route()
+        {
+            return Route.of(data);
+        }
+
+        @Override
+        public Iterator<E> iterator()
+        {
+            return Route.of(data);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "GenericNumericArray{" + Arrays.toString(data) + '}';
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int result = Objects.hash(converter);
+            result = 31 * result + Arrays.hashCode(data);
+            return result;
+        }
+    }
 
 
     static class GenericArray<E> extends AbstractArray<E>
@@ -31,7 +337,7 @@ class ArrayFactory
         }
 
         @SuppressWarnings("unchecked")
-        private GenericArray(int length, Class<E> type)
+        GenericArray(int length, Class<E> type)
         {
             this.data = (E[]) Array.newInstance(type, length);
         }
@@ -61,11 +367,9 @@ class ArrayFactory
         }
 
         @Override
-        public E set(int index, E element)
+        public void set(int index, E element)
         {
-            E last = data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
@@ -129,7 +433,7 @@ class ArrayFactory
 
         private final long[] data;
 
-         LongArray(long[] data, boolean isReference)
+        LongArray(long[] data, boolean isReference)
         {
             if (isReference) this.data = data;
             else
@@ -139,7 +443,7 @@ class ArrayFactory
             }
         }
 
-         LongArray(int length) {this.data = new long[length];}
+        LongArray(int length) {this.data = new long[length];}
 
         @Override
         protected Long getVoid()
@@ -184,51 +488,39 @@ class ArrayFactory
         }
 
         @Override
-        public byte setByte(int index, byte element)
+        public void setByte(int index, byte element)
         {
-            byte last = (byte) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public short setShort(int index, short element)
+        public void setShort(int index, short element)
         {
-            short last = (short) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public int setInt(int index, int element)
+        public void setInt(int index, int element)
         {
-            int last = (int) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public float setFloat(int index, float element)
+        public void setFloat(int index, float element)
         {
-            float last = data[index];
             data[index] = (long) element;
-            return last;
         }
 
         @Override
-        public double setDouble(int index, double element)
+        public void setDouble(int index, double element)
         {
-            double last = data[index];
             data[index] = (long) element;
-            return last;
         }
 
         @Override
-        public long setLong(int index, long element)
+        public void setLong(int index, long element)
         {
-            long last = data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
@@ -250,9 +542,9 @@ class ArrayFactory
         }
 
         @Override
-        public Long set(int index, Long element)
+        public void set(int index, Long element)
         {
-            return setLong(index, element == null ? getVoid() : element);
+            setLong(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -314,7 +606,7 @@ class ArrayFactory
     {
         private final double[] data;
 
-        private DoubleArray(double[] data, boolean isReference)
+        DoubleArray(double[] data, boolean isReference)
         {
             if (isReference) this.data = data;
             else
@@ -324,7 +616,7 @@ class ArrayFactory
             }
         }
 
-        private DoubleArray(int length) {this.data = new double[length];}
+        DoubleArray(int length) {this.data = new double[length];}
 
         @Override
         protected Double getVoid()
@@ -369,51 +661,39 @@ class ArrayFactory
         }
 
         @Override
-        public byte setByte(int index, byte element)
+        public void setByte(int index, byte element)
         {
-            byte last = (byte) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public short setShort(int index, short element)
+        public void setShort(int index, short element)
         {
-            short last = (short) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public int setInt(int index, int element)
+        public void setInt(int index, int element)
         {
-            int last = (int) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public float setFloat(int index, float element)
+        public void setFloat(int index, float element)
         {
-            float last = (float) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public double setDouble(int index, double element)
+        public void setDouble(int index, double element)
         {
-            double last = data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public long setLong(int index, long element)
+        public void setLong(int index, long element)
         {
-            long last = (long) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
@@ -435,9 +715,9 @@ class ArrayFactory
         }
 
         @Override
-        public Double set(int index, Double element)
+        public void set(int index, Double element)
         {
-            return setDouble(index, element == null ? getVoid() : element);
+            setDouble(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -501,15 +781,17 @@ class ArrayFactory
     {
         private final float[] data;
 
-         FloatArray(float[] data, boolean isReference) {
-            if(isReference) this.data = data;
-            else {
+        FloatArray(float[] data, boolean isReference)
+        {
+            if (isReference) this.data = data;
+            else
+            {
                 this.data = new float[data.length];
-                System.arraycopy(data,0,this.data,0,data.length);
+                System.arraycopy(data, 0, this.data, 0, data.length);
             }
         }
 
-         FloatArray(int length) {this.data = new float[length];}
+        FloatArray(int length) {this.data = new float[length];}
 
         @Override
         protected Float getVoid()
@@ -554,51 +836,39 @@ class ArrayFactory
         }
 
         @Override
-        public byte setByte(int index, byte element)
+        public void setByte(int index, byte element)
         {
-            byte last = (byte) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public short setShort(int index, short element)
+        public void setShort(int index, short element)
         {
-            short last = (short) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public int setInt(int index, int element)
+        public void setInt(int index, int element)
         {
-            int last = (int) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public float setFloat(int index, float element)
+        public void setFloat(int index, float element)
         {
-            float last = data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public double setDouble(int index, double element)
+        public void setDouble(int index, double element)
         {
-            double last = data[index];
             data[index] = (float) element;
-            return last;
         }
 
         @Override
-        public long setLong(int index, long element)
+        public void setLong(int index, long element)
         {
-            long last = (long) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
@@ -620,9 +890,9 @@ class ArrayFactory
         }
 
         @Override
-        public Float set(int index, Float element)
+        public void set(int index, Float element)
         {
-            return setFloat(index, element == null ? getVoid() : element);
+             setFloat(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -679,16 +949,17 @@ class ArrayFactory
     {
         private final int[] data;
 
-         IntArray(int[] data, boolean isReference)
+        IntArray(int[] data, boolean isReference)
         {
-            if(isReference) this.data = data;
-            else {
+            if (isReference) this.data = data;
+            else
+            {
                 this.data = new int[data.length];
-                System.arraycopy(data,0,this.data,0,data.length);
+                System.arraycopy(data, 0, this.data, 0, data.length);
             }
         }
 
-         IntArray(int length) {this.data = new int[length];}
+        IntArray(int length) {this.data = new int[length];}
 
         @Override
         protected Integer getVoid()
@@ -733,51 +1004,39 @@ class ArrayFactory
         }
 
         @Override
-        public byte setByte(int index, byte element)
+        public void setByte(int index, byte element)
         {
-            byte last = (byte) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public short setShort(int index, short element)
+        public void setShort(int index, short element)
         {
-            short last = (short) data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public int setInt(int index, int element)
+        public void setInt(int index, int element)
         {
-            int last = data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public float setFloat(int index, float element)
+        public void setFloat(int index, float element)
         {
-            float last = data[index];
             data[index] = (int) element;
-            return last;
         }
 
         @Override
-        public double setDouble(int index, double element)
+        public void setDouble(int index, double element)
         {
-            double last = data[index];
             data[index] = (int) element;
-            return last;
         }
 
         @Override
-        public long setLong(int index, long element)
+        public void setLong(int index, long element)
         {
-            long last = data[index];
             data[index] = (int) element;
-            return last;
         }
 
         @Override
@@ -799,9 +1058,9 @@ class ArrayFactory
         }
 
         @Override
-        public Integer set(int index, Integer element)
+        public void set(int index, Integer element)
         {
-            return setInt(index, element == null ? getVoid() : element);
+             setInt(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -859,16 +1118,17 @@ class ArrayFactory
 
         private final short[] data;
 
-         ShortArray(short[] data, boolean isReference)
+        ShortArray(short[] data, boolean isReference)
         {
-            if(isReference) this.data = data;
-            else {
+            if (isReference) this.data = data;
+            else
+            {
                 this.data = new short[data.length];
-                System.arraycopy(data,0,this.data,0,data.length);
+                System.arraycopy(data, 0, this.data, 0, data.length);
             }
         }
 
-         ShortArray(int length) {this.data = new short[length];}
+        ShortArray(int length) {this.data = new short[length];}
 
         @Override
         protected Short getVoid()
@@ -913,51 +1173,39 @@ class ArrayFactory
         }
 
         @Override
-        public byte setByte(int index, byte element)
+        public void setByte(int index, byte element)
         {
-            short last = data[index];
             data[index] = element;
-            return (byte) last;
         }
 
         @Override
-        public short setShort(int index, short element)
+        public void setShort(int index, short element)
         {
-            short last = data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public int setInt(int index, int element)
+        public void setInt(int index, int element)
         {
-            short last = data[index];
             data[index] = (short) element;
-            return last;
         }
 
         @Override
-        public float setFloat(int index, float element)
+        public void setFloat(int index, float element)
         {
-            short last = data[index];
             data[index] = (short) element;
-            return last;
         }
 
         @Override
-        public double setDouble(int index, double element)
+        public void setDouble(int index, double element)
         {
-            short last = data[index];
             data[index] = (short) element;
-            return last;
         }
 
         @Override
-        public long setLong(int index, long element)
+        public void setLong(int index, long element)
         {
-            short last = data[index];
             data[index] = (short) element;
-            return last;
         }
 
         @Override
@@ -979,9 +1227,9 @@ class ArrayFactory
         }
 
         @Override
-        public Short set(int index, Short element)
+        public void set(int index, Short element)
         {
-            return setShort(index, element == null ? getVoid() : element);
+             setShort(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -1038,15 +1286,17 @@ class ArrayFactory
     {
         private final byte[] data;
 
-         ByteArray(byte[] data, boolean isReference) {
-            if(isReference) this.data = data;
-            else {
+        ByteArray(byte[] data, boolean isReference)
+        {
+            if (isReference) this.data = data;
+            else
+            {
                 this.data = new byte[data.length];
-                System.arraycopy(data,0,this.data,0,data.length);
+                System.arraycopy(data, 0, this.data, 0, data.length);
             }
         }
 
-         ByteArray(int length) {this.data = new byte[length];}
+        ByteArray(int length) {this.data = new byte[length];}
 
         @Override
         protected Byte getVoid()
@@ -1091,51 +1341,39 @@ class ArrayFactory
         }
 
         @Override
-        public byte setByte(int index, byte element)
+        public void setByte(int index, byte element)
         {
-            byte last = data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
-        public short setShort(int index, short element)
+        public void setShort(int index, short element)
         {
-            byte last = data[index];
             data[index] = (byte) element;
-            return last;
         }
 
         @Override
-        public int setInt(int index, int element)
+        public void setInt(int index, int element)
         {
-            byte last = data[index];
             data[index] = (byte) element;
-            return last;
         }
 
         @Override
-        public float setFloat(int index, float element)
+        public void setFloat(int index, float element)
         {
-            byte last = data[index];
             data[index] = (byte) element;
-            return last;
         }
 
         @Override
-        public double setDouble(int index, double element)
+        public void setDouble(int index, double element)
         {
-            byte last = data[index];
             data[index] = (byte) element;
-            return last;
         }
 
         @Override
-        public long setLong(int index, long element)
+        public void setLong(int index, long element)
         {
-            byte last = data[index];
             data[index] = (byte) element;
-            return last;
         }
 
         @Override
@@ -1165,9 +1403,9 @@ class ArrayFactory
         }
 
         @Override
-        public Byte set(int index, Byte element)
+        public void set(int index, Byte element)
         {
-            return setByte(index, element == null ? getVoid() : element);
+             setByte(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -1224,15 +1462,17 @@ class ArrayFactory
     {
         private final char[] data;
 
-         CharArray(char[] data, boolean isReference) {
-            if(isReference) this.data = data;
-            else {
+        CharArray(char[] data, boolean isReference)
+        {
+            if (isReference) this.data = data;
+            else
+            {
                 this.data = new char[data.length];
-                System.arraycopy(data,0,this.data,0,data.length);
+                System.arraycopy(data, 0, this.data, 0, data.length);
             }
         }
 
-         CharArray(int length) {this.data = new char[length];}
+        CharArray(int length) {this.data = new char[length];}
 
         @Override
         protected Character getVoid()
@@ -1287,9 +1527,9 @@ class ArrayFactory
         }
 
         @Override
-        public Character set(int index, Character element)
+        public void set(int index, Character element)
         {
-            return setChar(index, element == null ? getVoid() : element);
+             setChar(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -1341,15 +1581,17 @@ class ArrayFactory
 
         private final boolean[] data;
 
-         BooleanArray(boolean[] data, boolean isReference) {
-            if(isReference) this.data = data;
-            else {
+        BooleanArray(boolean[] data, boolean isReference)
+        {
+            if (isReference) this.data = data;
+            else
+            {
                 this.data = new boolean[data.length];
-                System.arraycopy(data,0,this.data,0,data.length);
+                System.arraycopy(data, 0, this.data, 0, data.length);
             }
         }
 
-         BooleanArray(int length) {this.data = new boolean[length];}
+        BooleanArray(int length) {this.data = new boolean[length];}
 
 
         @Override
@@ -1405,9 +1647,9 @@ class ArrayFactory
         }
 
         @Override
-        public Boolean set(int index, Boolean element)
+        public void set(int index, Boolean element)
         {
-            return setBoolean(index, element == null ? getVoid() : element);
+             setBoolean(index, element == null ? getVoid() : element);
         }
 
         @Override
