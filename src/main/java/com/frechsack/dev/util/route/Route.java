@@ -1,7 +1,10 @@
 package com.frechsack.dev.util.route;
 
+import com.frechsack.dev.util.function.NumberSupplier;
+
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * A Cursor acts like an {@link Iterator}.

@@ -1,5 +1,6 @@
 package com.frechsack.dev.util.collection;
 
+import com.frechsack.dev.util.FsStd;
 import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.route.IndexRoute;
 import com.frechsack.dev.util.route.Routable;
@@ -387,7 +388,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
             for (int i = 0; i < length(); i++) if (Objects.equals(o, get(i))) return true;
             return false;
         }
-        return streamParallel().anyMatch(e -> Objects.equals(o, e));
+        return parallelStream().anyMatch(e -> Objects.equals(o, e));
     }
 
     /**
@@ -441,7 +442,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
      * @return The Stream.
      * @see Stream
      */
-    public Stream<E> streamParallel()
+    public Stream<E> parallelStream()
     {
         return StreamSupport.stream(spliterator(), true);
     }
@@ -906,7 +907,7 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
      */
     public E[] toGenericArray()
     {
-        return stream().toArray(generator());
+        return parallelStream().toArray(generator());
     }
 
     /**
@@ -3119,6 +3120,12 @@ public final class Array<E> implements Function<Integer, E>, IntFunction<E>, Ite
         public void sort(Comparator<? super E> c)
         {
             Array.this.sort(c);
+        }
+
+        @Override
+        public List<E> subList(int fromIndex, int toIndex)
+        {
+            return super.subList(fromIndex, toIndex);
         }
     }
 }

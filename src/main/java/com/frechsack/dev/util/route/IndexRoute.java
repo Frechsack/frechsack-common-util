@@ -17,6 +17,7 @@ public class IndexRoute<E> implements Route<E>
         this.size = size;
     }
 
+
     @Override
     public final void remove()
     {
