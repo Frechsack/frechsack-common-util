@@ -4,6 +4,7 @@ import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.*;
 import java.util.function.IntFunction;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -113,6 +114,15 @@ public abstract class AbstractArray<E> implements Array<E>
         ArrayList arrayList = arrayListReference == null ? null : arrayListReference.get();
         if (arrayList == null) arrayListReference = new SoftReference<>(new ArrayList());
         return arrayList;
+    }
+
+    @Override
+    public void sort(Comparator<? super E> c)
+    {
+        java.util.ArrayList<E> ls = new java.util.ArrayList<>(length());
+        stream().sorted(c).collect(Collectors.toCollection(() -> ls));
+        // Replace
+        IntStream.range(0, ls.size()).parallel().forEach(index -> set(index, ls.get(index)));
     }
 
     private class ArrayList extends AbstractList<E>

@@ -1,14 +1,11 @@
 package com.frechsack.dev.util.array;
 
-import java.util.Arrays;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 public abstract class AbstractNumericArray <E extends Number> extends AbstractArray<E> implements NumericArray<E>
 {
-    // TODO: Subclasses Equals
-
     @Override
     public IntStream intStream()
     {

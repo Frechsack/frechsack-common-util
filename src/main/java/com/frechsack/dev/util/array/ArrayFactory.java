@@ -1,12 +1,12 @@
 package com.frechsack.dev.util.array;
 
+import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.route.Route;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
+import java.util.*;
 import java.util.function.IntFunction;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -105,7 +105,7 @@ class ArrayFactory
         @Override
         public boolean equals(E[] array)
         {
-            return Arrays.equals(array,data);
+            return Arrays.equals(array, data);
         }
 
         @Override
@@ -248,12 +248,6 @@ class ArrayFactory
         public IntFunction<Long[]> generator()
         {
             return Long[]::new;
-        }
-
-        @Override
-        public void sort(Comparator<? super Long> c)
-        {
-            // TODO: Sort -> Sort Stream?
         }
 
         @Override
@@ -439,11 +433,6 @@ class ArrayFactory
             Arrays.sort(data);
         }
 
-        @Override
-        public void sort(Comparator<? super Double> c)
-        {
-            // TODO: Sort
-        }
 
         @Override
         public DoubleStream doubleStream()
@@ -635,11 +624,6 @@ class ArrayFactory
             Arrays.sort(data);
         }
 
-        @Override
-        public void sort(Comparator<? super Float> c)
-        {
-            // TODO: Sort
-        }
 
         @Override
         public int hashCode()
@@ -794,11 +778,6 @@ class ArrayFactory
             Arrays.sort(data);
         }
 
-        @Override
-        public void sort(Comparator<? super Integer> c)
-        {
-            // TODO: Sort
-        }
 
         @Override
         public IntFunction<Integer[]> generator()
@@ -972,11 +951,6 @@ class ArrayFactory
             Arrays.sort(data);
         }
 
-        @Override
-        public void sort(Comparator<? super Short> c)
-        {
-            // TODO: Sort
-        }
 
         @Override
         public IntFunction<Short[]> generator()
@@ -1169,11 +1143,6 @@ class ArrayFactory
             Arrays.sort(data);
         }
 
-        @Override
-        public void sort(Comparator<? super Byte> c)
-        {
-            // TODO: Sort
-        }
 
         @Override
         public Route<Byte> route()
@@ -1212,8 +1181,7 @@ class ArrayFactory
         @Override
         protected Character getVoid()
         {
-            // TODO: Java Default Value
-            return Character.MIN_VALUE;
+            return '\u0000';
         }
 
         @Override
@@ -1302,12 +1270,6 @@ class ArrayFactory
         public void sort()
         {
             Arrays.sort(data);
-        }
-
-        @Override
-        public void sort(Comparator<? super Character> c)
-        {
-            // TODO: Sort
         }
 
         @Override
