@@ -140,6 +140,36 @@ public abstract class AbstractArray<E> implements Array<E>
         IntStream.range(0, ls.size()).parallel().forEach(index -> set(index, ls.get(index)));
     }
 
+    // TODO: Force this impl. for better performance - final?
+
+    @Override
+    public Iterator<E> iterator()
+    {
+        return new ArrayIterator();
+    }
+
+    private class ArrayIterator implements Iterator<E>{
+        private int index = -1;
+
+        @Override
+        public boolean hasNext()
+        {
+            return index < length() - 1;
+        }
+
+        @Override
+        public E next()
+        {
+            return get(index++);
+        }
+
+        @Override
+        public void remove()
+        {
+            set(index,getVoid());
+        }
+    }
+
     private class ArrayList extends AbstractList<E>
     {
         @Override

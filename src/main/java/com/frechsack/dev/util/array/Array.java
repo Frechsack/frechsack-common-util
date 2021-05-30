@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
 {
-    // TODO: Generic char array
+    // TODO: Cached Array wrappers.
 
     static <E> Array<E> of(E... array)
     {
