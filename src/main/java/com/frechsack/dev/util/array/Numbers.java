@@ -4,7 +4,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
-public interface NumArray<E extends Number> extends Array<E>
+public interface Numbers<E extends Number> extends Array<E>
 {
     byte getByte(int index);
 

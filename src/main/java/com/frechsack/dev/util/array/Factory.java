@@ -16,11 +16,141 @@ import java.util.stream.LongStream;
 class Factory
 {
 
-    static class GenericBoolArray extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.BoolArray
+    static class GenericCharacters extends AbstractArray<Character> implements com.frechsack.dev.util.array.Characters
+    {
+        private final Character[] data;
+
+        GenericCharacters(Character[] data, boolean isReference)
+        {
+            if (isReference) this.data = data;
+            else
+            {
+                this.data = new Character[data.length];
+                System.arraycopy(data, 0, this.data, 0, data.length);
+            }
+        }
+        GenericCharacters(int length)
+        {
+            this.data = new Character[length];
+        }
+
+
+        @Override
+        protected Character getVoid()
+        {
+            return '\u0000';
+        }
+
+        @Override
+        public Object asArray()
+        {
+            return data;
+        }
+
+        @Override
+        public int length()
+        {
+            return data.length;
+        }
+
+        @Override
+        public Character get(int index)
+        {
+            Character last = data[index];
+            return last == null ? getVoid() : last;
+        }
+
+        @Override
+        public void set(int index, Character element)
+        {
+            data[index] = element == null ? getVoid() : element;
+        }
+
+        @Override
+        public boolean isPrimitive()
+        {
+            return false;
+        }
+
+        @Override
+        public IntFunction<Character[]> generator()
+        {
+            return Character[]::new;
+        }
+
+        @Override
+        public void sort()
+        {
+            Arrays.sort(data);
+        }
+
+        @Override
+        public Route<Character> route()
+        {
+            return Route.of(data);
+        }
+
+        @Override
+        public Iterator<Character> iterator()
+        {
+            return Route.of(data);
+        }
+
+        @Override
+        public char getChar(int index)
+        {
+            Character last = data[index];
+            return last == null ? getVoid() : last;
+        }
+
+        @Override
+        public void setChar(int index, char element)
+        {
+            data[index] = element;
+        }
+
+        @Override
+        public char[] toCharArray()
+        {
+            char[] clone = new char[data.length];
+            IntStream.range(0, length()).parallel().forEach(index -> clone[index] = get(index));
+            return clone;
+        }
+
+        @Override
+        public boolean equals(char[] array)
+        {
+            if(data.length != array.length) return false;
+
+            if (length() < STREAM_PREFERRED_LENGTH)
+            {
+                for (int i = 0; i < length(); i++)
+                {
+                    if (getChar(i) != array[i]) return false;
+                }
+                return true;
+            }
+            return IntStream.range(0, length()).allMatch(index -> getChar(index) == array[index]);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "GenericCharacters{" +  Arrays.toString(data) + '}';
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Arrays.hashCode(data);
+        }
+    }
+
+    static class GenericBooleans extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.Booleans
     {
         private final Boolean[] data;
 
-        GenericBoolArray(Boolean[] data, boolean isReference)
+        GenericBooleans(Boolean[] data, boolean isReference)
         {
             if (isReference) this.data = data;
             else
@@ -30,7 +160,7 @@ class Factory
             }
         }
 
-        GenericBoolArray(int length) {this.data = new Boolean[length];}
+        GenericBooleans(int length) {this.data = new Boolean[length];}
 
         @Override
         protected Boolean getVoid()
@@ -46,11 +176,9 @@ class Factory
         }
 
         @Override
-        public boolean setBoolean(int index, boolean element)
+        public void setBoolean(int index, boolean element)
         {
-            boolean last = getBoolean(index);
             data[index] = element;
-            return last;
         }
 
         @Override
@@ -138,13 +266,13 @@ class Factory
         }
     }
 
-    static class GenericNumArray<E extends Number> extends AbstractNumArray<E>
+    static class GenericNumbers<E extends Number> extends AbstractNumbers<E>
     {
         private final E[] data;
         private final Function<Number, E> converter;
 
         @SuppressWarnings("unchecked")
-        GenericNumArray(E[] data, boolean isReference, Function<Number, E> converter)
+        GenericNumbers(E[] data, boolean isReference, Function<Number, E> converter)
         {
             this.converter = converter;
             if (isReference) this.data = data;
@@ -156,7 +284,7 @@ class Factory
         }
 
         @SuppressWarnings("unchecked")
-        GenericNumArray(int length, Class<E> type, Function<Number, E> converter)
+        GenericNumbers(int length, Class<E> type, Function<Number, E> converter)
         {
             this.converter = converter;
             this.data = (E[]) Array.newInstance(type, length);
@@ -428,7 +556,7 @@ class Factory
         }
     }
 
-    static class LongArray extends AbstractNumArray<Long>
+    static class LongArray extends AbstractNumbers<Long>
     {
 
         private final long[] data;
@@ -602,7 +730,7 @@ class Factory
         }
     }
 
-    static class DoubleArray extends AbstractNumArray<Double>
+    static class DoubleArray extends AbstractNumbers<Double>
     {
         private final double[] data;
 
@@ -777,7 +905,7 @@ class Factory
         }
     }
 
-    static class FloatArray extends AbstractNumArray<Float>
+    static class FloatArray extends AbstractNumbers<Float>
     {
         private final float[] data;
 
@@ -945,7 +1073,7 @@ class Factory
         }
     }
 
-    static class IntArray extends AbstractNumArray<Integer>
+    static class IntArray extends AbstractNumbers<Integer>
     {
         private final int[] data;
 
@@ -1113,7 +1241,7 @@ class Factory
         }
     }
 
-    static class ShortArray extends AbstractNumArray<Short>
+    static class ShortArray extends AbstractNumbers<Short>
     {
 
         private final short[] data;
@@ -1282,7 +1410,7 @@ class Factory
         }
     }
 
-    static class ByteArray extends AbstractNumArray<Byte>
+    static class ByteArray extends AbstractNumbers<Byte>
     {
         private final byte[] data;
 
@@ -1458,11 +1586,11 @@ class Factory
         }
     }
 
-    static class CharArray extends AbstractArray<Character> implements com.frechsack.dev.util.array.CharArray
+    static class Characters extends AbstractArray<Character> implements com.frechsack.dev.util.array.Characters
     {
         private final char[] data;
 
-        CharArray(char[] data, boolean isReference)
+        Characters(char[] data, boolean isReference)
         {
             if (isReference) this.data = data;
             else
@@ -1472,7 +1600,7 @@ class Factory
             }
         }
 
-        CharArray(int length) {this.data = new char[length];}
+        Characters(int length) {this.data = new char[length];}
 
         @Override
         protected Character getVoid()
@@ -1487,11 +1615,9 @@ class Factory
         }
 
         @Override
-        public char setChar(int index, char element)
+        public void setChar(int index, char element)
         {
-            char last = data[index];
             data[index] = element;
-            return last;
         }
 
         @Override
@@ -1576,12 +1702,12 @@ class Factory
 
     }
 
-    static class BoolArray extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.BoolArray
+    static class Booleans extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.Booleans
     {
 
         private final boolean[] data;
 
-        BoolArray(boolean[] data, boolean isReference)
+        Booleans(boolean[] data, boolean isReference)
         {
             if (isReference) this.data = data;
             else
@@ -1591,7 +1717,7 @@ class Factory
             }
         }
 
-        BoolArray(int length) {this.data = new boolean[length];}
+        Booleans(int length) {this.data = new boolean[length];}
 
 
         @Override
@@ -1601,11 +1727,9 @@ class Factory
         }
 
         @Override
-        public boolean setBoolean(int index, boolean element)
+        public void setBoolean(int index, boolean element)
         {
-            boolean last = data[index];
             data[index] = element;
-            return last;
         }
 
         @Override

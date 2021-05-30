@@ -1,10 +1,10 @@
 package com.frechsack.dev.util.array;
 
-public interface CharArray extends Array<Character>
+public interface Characters extends Array<Character>
 {
     char getChar(int index);
 
-    char setChar(int index, char element);
+    void setChar(int index, char element);
 
     char[] toCharArray();
 

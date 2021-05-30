@@ -2,11 +2,11 @@ package com.frechsack.dev.util.array;
 
 import java.util.Comparator;
 
-public interface BoolArray extends Array<Boolean>
+public interface Booleans extends Array<Boolean>
 {
     boolean getBoolean(int index);
 
-    boolean setBoolean(int index, boolean element);
+    void setBoolean(int index, boolean element);
 
     boolean[] toBooleanArray();
 
