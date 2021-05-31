@@ -3,10 +3,7 @@ package com.frechsack.dev.util.array;
 import com.frechsack.dev.util.route.Route;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.DoubleStream;
@@ -15,7 +12,6 @@ import java.util.stream.LongStream;
 
 class Factory
 {
-
     static class GenericCharacters extends AbstractArray<Character> implements com.frechsack.dev.util.array.Characters
     {
         private final Character[] data;
@@ -86,12 +82,6 @@ class Factory
 
         @Override
         public Route<Character> route()
-        {
-            return Route.of(data);
-        }
-
-        @Override
-        public Iterator<Character> iterator()
         {
             return Route.of(data);
         }
@@ -247,11 +237,6 @@ class Factory
             return Route.of(data);
         }
 
-        @Override
-        public Iterator<Boolean> iterator()
-        {
-            return Route.of(data);
-        }
 
         @Override
         public String toString()
@@ -428,12 +413,6 @@ class Factory
         }
 
         @Override
-        public Iterator<E> iterator()
-        {
-            return Route.of(data);
-        }
-
-        @Override
         public String toString()
         {
             return "GenericNumericArray{" + Arrays.toString(data) + '}';
@@ -527,12 +506,6 @@ class Factory
 
         @Override
         public Route<E> route()
-        {
-            return Route.of(data);
-        }
-
-        @Override
-        public Iterator<E> iterator()
         {
             return Route.of(data);
         }
@@ -701,12 +674,6 @@ class Factory
 
         @Override
         public Route<Long> route()
-        {
-            return Route.of(data);
-        }
-
-        @Override
-        public Iterator<Long> iterator()
         {
             return Route.of(data);
         }
@@ -893,12 +860,6 @@ class Factory
         }
 
         @Override
-        public Iterator<Double> iterator()
-        {
-            return Route.of(data);
-        }
-
-        @Override
         public boolean equals(double[] array)
         {
             return Arrays.equals(array, data);
@@ -1037,12 +998,6 @@ class Factory
 
         @Override
         public Route<Float> route()
-        {
-            return Route.of(data);
-        }
-
-        @Override
-        public Iterator<Float> iterator()
         {
             return Route.of(data);
         }
@@ -1222,11 +1177,6 @@ class Factory
             return Arrays.stream(data);
         }
 
-        @Override
-        public Iterator<Integer> iterator()
-        {
-            return Route.of(data);
-        }
 
         @Override
         public int hashCode()
@@ -1381,12 +1331,6 @@ class Factory
 
         @Override
         public Route<Short> route()
-        {
-            return Route.of(data);
-        }
-
-        @Override
-        public Iterator<Short> iterator()
         {
             return Route.of(data);
         }
@@ -1549,12 +1493,6 @@ class Factory
         }
 
         @Override
-        public Iterator<Byte> iterator()
-        {
-            return Route.of(data);
-        }
-
-        @Override
         public void sort()
         {
             Arrays.sort(data);
@@ -1671,12 +1609,6 @@ class Factory
         }
 
         @Override
-        public Iterator<Character> iterator()
-        {
-            return Route.of(data);
-        }
-
-        @Override
         public Route<Character> route()
         {
             return Route.of(data);
@@ -1786,12 +1718,6 @@ class Factory
         public IntFunction<Boolean[]> generator()
         {
             return Boolean[]::new;
-        }
-
-        @Override
-        public Iterator<Boolean> iterator()
-        {
-            return Route.of(data);
         }
 
         @Override

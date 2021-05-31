@@ -21,7 +21,7 @@ public abstract class AbstractArray<E> implements Array<E>
     public E getAndSet(int index, E element)
     {
         E last = get(index);
-        set(index,element);
+        set(index, element);
         return last;
     }
 
@@ -70,7 +70,7 @@ public abstract class AbstractArray<E> implements Array<E>
         }
         else
         {
-            IntStream.range(0,length()).parallel().forEach(index -> set(index,voidValue));
+            IntStream.range(0, length()).parallel().forEach(index -> set(index, voidValue));
         }
     }
 
@@ -99,10 +99,11 @@ public abstract class AbstractArray<E> implements Array<E>
     }
 
     @Override
-    public boolean equals(Object o)
+    public final boolean equals(Object o)
     {
         if (this == o) return true;
         if (o instanceof Collection) return asList().equals(o);
+        if (asArray() == o) return true;
         if (!(o instanceof Array)) return false;
         // Compare collection
         return AbstractArray.this.parallelStream().allMatch(((Array<?>) o)::contains);
@@ -140,33 +141,77 @@ public abstract class AbstractArray<E> implements Array<E>
         IntStream.range(0, ls.size()).parallel().forEach(index -> set(index, ls.get(index)));
     }
 
-    // TODO: Force this impl. for better performance - final?
+    @Override
+    public void sortReverse()
+    {
+        sort();
+        reverse();
+    }
 
     @Override
-    public Iterator<E> iterator()
+    public void sortReverse(Comparator<? super E> c)
+    {
+        java.util.ArrayList<E> ls = new java.util.ArrayList<>(length());
+        stream().sorted(c).collect(Collectors.toCollection(() -> ls));
+        // Replace
+        IntStream.range(0, ls.size()).parallel().forEach(index ->
+                                                         {
+                                                             set(length() - 1 - index, ls.get(index));
+                                                         });
+    }
+
+    @Override
+    public void fill(E element)
+    {
+        if (length() < STREAM_PREFERRED_LENGTH)
+        {
+            for (int i = 0; i < length(); i++)
+            {
+                set(i, element);
+            }
+        }
+        else IntStream.range(0, length()).parallel().forEach(index -> set(index, element));
+    }
+
+    @Override
+    public void reverse()
+    {
+        int swapLength = length() / 2;
+        IntStream.range(0, swapLength).parallel().forEach(index ->
+                                                          {
+                                                              int swapIndex = length() - 1 - index;
+                                                              E swap = get(index);
+                                                              set(index, getAndSet(swapIndex, swap));
+                                                          });
+
+    }
+
+    @Override
+    public final Iterator<E> iterator()
     {
         return new ArrayIterator();
     }
 
-    private class ArrayIterator implements Iterator<E>{
+    private class ArrayIterator implements Iterator<E>
+    {
         private int index = -1;
 
         @Override
         public boolean hasNext()
         {
-            return index < length() - 1;
+            return index + 1 < length();
         }
 
         @Override
         public E next()
         {
-            return get(index++);
+            return get(++index);
         }
 
         @Override
         public void remove()
         {
-            set(index,getVoid());
+            set(index, getVoid());
         }
     }
 

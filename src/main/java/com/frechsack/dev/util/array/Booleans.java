@@ -8,6 +8,12 @@ public interface Booleans extends Array<Boolean>
 
     void setBoolean(int index, boolean element);
 
+    default boolean getAndSetBoolean(int index, boolean element){
+        boolean last = getBoolean(index);
+        setBoolean(index,element);
+        return last;
+    }
+
     boolean[] toBooleanArray();
 
     boolean equals(boolean[] array);
