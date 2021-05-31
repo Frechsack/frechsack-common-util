@@ -11,13 +11,13 @@ import java.util.stream.Stream;
 
 public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
 {
-    static <E> Array<E> of(E[] array)
+    static <E> Array<E> of(E... array)
     {
         return new Factory.GenericArray<>(array, true);
 
     }
 
-    static <E> Array<E> of(boolean isReference, E[] array)
+    static <E> Array<E> of(boolean isReference, E... array)
     {
         return new Factory.GenericArray<>(array, isReference);
     }

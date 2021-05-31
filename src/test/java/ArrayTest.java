@@ -1,7 +1,10 @@
 import com.frechsack.dev.util.array.Array;
 import com.frechsack.dev.util.array.Numbers;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ArrayTest
 {
@@ -17,6 +20,14 @@ public class ArrayTest
 
     public static void main(String[] bca)
     {
+        int[] ints = new int[]{1,2,3,4,5,6,7,8,9,10};
+        print(Array.ofInt(ints).asList());
+        System.out.println(Arrays.toString(ints));
+    }
 
+    private static void print(List<Integer> ls){
+        System.out.println(ls);
+
+        ls.set(2,10);
     }
 }

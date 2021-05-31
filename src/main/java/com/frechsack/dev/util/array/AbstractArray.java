@@ -128,7 +128,7 @@ public abstract class AbstractArray<E> implements Array<E>
     public List<E> asList()
     {
         ArrayList arrayList = arrayListReference == null ? null : arrayListReference.get();
-        if (arrayList == null) arrayListReference = new SoftReference<>(new ArrayList());
+        if (arrayList == null) arrayListReference = new SoftReference<>(arrayList = new ArrayList());
         return arrayList;
     }
 
