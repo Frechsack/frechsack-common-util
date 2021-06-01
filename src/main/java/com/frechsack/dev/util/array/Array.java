@@ -375,11 +375,11 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
 
     void fill(E element);
 
-    void sortDistinct();
+    void sortReverse();
 
-    void sortDistinct(Comparator<? super E> c);
+    void sortReverse(Comparator<? super E> c);
 
-    void distinct();
+    void reverse();
 
     @Override
     default E apply(Integer index)

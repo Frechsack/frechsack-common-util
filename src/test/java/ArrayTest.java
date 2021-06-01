@@ -21,10 +21,23 @@ public class ArrayTest
 
     public static void main(String[] bca)
     {
-        int[] ints = new int[]{123, 2, 2, 2, 2, 2, 2, 2, 2, 10};
-        Numbers<Integer> numbers = Array.ofInt(ints);
+        IntStream.Builder builder = IntStream.builder();
+        IntStream.range(0,4100).forEach(builder::add);
+        for (int i = 0; i < 10; i++) builder.add(2);
 
-        System.out.println(numbers.indexOf(2));
+
+
+
+        int[] array  = builder.build().toArray();
+        Numbers<Integer> numbers = Array.ofInt(array);
+
+        System.out.println(array.length);
+
+        long start = System.nanoTime();
+
+        System.out.println(numbers.lastIndexOf(2));
+
+        System.out.println(System.nanoTime() - start);
     }
 
     private static void print(List<Integer> ls)

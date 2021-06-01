@@ -16,7 +16,7 @@ public abstract class AbstractArray<E> implements Array<E>
 
     protected abstract E getVoid();
 
-    protected static final int STREAM_PREFERRED_LENGTH = 32;
+    protected static final int STREAM_PREFERRED_LENGTH = 4096;
 
     @Override
     public E getAndSet(int index, E element)
@@ -51,7 +51,7 @@ public abstract class AbstractArray<E> implements Array<E>
             }
             return -1;
         }
-        return IntStream.range(0, length()).distinct().parallel().filter(index -> Objects.equals(element, get(index))).findAny().orElse(-1);
+        return IntStream.range(0, length()).parallel().map(index -> length() - index -1).filter(index -> Objects.equals(element, get(index))).findFirst().orElse(-1);
     }
 
     @Override
@@ -168,14 +168,14 @@ public abstract class AbstractArray<E> implements Array<E>
     }
 
     @Override
-    public void sortDistinct()
+    public void sortReverse()
     {
         sort();
-        distinct();
+        reverse();
     }
 
     @Override
-    public void sortDistinct(Comparator<? super E> c)
+    public void sortReverse(Comparator<? super E> c)
     {
         java.util.ArrayList<E> ls = new java.util.ArrayList<>(length());
         stream().sorted(c).collect(Collectors.toCollection(() -> ls));
@@ -197,7 +197,7 @@ public abstract class AbstractArray<E> implements Array<E>
     }
 
     @Override
-    public void distinct()
+    public void reverse()
     {
         IntStream.range(0, length() / 2).parallel().forEach(index ->
                                                             {
