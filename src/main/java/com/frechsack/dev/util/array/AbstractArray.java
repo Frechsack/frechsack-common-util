@@ -3,6 +3,7 @@ package com.frechsack.dev.util.array;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -26,7 +27,7 @@ public abstract class AbstractArray<E> implements Array<E>
     }
 
     @Override
-    public int indexOf(Object element)
+    public int firstIndexOf(Object element)
     {
         if (length() < STREAM_PREFERRED_LENGTH)
         {
@@ -36,17 +37,35 @@ public abstract class AbstractArray<E> implements Array<E>
             }
             return -1;
         }
-        return IntStream.range(0, length()).parallel().filter(index -> Objects.equals(element, get(index))).findAny().orElse(-1);
+        return IntStream.range(0, length()).parallel().filter(index -> Objects.equals(element, get(index))).findFirst().orElse(-1);
     }
 
     @Override
     public int lastIndexOf(Object element)
     {
-        for (int i = length() - 1; i > 0; i--)
+        if (length() < STREAM_PREFERRED_LENGTH)
         {
-            if (Objects.equals(element, get(i))) return i;
+            for (int i = length() - 1; i > 0; i--)
+            {
+                if (Objects.equals(element, get(i))) return i;
+            }
+            return -1;
         }
-        return -1;
+        return IntStream.range(0, length()).distinct().parallel().filter(index -> Objects.equals(element, get(index))).findAny().orElse(-1);
+    }
+
+    @Override
+    public int indexOf(Object element, int start, int end)
+    {
+        if (end - start < STREAM_PREFERRED_LENGTH)
+        {
+            for (int i = start; i < end; i++)
+            {
+                if (Objects.equals(element, get(i))) return i;
+            }
+            return -1;
+        }
+        return IntStream.range(start, end).parallel().filter(index -> Objects.equals(element, get(index))).findAny().orElse(-1);
     }
 
     @Override
@@ -120,7 +139,14 @@ public abstract class AbstractArray<E> implements Array<E>
     public E[] toArray()
     {
         E[] array = (E[]) java.lang.reflect.Array.newInstance(this.getClass().getComponentType(), length());
-        IntStream.range(0, length()).parallel().forEach(index -> array[index] = get(index));
+        if (length() < STREAM_PREFERRED_LENGTH)
+        {
+            for (int i = 0; i < length(); i++)
+            {
+                array[i] = get(i);
+            }
+        }
+        else IntStream.range(0, length()).parallel().forEach(index -> array[index] = get(index));
         return array;
     }
 
@@ -142,22 +168,19 @@ public abstract class AbstractArray<E> implements Array<E>
     }
 
     @Override
-    public void sortReverse()
+    public void sortDistinct()
     {
         sort();
-        reverse();
+        distinct();
     }
 
     @Override
-    public void sortReverse(Comparator<? super E> c)
+    public void sortDistinct(Comparator<? super E> c)
     {
         java.util.ArrayList<E> ls = new java.util.ArrayList<>(length());
         stream().sorted(c).collect(Collectors.toCollection(() -> ls));
         // Replace
-        IntStream.range(0, ls.size()).parallel().forEach(index ->
-                                                         {
-                                                             set(length() - 1 - index, ls.get(index));
-                                                         });
+        IntStream.range(0, ls.size()).parallel().forEach(index -> set(length() - 1 - index, ls.get(index)));
     }
 
     @Override
@@ -174,16 +197,28 @@ public abstract class AbstractArray<E> implements Array<E>
     }
 
     @Override
-    public void reverse()
+    public void distinct()
     {
-        int swapLength = length() / 2;
-        IntStream.range(0, swapLength).parallel().forEach(index ->
-                                                          {
-                                                              int swapIndex = length() - 1 - index;
-                                                              E swap = get(index);
-                                                              set(index, getAndSet(swapIndex, swap));
-                                                          });
+        IntStream.range(0, length() / 2).parallel().forEach(index ->
+                                                            {
+                                                                int swapIndex = length() - 1 - index;
+                                                                E swap = get(index);
+                                                                set(index, getAndSet(swapIndex, swap));
+                                                            });
 
+    }
+
+    @Override
+    public void transform(Function<E, E> mapper)
+    {
+        if (length() < STREAM_PREFERRED_LENGTH)
+        {
+            for (int i = 0; i < length(); i++)
+            {
+                set(i, mapper.apply(get(i)));
+            }
+        }
+        else IntStream.range(0,length()).parallel().forEach(index -> set(index,mapper.apply(get(index))));
     }
 
     @Override

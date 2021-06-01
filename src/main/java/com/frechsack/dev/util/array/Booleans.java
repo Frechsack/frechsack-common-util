@@ -14,6 +14,27 @@ public interface Booleans extends Array<Boolean>
         return last;
     }
 
+    default void and(boolean b){
+        for (int i = 0; i < length(); i++)
+        {
+            setBoolean(i,b && getBoolean(i));
+        }
+    }
+
+    default void or(boolean b){
+        for (int i = 0; i < length(); i++)
+        {
+            setBoolean(i,b || getBoolean(i));
+        }
+    }
+
+    default void swap(){
+        for (int i = 0; i < length(); i++)
+        {
+            setBoolean(i,!getBoolean(i));
+        }
+    }
+
     boolean[] toBooleanArray();
 
     boolean equals(boolean[] array);

@@ -4,7 +4,7 @@ import com.frechsack.dev.util.array.Numbers;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 public class ArrayTest
 {
@@ -13,21 +13,24 @@ public class ArrayTest
     private static final long TEST_SLEEP = 1L;
 
 
-    private static long overload(Collection<Long> ls, long l){
+    private static long overload(Collection<Long> ls, long l)
+    {
         ls.add(l++);
         return l;
     }
 
     public static void main(String[] bca)
     {
-        int[] ints = new int[]{1,2,3,4,5,6,7,8,9,10};
-        print(Array.ofInt(ints).asList());
-        System.out.println(Arrays.toString(ints));
+        int[] ints = new int[]{123, 2, 2, 2, 2, 2, 2, 2, 2, 10};
+        Numbers<Integer> numbers = Array.ofInt(ints);
+
+        System.out.println(numbers.indexOf(2));
     }
 
-    private static void print(List<Integer> ls){
+    private static void print(List<Integer> ls)
+    {
         System.out.println(ls);
 
-        ls.set(2,10);
+        ls.set(2, 10);
     }
 }
