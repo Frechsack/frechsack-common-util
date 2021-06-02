@@ -1,10 +1,13 @@
 package com.frechsack.dev.util.array;
 
+import com.frechsack.dev.util.Pair;
+
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -51,11 +54,16 @@ public abstract class AbstractArray<E> implements Array<E>
             }
             return -1;
         }
-        return IntStream.range(0, length()).parallel().map(index -> length() - index -1).filter(index -> Objects.equals(element, get(index))).findFirst().orElse(-1);
+        return IntStream.range(0, length())
+                        .parallel()
+                        .map(index -> length() - index - 1)
+                        .filter(index -> Objects.equals(element, get(index)))
+                        .findFirst()
+                        .orElse(-1);
     }
 
     @Override
-    public int indexOf(Object element, int start, int end)
+    public int indexOf(int start, int end, Object element)
     {
         if (end - start < STREAM_PREFERRED_LENGTH)
         {
@@ -66,6 +74,53 @@ public abstract class AbstractArray<E> implements Array<E>
             return -1;
         }
         return IntStream.range(start, end).parallel().filter(index -> Objects.equals(element, get(index))).findAny().orElse(-1);
+    }
+
+    @Override
+    public int indexOf(int start, int end, Predicate<E> predicate)
+    {
+        if (end - start < STREAM_PREFERRED_LENGTH)
+        {
+            for (int i = 0; i < length(); i++)
+            {
+                if (predicate.test(get(i))) return i;
+            }
+            return -1;
+        }
+        return IntStream.range(start, end).parallel().filter(index -> predicate.test(get(index))).findAny().orElse(-1);
+    }
+
+    @Override
+    public int lastIndexOf(Predicate<E> predicate)
+    {
+        if (length() < STREAM_PREFERRED_LENGTH)
+        {
+            for (int i = length() - 1; i > 0; i--)
+            {
+                if (predicate.test(get(i))) return i;
+            }
+            return -1;
+        }
+        return IntStream.range(0, length())
+                        .parallel()
+                        .map(index -> length() - index - 1)
+                        .filter(index -> predicate.test(get(index)))
+                        .findFirst()
+                        .orElse(-1);
+    }
+
+    @Override
+    public int firstIndexOf(Predicate<E> predicate)
+    {
+        if (length() < STREAM_PREFERRED_LENGTH)
+        {
+            for (int i = 0; i < length(); i++)
+            {
+                if (predicate.test(get(i))) return i;
+            }
+            return -1;
+        }
+        return IntStream.range(0, length()).parallel().filter(index -> predicate.test(get(index))).findFirst().orElse(-1);
     }
 
     @Override
@@ -97,6 +152,18 @@ public abstract class AbstractArray<E> implements Array<E>
     public Stream<E> stream()
     {
         return StreamSupport.stream(spliterator(), false);
+    }
+
+    @Override
+    public Stream<Pair<Integer, E>> streamIndices()
+    {
+        return IntStream.range(0,length()).mapToObj(index -> Pair.of(index,get(index)));
+    }
+
+    @Override
+    public Stream<Pair<Integer, E>> parallelStreamIndices()
+    {
+        return IntStream.range(0,length()).parallel().mapToObj(index -> Pair.of(index,get(index)));
     }
 
     @Override
@@ -218,7 +285,7 @@ public abstract class AbstractArray<E> implements Array<E>
                 set(i, mapper.apply(get(i)));
             }
         }
-        else IntStream.range(0,length()).parallel().forEach(index -> set(index,mapper.apply(get(index))));
+        else IntStream.range(0, length()).parallel().forEach(index -> set(index, mapper.apply(get(index))));
     }
 
     @Override

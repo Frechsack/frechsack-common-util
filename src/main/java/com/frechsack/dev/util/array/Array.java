@@ -1,5 +1,6 @@
 package com.frechsack.dev.util.array;
 
+import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.route.Routable;
 
 import java.util.Comparator;
@@ -8,6 +9,7 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
@@ -318,18 +320,32 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     }
 
     default int indexOf(Object element){
-        return indexOf(element,0,length());
+        return indexOf(0, length(), element);
     }
 
-    int indexOf(Object element, int start, int end);
-
-    default int indexOf(Object element, int start){
-        return indexOf(element,start,length());
+    default int indexOf(int start, Object element){
+        return indexOf(start, length(), element);
     }
+
+    int indexOf(int start, int end, Object element);
+
+    default int indexOf(Predicate<E> predicate){
+        return indexOf(0,length(),predicate);
+    }
+
+    default int indexOf(int start, Predicate<E> predicate){
+        return indexOf(start,length(),predicate);
+    }
+
+    int indexOf(int start, int end, Predicate<E> predicate);
 
     int lastIndexOf(Object element);
 
+    int lastIndexOf(Predicate<E> predicate);
+
     int firstIndexOf(Object element);
+
+    int firstIndexOf(Predicate<E> predicate);
 
     void clear();
 
@@ -355,6 +371,10 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     default void transform(Function<E,E> mapper){
         for (int i = 0; i < length(); i++) set(i,mapper.apply(get(i)));
     }
+
+    Stream<Pair<Integer,E>> streamIndices();
+
+    Stream<Pair<Integer,E>> parallelStreamIndices();
 
     Stream<E> stream();
 
