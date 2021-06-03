@@ -4,16 +4,31 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Objects;
 
+/**
+ * An {@link Iterator} based approach of {@link Route}.
+ * <p>
+ * This implementation will take an Iterator and store previous iterated elements.
+ * @param <E> The type of this sequence.
+ * @author Frechsack
+ */
 public class IteratorRoute<E> implements Route<E>
 {
     private final Iterator<E> elementIterator;
     private final ArrayList<E> passedElementLs = new ArrayList<>();
     private int passedIndex = -1;
 
+    /**
+     * Creates a new IteratorRoute based on the specified Iterator.
+     * @param elementIterator The Iterator.
+     * @throws NullPointerException Thrown when the Iterator is null.
+     */
     public IteratorRoute(Iterator<E> elementIterator)
     {
+        Objects.requireNonNull(elementIterator);
         this.elementIterator = elementIterator;
     }
+
+    // TODO: Remove operation
 
     @Override
     public final boolean hasNext()

@@ -3,16 +3,33 @@ package com.frechsack.dev.util.route;
 import com.frechsack.dev.util.function.NumberSupplier;
 
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.function.IntFunction;
 
+/**
+ * An indexed based approach of {@link Route}.
+ * <p>
+ * This implementation allows a dynamic resizing of the underlying model.
+ * @param <E> The type of this sequence.
+ * @author Frechsack
+ */
 public class IndexRoute<E> implements Route<E>
 {
-    private final Function<Integer, E> items;
+    private final IntFunction<E> items;
     private final NumberSupplier<?> size;
     private int index = -1;
 
-    public IndexRoute(Function<Integer, E> items, NumberSupplier<?> size)
+    /**
+     * Creates a new IndexRoute.
+     *
+     * @param items A function that returns the given value on the specified position.
+     * @param size Returns the current size of the underlying model.
+     * @apiNote This constructor is visible, because user may want to override {@link #remove(int)} to modify the remove operation.
+     * @throws NullPointerException Thrown when one of the arguments is null.
+     */
+    public IndexRoute(IntFunction<E> items, NumberSupplier<?> size)
     {
+        Objects.requireNonNull(items);
+        Objects.requireNonNull(size);
         this.items = items;
         this.size = size;
     }

@@ -1,13 +1,10 @@
 package com.frechsack.dev.util.route;
 
-import com.frechsack.dev.util.function.NumberSupplier;
-
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
- * A Cursor acts like an {@link Iterator}.
+ * A Route acts like an {@link Iterator}.
  * <p>
  * Unlike an Iterator it allows to move forward and backwards.
  * When a Cursor is initialized, it´s position is placed before the first element in it´s sequence.

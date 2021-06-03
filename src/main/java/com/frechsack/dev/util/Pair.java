@@ -8,9 +8,12 @@ import java.util.function.Supplier;
  * A Pair stores two Objects. It´s main propose is to provide a link between two related Objects.
  * <p>
  * Two Pairs are considered as equal, when their first and second value are equal.
+ * <p>
+ * This interface provides common implementations of Pair.
  *
  * @param <E> The first Object´s type.
  * @param <V> The second Object´s type.
+ * @author Frechsack
  */
 public interface Pair<E, V>
 {
@@ -50,6 +53,7 @@ public interface Pair<E, V>
      * @param <E>    The first Object´s type.
      * @param <V>The second Object´s type.
      * @return Returns a new Pair with the content of the specified Suppliers.
+     * @throws NullPointerException Thrown when one of the Suppliers is null.
      * @see Supplier
      */
     static <E, V> Pair<E, V> of(Supplier<E> e, Supplier<V> v)
@@ -66,6 +70,7 @@ public interface Pair<E, V>
      * @param <E>    The first Object´s type.
      * @param <V>The second Object´s type.
      * @return Returns a new Pair with the same content as the specified entry.
+     * @throws NullPointerException Thrown when the specified entry is null.
      */
     static <E, V> Pair<E, V> of(Map.Entry<E, V> entry)
     {
