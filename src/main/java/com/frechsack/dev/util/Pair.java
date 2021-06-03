@@ -4,166 +4,89 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+/**
+ * A Pair stores two Objects. It´s main propose is to provide a link between two related Objects.
+ * <p>
+ * Two Pairs are considered as equal, when their first and second value are equal.
+ *
+ * @param <E> The first Object´s type.
+ * @param <V> The second Object´s type.
+ */
 public interface Pair<E, V>
 {
+    /**
+     * Returns the first Object of this Pair.
+     *
+     * @return The first Object.
+     */
     E first();
 
+    /**
+     * Returns the second Object of this Pair.
+     *
+     * @return The second Object.
+     */
     V second();
 
+    /**
+     * Creates a new Pair with the specified content.
+     *
+     * @param e   The first Object.
+     * @param v   The second Object.
+     * @param <E> The first Object´s type.
+     * @param <V> The second Object´s type.
+     * @return Returns a new Pair with the content of e and v.
+     */
     static <E, V> Pair<E, V> of(E e, V v)
     {
-        return new SimplePair<>(e, v);
+        return new PairFactory.SimplePair<>(e, v);
     }
 
+    /**
+     * Creates a new Pair with the specified content. The values returned by this Pair is equal to {@link Supplier#get()}.
+     *
+     * @param e      The first Supplier. When {@link #first()} is invoked, the Supplier´s {@link Supplier#get()} function is invoked.
+     * @param v      The second Supplier. When {@link #second()} is invoked, the Supplier´s {@link Supplier#get()} function is invoked.
+     * @param <E>    The first Object´s type.
+     * @param <V>The second Object´s type.
+     * @return Returns a new Pair with the content of the specified Suppliers.
+     * @see Supplier
+     */
     static <E, V> Pair<E, V> of(Supplier<E> e, Supplier<V> v)
     {
-        return new SupplierPair<>(e, v);
+        Objects.requireNonNull(e);
+        Objects.requireNonNull(v);
+        return new PairFactory.SupplierPair<>(e, v);
     }
 
+    /**
+     * Creates a new Pair with the specified content. This Pair will act like a mirror to the specified {@link java.util.Map.Entry}. This Pair´s {@link #first()} function will be return the Entry´s key, and {@link #second()} returns the Entry´s value.
+     *
+     * @param entry  The entry that should be mirrored.
+     * @param <E>    The first Object´s type.
+     * @param <V>The second Object´s type.
+     * @return Returns a new Pair with the same content as the specified entry.
+     */
     static <E, V> Pair<E, V> of(Map.Entry<E, V> entry)
     {
-        return new PairEntry<>(entry);
+        Objects.requireNonNull(entry);
+        return new PairFactory.PairEntry<>(entry);
     }
 
+    /**
+     * Creates a Pair with the three Objects.
+     *
+     * @param e   The first Object.
+     * @param v   The second Object. Obtainable by get {{@link #second()} and then {@link #first()}.
+     * @param k   The third Object. Obtainable by get {{@link #second()} and then {@link #second()}.
+     * @param <E> The first Object´s type.
+     * @param <V> The second Object´s type.
+     * @param <K> The third Object´s type.
+     * @return Returns a new Pair with the specified content.
+     */
     static <E, V, K> Pair<E, Pair<V, K>> of(E e, V v, K k)
     {
         return of(e, of(v, k));
     }
 
-    class PairEntry<E, V> implements Pair<E, V>
-    {
-        private final Map.Entry<E, V> entry;
-
-        public PairEntry(Map.Entry<E, V> entry)
-        {
-            Objects.requireNonNull(entry);
-            this.entry = entry;
-        }
-
-        @Override
-        public E first()
-        {
-            return entry.getKey();
-        }
-
-        @Override
-        public V second()
-        {
-            return entry.getValue();
-        }
-
-        @Override
-        public String toString()
-        {
-            return "PairEntry{" + "first=" + first() + ", second=" + second() + " entry=" + entry + '}';
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Pair<?, ?> that = (Pair<?, ?>) o;
-            return Objects.equals(first(), that.first()) && Objects.equals(second(), that.second());
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Objects.hash(entry);
-        }
-    }
-
-    class SupplierPair<E, V> implements Pair<E, V>
-    {
-
-        private final Supplier<E> eSupplier;
-        private final Supplier<V> vSupplier;
-
-        public SupplierPair(Supplier<E> eSupplier, Supplier<V> vSupplier)
-        {
-            Objects.requireNonNull(eSupplier);
-            Objects.requireNonNull(vSupplier);
-            this.eSupplier = eSupplier;
-            this.vSupplier = vSupplier;
-        }
-
-        @Override
-        public E first()
-        {
-            return eSupplier.get();
-        }
-
-        @Override
-        public V second()
-        {
-            return vSupplier.get();
-        }
-
-        @Override
-        public String toString()
-        {
-            return "SupplierPair{" + "eSupplier=" + eSupplier + ", vSupplier=" + vSupplier + '}';
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Pair<?, ?> that = (Pair<?, ?>) o;
-            return Objects.equals(first(), that.first()) && Objects.equals(second(), that.second());
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Objects.hash(eSupplier, vSupplier);
-        }
-    }
-
-    class SimplePair<E, V> implements Pair<E, V>
-    {
-        private final E first;
-        private final V second;
-
-        public SimplePair(E first, V second)
-        {
-            this.first = first;
-            this.second = second;
-        }
-
-        @Override
-        public E first()
-        {
-            return first;
-        }
-
-        @Override
-        public V second()
-        {
-            return second;
-        }
-
-        @Override
-        public String toString()
-        {
-            return "SimplePair{" + "first=" + first + ", second=" + second + '}';
-        }
-
-        @Override
-        public boolean equals(Object o)
-        {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Pair<?, ?> that = (Pair<?, ?>) o;
-            return Objects.equals(first, that.first()) && Objects.equals(second, that.second());
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Objects.hash(first, second);
-        }
-    }
 }

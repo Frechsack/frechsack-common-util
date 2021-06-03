@@ -1,3 +1,4 @@
+import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.array.Array;
 import com.frechsack.dev.util.array.Numbers;
 
@@ -26,6 +27,7 @@ public class ArrayTest
         for (int i = 0; i < 10; i++) builder.add(2);
 
 
+        Pair.of(1,2,3);
 
 
         int[] array  = builder.build().toArray();
@@ -35,7 +37,7 @@ public class ArrayTest
 
         long start = System.nanoTime();
 
-        System.out.println(numbers.lastIndexOf(2));
+        System.out.println(numbers.firstIndexOf(2));
 
         System.out.println(System.nanoTime() - start);
     }

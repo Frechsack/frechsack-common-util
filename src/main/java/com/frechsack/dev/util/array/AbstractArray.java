@@ -5,6 +5,7 @@ import com.frechsack.dev.util.Pair;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -101,12 +102,7 @@ public abstract class AbstractArray<E> implements Array<E>
             }
             return -1;
         }
-        return IntStream.range(0, length())
-                        .parallel()
-                        .map(index -> length() - index - 1)
-                        .filter(index -> predicate.test(get(index)))
-                        .findFirst()
-                        .orElse(-1);
+        return IntStream.range(0, length()).parallel().map(index -> length() - index - 1).filter(index -> predicate.test(get(index))).findFirst().orElse(-1);
     }
 
     @Override
@@ -149,6 +145,14 @@ public abstract class AbstractArray<E> implements Array<E>
     }
 
     @Override
+    public void forEach(Consumer<? super E> action)
+    {
+        if (length() < STREAM_PREFERRED_LENGTH)
+            for (int i = 0; i < length(); i++) action.accept(get(i));
+        else stream().forEach(action);
+    }
+
+    @Override
     public Stream<E> stream()
     {
         return StreamSupport.stream(spliterator(), false);
@@ -157,13 +161,13 @@ public abstract class AbstractArray<E> implements Array<E>
     @Override
     public Stream<Pair<Integer, E>> streamIndices()
     {
-        return IntStream.range(0,length()).mapToObj(index -> Pair.of(index,get(index)));
+        return IntStream.range(0, length()).mapToObj(index -> Pair.of(index, get(index)));
     }
 
     @Override
     public Stream<Pair<Integer, E>> parallelStreamIndices()
     {
-        return IntStream.range(0,length()).parallel().mapToObj(index -> Pair.of(index,get(index)));
+        return IntStream.range(0, length()).parallel().mapToObj(index -> Pair.of(index, get(index)));
     }
 
     @Override
