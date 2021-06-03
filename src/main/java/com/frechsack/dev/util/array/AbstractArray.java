@@ -1,7 +1,6 @@
 package com.frechsack.dev.util.array;
 
 import com.frechsack.dev.util.Pair;
-import com.frechsack.dev.util.route.Route;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
@@ -22,6 +21,8 @@ public abstract class AbstractArray<E> implements Array<E>
     protected abstract E getVoid();
 
     protected static final int STREAM_PREFERRED_LENGTH = 4096;
+
+    protected AbstractArray(){}
 
     @Override
     public E getAndSet(int index, E element)

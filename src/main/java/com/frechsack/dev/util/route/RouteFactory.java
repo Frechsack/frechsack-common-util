@@ -13,7 +13,7 @@ import java.util.function.IntFunction;
 import java.util.function.IntUnaryOperator;
 
 /**
- * Package-private implementations of {@link Pair}.
+ * Package-private implementations of {@link Route}.
  *
  * @author Frechsack
  */

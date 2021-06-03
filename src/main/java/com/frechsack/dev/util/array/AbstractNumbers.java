@@ -6,6 +6,10 @@ import java.util.stream.LongStream;
 
 public abstract class AbstractNumbers<E extends Number> extends AbstractArray<E> implements Numbers<E>
 {
+    protected AbstractNumbers(){
+        super();
+    }
+
     @Override
     public IntStream intStream()
     {

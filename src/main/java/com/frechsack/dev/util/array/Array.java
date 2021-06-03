@@ -16,18 +16,18 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
 {
     static <E> Array<E> of(E... array)
     {
-        return new Factory.GenericArray<>(array, true);
+        return new ArrayFactory.GenericArray<>(array, true);
 
     }
 
     static <E> Array<E> of(boolean isReference, E... array)
     {
-        return new Factory.GenericArray<>(array, isReference);
+        return new ArrayFactory.GenericArray<>(array, isReference);
     }
 
     static <E> Array<E> of(int length, Class<E> type)
     {
-        return new Factory.GenericArray<>(length, type);
+        return new ArrayFactory.GenericArray<>(length, type);
     }
 
     /**
@@ -41,19 +41,19 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     static <E extends Number> Numbers<E> ofTypedNumber(Function<Number, E> converter, E... array)
     {
         checkNumberConverter(converter);
-        return new Factory.GenericNumbers<>(array, true, converter);
+        return new ArrayFactory.GenericNumbers<>(array, true, converter);
     }
 
     static <E extends Number> Numbers<E> ofTypedNumber(boolean isReference, Function<Number, E> converter, E... array)
     {
         checkNumberConverter(converter);
-        return new Factory.GenericNumbers<>(array, isReference, converter);
+        return new ArrayFactory.GenericNumbers<>(array, isReference, converter);
     }
 
     static <E extends Number> Numbers<E> ofTypedNumber(int length, Class<E> type, Function<Number, E> converter)
     {
         checkNumberConverter(converter);
-        return new Factory.GenericNumbers<>(length, type, converter);
+        return new ArrayFactory.GenericNumbers<>(length, type, converter);
     }
 
     private static void checkNumberConverter(Function<Number, ?> converter)
@@ -65,258 +65,258 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
 
     static Numbers<Number> ofNumber(boolean isReference, Number... array)
     {
-        return new Factory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number);
+        return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number);
     }
 
     static Numbers<Number> ofNumber(Number... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number);
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number);
     }
 
     static Numbers<Number> ofNumber(int length)
     {
-        return new Factory.GenericNumbers<>(length, Number.class, number -> number == null ? 0 : number);
+        return new ArrayFactory.GenericNumbers<>(length, Number.class, number -> number == null ? 0 : number);
     }
 
 
     static Numbers<Integer> ofInt(boolean isReference, int... array)
     {
-        return new Factory.IntArray(array, isReference);
+        return new ArrayFactory.IntArray(array, isReference);
     }
 
     static Numbers<Integer> ofInt(int... array)
     {
-        return new Factory.IntArray(array, true);
+        return new ArrayFactory.IntArray(array, true);
     }
 
     static Numbers<Integer> ofInt(int length)
     {
-        return new Factory.IntArray(length);
+        return new ArrayFactory.IntArray(length);
     }
 
     static Numbers<Integer> ofGenericInt(Integer... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.intValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.intValue());
     }
 
     static Numbers<Integer> ofGenericInt(boolean isReference, Integer... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.intValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.intValue());
     }
 
     static Numbers<Integer> ofGenericInt(int length)
     {
-        return new Factory.GenericNumbers<Integer>(length, Integer.class, number -> number == null ? 0 : number.intValue());
+        return new ArrayFactory.GenericNumbers<Integer>(length, Integer.class, number -> number == null ? 0 : number.intValue());
     }
 
     static Numbers<Byte> ofByte(boolean isReference, byte... array)
     {
-        return new Factory.ByteArray(array, isReference);
+        return new ArrayFactory.ByteArray(array, isReference);
     }
 
     static Numbers<Byte> ofByte(byte... array)
     {
-        return new Factory.ByteArray(array, true);
+        return new ArrayFactory.ByteArray(array, true);
     }
 
     static Numbers<Byte> ofByte(int length)
     {
-        return new Factory.ByteArray(length);
+        return new ArrayFactory.ByteArray(length);
     }
 
     static Numbers<Byte> ofGenericByte(Byte... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.byteValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.byteValue());
     }
 
     static Numbers<Byte> ofGenericByte(boolean isReference, Byte... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.byteValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.byteValue());
     }
 
     static Numbers<Byte> ofGenericByte(int length)
     {
-        return new Factory.GenericNumbers<>(length, Byte.class, number -> number == null ? 0 : number.byteValue());
+        return new ArrayFactory.GenericNumbers<>(length, Byte.class, number -> number == null ? 0 : number.byteValue());
     }
 
     static Numbers<Short> ofShort(boolean isReference, short... array)
     {
-        return new Factory.ShortArray(array, isReference);
+        return new ArrayFactory.ShortArray(array, isReference);
     }
 
     static Numbers<Short> ofShort(short... array)
     {
-        return new Factory.ShortArray(array, true);
+        return new ArrayFactory.ShortArray(array, true);
     }
 
     static Numbers<Short> ofShort(int length)
     {
-        return new Factory.ShortArray(length);
+        return new ArrayFactory.ShortArray(length);
     }
 
     static Numbers<Short> ofGenericShort(Short... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.shortValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.shortValue());
     }
 
     static Numbers<Short> ofGenericShort(boolean isReference, Short... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.shortValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.shortValue());
     }
 
     static Numbers<Short> ofGenericShort(int length)
     {
-        return new Factory.GenericNumbers<>(length, Short.class, number -> number == null ? 0 : number.shortValue());
+        return new ArrayFactory.GenericNumbers<>(length, Short.class, number -> number == null ? 0 : number.shortValue());
     }
 
     static Numbers<Float> ofFloat(boolean isReference, float... array)
     {
-        return new Factory.FloatArray(array, isReference);
+        return new ArrayFactory.FloatArray(array, isReference);
     }
 
     static Numbers<Float> ofFloat(float... array)
     {
-        return new Factory.FloatArray(array, true);
+        return new ArrayFactory.FloatArray(array, true);
     }
 
     static Numbers<Float> ofFloat(int length)
     {
-        return new Factory.FloatArray(length);
+        return new ArrayFactory.FloatArray(length);
     }
 
     static Numbers<Float> ofGenericFloat(Float... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.floatValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.floatValue());
     }
 
     static Numbers<Float> ofGenericFloat(boolean isReference, Float... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.floatValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.floatValue());
     }
 
     static Numbers<Float> ofGenericFloat(int length)
     {
-        return new Factory.GenericNumbers<>(length, Float.class, number -> number == null ? 0 : number.floatValue());
+        return new ArrayFactory.GenericNumbers<>(length, Float.class, number -> number == null ? 0 : number.floatValue());
     }
 
     static Numbers<Double> ofDouble(boolean isReference, double... array)
     {
-        return new Factory.DoubleArray(array, isReference);
+        return new ArrayFactory.DoubleArray(array, isReference);
     }
 
     static Numbers<Double> ofDouble(double... array)
     {
-        return new Factory.DoubleArray(array, true);
+        return new ArrayFactory.DoubleArray(array, true);
     }
 
     static Numbers<Double> ofDouble(int length)
     {
-        return new Factory.DoubleArray(length);
+        return new ArrayFactory.DoubleArray(length);
     }
 
     static Numbers<Double> ofGenericDouble(Double... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.doubleValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.doubleValue());
     }
 
     static Numbers<Double> ofGenericDouble(boolean isReference, Double... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.doubleValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.doubleValue());
     }
 
     static Numbers<Double> ofGenericDouble(int length)
     {
-        return new Factory.GenericNumbers<>(length, Double.class, number -> number == null ? 0 : number.doubleValue());
+        return new ArrayFactory.GenericNumbers<>(length, Double.class, number -> number == null ? 0 : number.doubleValue());
     }
 
     static Numbers<Long> ofLong(boolean isReference, long... array)
     {
-        return new Factory.LongArray(array, isReference);
+        return new ArrayFactory.LongArray(array, isReference);
     }
 
     static Numbers<Long> ofLong(long... array)
     {
-        return new Factory.LongArray(array, true);
+        return new ArrayFactory.LongArray(array, true);
     }
 
     static Numbers<Long> ofLong(int length)
     {
-        return new Factory.LongArray(length);
+        return new ArrayFactory.LongArray(length);
     }
 
     static Numbers<Long> ofGenericLong(Long... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.longValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.longValue());
     }
 
     static Numbers<Long> ofGenericLong(boolean isReference, Long... array)
     {
-        return new Factory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.longValue());
+        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.longValue());
     }
 
     static Numbers<Long> ofGenericLong(int length)
     {
-        return new Factory.GenericNumbers<>(length, Long.class, number -> number == null ? 0 : number.longValue());
+        return new ArrayFactory.GenericNumbers<>(length, Long.class, number -> number == null ? 0 : number.longValue());
     }
 
     static Booleans ofBoolean(boolean isReference, boolean... array)
     {
-        return new Factory.Booleans(array, isReference);
+        return new ArrayFactory.Booleans(array, isReference);
     }
 
     static Booleans ofBoolean(boolean... array)
     {
-        return new Factory.Booleans(array, true);
+        return new ArrayFactory.Booleans(array, true);
     }
 
     static Booleans ofBoolean(int length)
     {
-        return new Factory.Booleans(length);
+        return new ArrayFactory.Booleans(length);
     }
 
     static Booleans ofGenericBoolean(Boolean... array)
     {
-        return new Factory.GenericBooleans(array, true);
+        return new ArrayFactory.GenericBooleans(array, true);
     }
 
     static Booleans ofGenericBoolean(boolean isReference, Boolean... array)
     {
-        return new Factory.GenericBooleans(array, isReference);
+        return new ArrayFactory.GenericBooleans(array, isReference);
     }
 
     static Booleans ofGenericBoolean(int length)
     {
-        return new Factory.GenericBooleans(length);
+        return new ArrayFactory.GenericBooleans(length);
     }
 
     static Characters ofChar(boolean isReference, char... array)
     {
-        return new Factory.Characters(array, isReference);
+        return new ArrayFactory.Characters(array, isReference);
     }
 
     static Characters ofChar(char... array)
     {
-        return new Factory.Characters(array, true);
+        return new ArrayFactory.Characters(array, true);
     }
 
     static Characters ofChar(int length)
     {
-        return new Factory.Characters(length);
+        return new ArrayFactory.Characters(length);
     }
 
     static Characters ofGenericChar(Character... array)
     {
-        return new Factory.GenericCharacters(array, true);
+        return new ArrayFactory.GenericCharacters(array, true);
     }
 
     static Characters ofGenericChar(boolean isReference, Character... array)
     {
-        return new Factory.GenericCharacters(array, isReference);
+        return new ArrayFactory.GenericCharacters(array, isReference);
     }
 
     static Characters ofGenericChar(int length)
     {
-        return new Factory.GenericCharacters(length);
+        return new ArrayFactory.GenericCharacters(length);
     }
 
     default int indexOf(Object element){

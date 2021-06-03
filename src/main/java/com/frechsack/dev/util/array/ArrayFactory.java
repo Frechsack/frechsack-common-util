@@ -1,5 +1,6 @@
 package com.frechsack.dev.util.array;
 
+import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.route.Route;
 
 import java.lang.reflect.Array;
@@ -10,7 +11,12 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
-class Factory
+/**
+ * Package-private implementations of {@link com.frechsack.dev.util.array.Array}.
+ *
+ * @author Frechsack
+ */
+class ArrayFactory
 {
     static class GenericCharacters extends AbstractArray<Character> implements com.frechsack.dev.util.array.Characters
     {
