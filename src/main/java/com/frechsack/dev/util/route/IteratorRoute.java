@@ -8,6 +8,7 @@ import java.util.Objects;
  * An {@link Iterator} based approach of {@link Route}.
  * <p>
  * This implementation will take an Iterator and store previous iterated elements.
+ *
  * @param <E> The type of this sequence.
  * @author Frechsack
  */
@@ -19,6 +20,7 @@ public class IteratorRoute<E> implements Route<E>
 
     /**
      * Creates a new IteratorRoute based on the specified Iterator.
+     *
      * @param elementIterator The Iterator.
      * @throws NullPointerException Thrown when the Iterator is null.
      */
@@ -28,7 +30,19 @@ public class IteratorRoute<E> implements Route<E>
         this.elementIterator = elementIterator;
     }
 
-    // TODO: Remove operation
+    @Override
+    public void remove()
+    {
+        try
+        {
+            elementIterator.remove();
+            passedElementLs.remove(passedIndex--);
+        }
+        catch (Exception ignored)
+        {
+        }
+
+    }
 
     @Override
     public final boolean hasNext()
@@ -75,5 +89,28 @@ public class IteratorRoute<E> implements Route<E>
     {
         if (passedElementLs.isEmpty()) Objects.checkIndex(-1, 0);
         return passedElementLs.get(passedIndex = 0);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "IteratorRoute{" + "elementIterator=" + elementIterator + ", passedElementLs=" + passedElementLs + ", passedIndex=" + passedIndex + '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IteratorRoute<?> that = (IteratorRoute<?>) o;
+        return passedIndex == that.passedIndex &&
+               Objects.equals(elementIterator, that.elementIterator) &&
+               Objects.equals(passedElementLs, that.passedElementLs);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(elementIterator, passedElementLs, passedIndex);
     }
 }

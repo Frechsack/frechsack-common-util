@@ -209,7 +209,6 @@ public interface Route<E> extends Iterator<E>, Enumeration<E>
 
     class ListIteratorRoute<E> implements Route<E>
     {
-
         private final ListIterator<E> listIterator;
 
         private ListIteratorRoute(ListIterator<E> listIterator)

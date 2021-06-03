@@ -209,7 +209,7 @@ public abstract class AbstractArray<E> implements Array<E>
     @Override
     public E[] toArray()
     {
-        E[] array = (E[]) java.lang.reflect.Array.newInstance(this.getClass().getComponentType(), length());
+        E[] array = (E[]) java.lang.reflect.Array.newInstance(asArray().getClass().getComponentType(), length());
         if (length() < STREAM_PREFERRED_LENGTH)
         {
             for (int i = 0; i < length(); i++)

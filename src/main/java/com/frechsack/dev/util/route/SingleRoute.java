@@ -1,5 +1,6 @@
 package com.frechsack.dev.util.route;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -76,5 +77,26 @@ public class SingleRoute<E> implements Route<E>
     public E first()
     {
         return last();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "SingleRoute{" + "single=" + single + ", isInitial=" + isInitial + '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SingleRoute<?> that = (SingleRoute<?>) o;
+        return isInitial == that.isInitial && Objects.equals(single, that.single);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(single, isInitial);
     }
 }

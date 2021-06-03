@@ -94,4 +94,25 @@ public class IndexRoute<E> implements Route<E>
         this.index = -1;
         return next();
     }
+
+    @Override
+    public String toString()
+    {
+        return "IndexRoute{" + "items=" + items + ", size=" + size + ", index=" + index + '}';
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IndexRoute<?> that = (IndexRoute<?>) o;
+        return index == that.index && Objects.equals(items, that.items) && Objects.equals(size, that.size);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(items, size, index);
+    }
 }
