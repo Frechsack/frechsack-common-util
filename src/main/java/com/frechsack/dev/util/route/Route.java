@@ -1,7 +1,10 @@
 package com.frechsack.dev.util.route;
 
+import com.frechsack.dev.util.array.Array;
+
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.IntUnaryOperator;
 
 /**
  * A Route acts like an {@link Iterator}.
@@ -95,6 +98,11 @@ public interface Route<E> extends Iterator<E>, Enumeration<E>
         while (hasPrevious()) action.accept(previous());
     }
 
+    static <E> Route<E> of(Array<E> array)
+    {
+        return new RouteFactory.FixedIndexRoute<>(array::get, array.length(), i -> array.set(i, null));
+    }
+
     static <E> Route<E> of(Collection<E> collection)
     {
         if (collection instanceof List)
@@ -108,148 +116,108 @@ public interface Route<E> extends Iterator<E>, Enumeration<E>
 
     static <E> Route<E> of(ListIterator<E> iterator)
     {
-        return new ListIteratorRoute<>(iterator);
+        return new RouteFactory.ListIteratorRoute<>(iterator);
     }
 
     static <E> Route<E> of(Iterator<E> iterator)
     {
         if (iterator instanceof ListIterator) return of((ListIterator<E>) iterator);
-        return new IteratorRoute<>(iterator);
+        return new RouteFactory.IteratorRoute<>(iterator);
     }
 
     static <E> Route<E> of(E[] array)
     {
-        return new IndexRoute<>((i) -> array[i], () -> array.length);
+        return new RouteFactory.FixedIndexRoute<>(i -> array[i], array.length, i -> array[i] = null);
+    }
+
+    static <E> Route<E> of(E[] array, IntUnaryOperator removeOperation)
+    {
+        return new RouteFactory.DynamicIndexRoute<>(i -> array[i], () -> array.length, removeOperation);
     }
 
     static <E> Route<E> of(E e)
     {
-        return new SingleRoute<>(e);
+        return new RouteFactory.SingleRoute<>(e);
     }
 
     static Route<Boolean> of(boolean v)
     {
-        return new SingleRoute<>(v);
+        return new RouteFactory.SingleRoute<>(v);
     }
 
     static Route<Boolean> of(boolean[] array)
     {
-        return new IndexRoute<>((i) -> array[i], () -> array.length);
+        return new RouteFactory.FixedIndexRoute<>(i -> array[i], array.length, i -> array[i] = false);
     }
 
     static Route<Character> of(char v)
     {
-        return new SingleRoute<>(v);
+        return new RouteFactory.SingleRoute<>(v);
     }
 
     static Route<Character> of(char[] array)
     {
-        return new IndexRoute<>((i) -> array[i], () -> array.length);
+        return new RouteFactory.FixedIndexRoute<>(i -> array[i], array.length, i -> array[i] = '\u0000');
     }
 
     static Route<Byte> of(byte v)
     {
-        return new SingleRoute<>(v);
+        return new RouteFactory.SingleRoute<>(v);
     }
 
     static Route<Byte> of(byte[] array)
     {
-        return new IndexRoute<>((i) -> array[i], () -> array.length);
+        return new RouteFactory.FixedIndexRoute<>((i) -> array[i], array.length, i -> array[i] = 0);
     }
 
     static Route<Short> of(short v)
     {
-        return new SingleRoute<>(v);
+        return new RouteFactory.SingleRoute<>(v);
     }
 
     static Route<Short> of(short[] array)
     {
-        return new IndexRoute<>((i) -> array[i], () -> array.length);
+        return new RouteFactory.FixedIndexRoute<>((i) -> array[i], array.length, i -> array[i] = 0);
     }
 
     static Route<Integer> of(int v)
     {
-        return new SingleRoute<>(v);
+        return new RouteFactory.SingleRoute<>(v);
     }
 
     static Route<Integer> of(int[] array)
     {
-        return new IndexRoute<>((i) -> array[i], () -> array.length);
+        return new RouteFactory.FixedIndexRoute<>((i) -> array[i], array.length, i -> array[i] = 0);
     }
 
     static Route<Float> of(float v)
     {
-        return new SingleRoute<>(v);
+        return new RouteFactory.SingleRoute<>(v);
     }
 
     static Route<Float> of(float[] array)
     {
-        return new IndexRoute<>((i) -> array[i], () -> array.length);
+        return new RouteFactory.FixedIndexRoute<>((i) -> array[i], array.length, i -> array[i] = 0);
     }
 
     static Route<Double> of(double v)
     {
-        return new SingleRoute<>(v);
+        return new RouteFactory.SingleRoute<>(v);
     }
 
     static Route<Double> of(double[] array)
     {
-        return new IndexRoute<>((i) -> array[i], () -> array.length);
+        return new RouteFactory.FixedIndexRoute<>((i) -> array[i], array.length, i -> array[i] = 0);
     }
 
     static Route<Long> of(long v)
     {
-        return new SingleRoute<>(v);
+        return new RouteFactory.SingleRoute<>(v);
     }
 
     static Route<Long> of(long[] array)
     {
-        return new IndexRoute<>((i) -> array[i], () -> array.length);
+        return new RouteFactory.FixedIndexRoute<>((i) -> array[i], array.length, i -> array[i] = 0);
     }
 
-    class ListIteratorRoute<E> implements Route<E>
-    {
-        private final ListIterator<E> listIterator;
-
-        private ListIteratorRoute(ListIterator<E> listIterator)
-        {
-            this.listIterator = listIterator;
-        }
-
-        @Override
-        public boolean hasNext()
-        {
-            return listIterator.hasNext();
-        }
-
-        @Override
-        public boolean hasPrevious()
-        {
-            return listIterator.hasPrevious();
-        }
-
-        @Override
-        public E next()
-        {
-            return listIterator.next();
-        }
-
-        @Override
-        public void remove()
-        {
-            listIterator.remove();
-        }
-
-        @Override
-        public void forEachRemaining(Consumer<? super E> action)
-        {
-            listIterator.forEachRemaining(action);
-        }
-
-        @Override
-        public E previous()
-        {
-            return listIterator.previous();
-        }
-    }
 }
