@@ -198,6 +198,7 @@ public abstract class AbstractArray<E> implements Array<E>
         if (asArray() == o) return true;
         if (!(o instanceof Array)) return false;
         // Compare collection
+        // TODO: Compare indexed based
         return AbstractArray.this.parallelStream().allMatch(((Array<?>) o)::contains);
     }
 

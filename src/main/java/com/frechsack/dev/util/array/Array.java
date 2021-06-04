@@ -3,16 +3,35 @@ package com.frechsack.dev.util.array;
 import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.route.Routable;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
+/**
+ * An Array behaves like a native array.
+ * It allows typical read and write operations by {@link #get(int)} and {@link #set(int, Object)}.
+ * The Array is fixed sized, the length can be obtained by {@link #length()}.
+ * <p>
+ * This Object allows various stream, iterator and sort operations.
+ * <p>
+ * Typical an Array is backed by a native array. Direct access to the underlying array can be obtained by {@link #asArray()}.
+ * <p>
+ * To be compatible with {@link java.util.Collection} an Array allows to wrap itself into a {@link List} by {@link #asList()}.
+ * The returned List allows modification of this Array.
+ * <p>
+ * An Array is considered as equal, when it´s elements are equal to a second array in the same order.
+ * <p>
+ * This Object acts like a bridge between the Java-Collections-Framework and native arrays.
+ * <p>
+ * This interface provides static factories to create an Array of any class-type.
+ *
+ * @param <E> The class type of this Array. This may be an Object or primitive type.
+ * @author Frechsack
+ */
+public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>, IntFunction<E>
 {
     static <E> Array<E> of(E... array)
     {
@@ -319,48 +338,167 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
         return new ArrayFactory.GenericCharacters(length);
     }
 
-    default int indexOf(Object element){
+    /**
+     * Returns the index of the specified element in this Array.
+     * It is not granted, that the specified index is the first one that matches the given value.
+     *
+     * @param element The value.
+     * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
+     */
+    default int indexOf(Object element)
+    {
         return indexOf(0, length(), element);
     }
 
-    default int indexOf(int start, Object element){
+    /**
+     * Returns the index of the specified element in this Array.
+     * It is not granted, that the specified index is the first one that matches the given value.
+     *
+     * @param start   The first inclusive index, where the search will start.
+     * @param element The value.
+     * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
+     */
+    default int indexOf(int start, Object element)
+    {
         return indexOf(start, length(), element);
     }
 
+    /**
+     * Returns the index of the specified element in this Array.
+     * It is not granted, that the specified index is the first one that matches the given value.
+     *
+     * @param start   The first inclusive index, where the search will start.
+     * @param end     The last exclusive index, where the search will end.
+     * @param element The value.
+     * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
+     */
     int indexOf(int start, int end, Object element);
 
-    default int indexOf(Predicate<E> predicate){
-        return indexOf(0,length(),predicate);
+    /**
+     * Returns an index, where the specified {@link Predicate} returns true.
+     * It is not granted, that the specified index is the first one that matches the given value.
+     *
+     * @param predicate The predicate.
+     * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
+     */
+    default int indexOf(Predicate<E> predicate)
+    {
+        return indexOf(0, length(), predicate);
     }
 
-    default int indexOf(int start, Predicate<E> predicate){
-        return indexOf(start,length(),predicate);
+    /**
+     * Returns an index, where the specified {@link Predicate} returns true.
+     * It is not granted, that the specified index is the first one that matches the given value.
+     *
+     * @param start     The first inclusive index, where the search will start.
+     * @param predicate The predicate.
+     * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
+     */
+    default int indexOf(int start, Predicate<E> predicate)
+    {
+        return indexOf(start, length(), predicate);
     }
 
+    /**
+     * Returns an index, where the specified {@link Predicate} returns true.
+     * It is not granted, that the specified index is the first one that matches the given value.
+     *
+     * @param start     The first inclusive index, where the search will start.
+     * @param end       The last exclusive index, where the search will end.
+     * @param predicate The predicate.
+     * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
+     */
     int indexOf(int start, int end, Predicate<E> predicate);
 
+    /**
+     * Returns the last index of the specified element in this Array.
+     *
+     * @param element The value.
+     * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
+     */
     int lastIndexOf(Object element);
 
+    /**
+     * Returns the last index, where the specified {@link Predicate} returns true.
+     *
+     * @param predicate The predicate.
+     * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
+     */
     int lastIndexOf(Predicate<E> predicate);
 
+    /**
+     * Returns the first index of the specified element in this Array.
+     *
+     * @param element The value.
+     * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
+     */
     int firstIndexOf(Object element);
 
+    /**
+     * Returns the first index, where the specified {@link Predicate} returns true.
+     *
+     * @param predicate The predicate.
+     * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
+     */
     int firstIndexOf(Predicate<E> predicate);
 
+    /**
+     * Try's to set any value in this Array to a default value. In case this Array contains primitive types, they will be set to their default value otherwise they will be set to null.
+     */
     void clear();
 
+    /**
+     * Checks if this Array contains the specified element.
+     *
+     * @param element The element.
+     * @return Returns true if this Array contains the specified element, else false.
+     */
     boolean contains(Object element);
 
+    /**
+     * Returns a copy of this Array´s element.
+     *
+     * @return Returns a copy with the same size and content as this Array.
+     */
     E[] toArray();
 
+    /**
+     * Returns the underlying native array of this Array. Changes in the returned array will be reflected in this Object.
+     *
+     * @return Returns the underlying native array.
+     */
     Object asArray();
 
+    /**
+     * Returns the length of this Array.
+     *
+     * @return Returns the length.
+     */
     int length();
 
+    /**
+     * Returns the element on the specified index.
+     *
+     * @param index The element´s index.
+     * @return Returns the element.
+     */
     E get(int index);
 
+    /**
+     * Sets the specified element on the given position.
+     *
+     * @param index   The position.
+     * @param element The element.
+     */
     void set(int index, E element);
 
+    /**
+     * Sets the specified element on the given position and returns the previous value.
+     *
+     * @param index   The position.
+     * @param element The new element.
+     * @return Returns the previous element.
+     */
     default E getAndSet(int index, E element)
     {
         E last = get(index);
@@ -368,44 +506,132 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
         return last;
     }
 
-    default void transform(Function<E,E> mapper){
-        for (int i = 0; i < length(); i++) set(i,mapper.apply(get(i)));
+    /**
+     * Applies the specified {@link Function} to any position in this Array.
+     *
+     * @param mapper The transformation Function.
+     */
+    default void transform(Function<E, E> mapper)
+    {
+        for (int i = 0; i < length(); i++) set(i, mapper.apply(get(i)));
     }
 
-    Stream<Pair<Integer,E>> streamIndices();
+    /**
+     * Creates an Index based {@link Stream}. Each index in relation to it´s current element will be streamed in a {@link Pair}.
+     *
+     * @return Returns a Stream.
+     */
+    Stream<Pair<Integer, E>> streamIndices();
 
-    Stream<Pair<Integer,E>> parallelStreamIndices();
+    /**
+     * Creates an Index based parallel {@link Stream}. Each index in relation to it´s current element will be streamed in a {@link Pair}.
+     *
+     * @return Returns a Stream.
+     */
+    Stream<Pair<Integer, E>> parallelStreamIndices();
 
+    /**
+     * Creates a {@link Stream} with the whole content of this Array.
+     *
+     * @return Returns a Stream.
+     */
     Stream<E> stream();
 
+    /**
+     * Creates a parallel {@link Stream} with the whole content of this Array.
+     *
+     * @return Returns a Stream.
+     */
     Stream<E> parallelStream();
 
+    /**
+     * Checks if this Array´s elements are primitives.
+     *
+     * @return Returns true if this Array contains primitives, else false.
+     */
     boolean isPrimitive();
 
+    /**
+     * Creates an {@link IntFunction} that creates an generic array of this Array´s type.
+     *
+     * @return Returns a generator.
+     */
     IntFunction<E[]> generator();
 
     @Override
     Spliterator<E> spliterator();
 
+    /**
+     * Checks if this Array is equal to the specified array. They are considered as equal, when they contains the same elements in the same order.
+     *
+     * @param array The comparison array.
+     * @return Returns true if this Array and the specified one are equal, else false.
+     */
     boolean equals(E[] array);
 
+    /**
+     * Returns a {@link List} that wraps this Array. Modifications in the returned List will be reflected in this Array.
+     *
+     * @return Returns a List.
+     */
     List<E> asList();
 
+    /**
+     * Sorts this Array with the given {@link Comparator}.
+     *
+     * @param c The Comparator.
+     */
     void sort(Comparator<? super E> c);
 
+    /**
+     * Replaces any position in this Array with the specified element.
+     *
+     * @param element The element.
+     */
     void fill(E element);
 
+    /**
+     * Sorts this Array in the opposite order.  This Array´s elements have to implement {@link Comparable}.
+     */
     void sortReverse();
 
+    /**
+     * Sorts this Array with the given {@link Comparator} in the opposite order.
+     *
+     * @param c The Comparator.
+     */
     void sortReverse(Comparator<? super E> c);
 
+    /**
+     * Changes the order of this Array. The previous first element will now equal the last element.
+     */
     void reverse();
+
+    /**
+     * Rotates the elements in this Array by the specified distance.
+     *
+     * @param distance The distance. The elements current position will differ by the specified distance after the call.
+     * @implNote To rotate the elements in This Array, {@link Collections#rotate(List, int)} is used, to take advantage of the default optimizations.
+     */
+    default void rotate(int distance)
+    {
+        Collections.rotate(asList(), distance);
+    }
 
     @Override
     default E apply(Integer index)
     {
+        return get(index == null ? 0 : index);
+    }
+
+
+    @Override
+    default E apply(int index){
         return get(index);
     }
 
+    /**
+     * Sorts this Array. This Array´s elements have to implement {@link Comparable}.
+     */
     void sort();
 }

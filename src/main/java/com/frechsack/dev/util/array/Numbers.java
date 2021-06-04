@@ -4,8 +4,17 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
+/**
+ * Numbers are a numeric implementation of an {@link Array}.
+ * <p>
+ * It allows access to primitive read and write operations and {@link IntStream}.
+ *
+ * @param <E> The class type of this Array. This may be an Object or primitive type.
+ * @author Frechsack
+ */
 public interface Numbers<E extends Number> extends Array<E>
 {
+
     byte getByte(int index);
 
     short getShort(int index);
@@ -57,12 +66,14 @@ public interface Numbers<E extends Number> extends Array<E>
         setFloat(index, element);
         return last;
     }
+
     default double getAndSetDouble(int index, double element)
     {
         double last = getDouble(index);
         setDouble(index, element);
         return last;
     }
+
     default long getAndSetLong(int index, long element)
     {
         long last = getLong(index);
