@@ -22,7 +22,7 @@ public abstract class AbstractArray<E> implements Array<E>
 
     protected static final int STREAM_PREFERRED_LENGTH = 4096;
 
-    protected AbstractArray(){}
+    protected AbstractArray() {}
 
     @Override
     public E getAndSet(int index, E element)
@@ -149,8 +149,7 @@ public abstract class AbstractArray<E> implements Array<E>
     @Override
     public void forEach(Consumer<? super E> action)
     {
-        if (length() < STREAM_PREFERRED_LENGTH)
-            for (int i = 0; i < length(); i++) action.accept(get(i));
+        if (length() < STREAM_PREFERRED_LENGTH) for (int i = 0; i < length(); i++) action.accept(get(i));
         else stream().forEach(action);
     }
 
@@ -198,8 +197,13 @@ public abstract class AbstractArray<E> implements Array<E>
         if (asArray() == o) return true;
         if (!(o instanceof Array)) return false;
         // Compare collection
-        // TODO: Compare indexed based
-        return AbstractArray.this.parallelStream().allMatch(((Array<?>) o)::contains);
+        Array<?> oArray = (Array<?>) o;
+        if (oArray.length() != length()) return false;
+        for (int i = 0; i < length(); i++)
+        {
+            if (!Objects.equals(oArray.get(i), get(i))) return false;
+        }
+        return true;
     }
 
     @Override
