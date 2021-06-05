@@ -107,6 +107,8 @@ public interface Route<E> extends Iterator<E>, Enumeration<E>
      * @see IntSupplier
      */
     static <E> Route<E> of(IntFunction<E> items, IntSupplier size){
+        Objects.requireNonNull(items);
+        Objects.requireNonNull(size);
         return new RouteFactory.DynamicIndexRoute<>(items, size, null);
     }
 
@@ -119,6 +121,7 @@ public interface Route<E> extends Iterator<E>, Enumeration<E>
      * @see IntFunction
      */
     static <E> Route<E> of(IntFunction<E> items, int size){
+        Objects.requireNonNull(items);
         return new RouteFactory.FixedIndexRoute<>(items, size, null);
     }
     /**
@@ -133,6 +136,8 @@ public interface Route<E> extends Iterator<E>, Enumeration<E>
      * @see IntUnaryOperator
      */
     static <E> Route<E> of(IntFunction<E> items, IntSupplier size, IntUnaryOperator remove){
+        Objects.requireNonNull(items);
+        Objects.requireNonNull(size);
         return new RouteFactory.DynamicIndexRoute<>(items, size, remove);
     }
     /**
@@ -147,6 +152,7 @@ public interface Route<E> extends Iterator<E>, Enumeration<E>
      * @see IntUnaryOperator
      */
     static <E> Route<E> of(IntFunction<E> items, int size, IntConsumer remove){
+        Objects.requireNonNull(items);
         return new RouteFactory.FixedIndexRoute<>(items, size, remove);
     }
 

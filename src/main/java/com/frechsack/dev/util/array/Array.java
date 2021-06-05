@@ -6,7 +6,6 @@ import com.frechsack.dev.util.route.Routable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
-import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -28,29 +27,34 @@ import java.util.stream.Stream;
  * <p>
  * This interface provides static factories to create an Array of any class-type.
  *
- * @param <E> The class type of this Array. This may be an Object or primitive type.
+ * @param <E> The element type of this Array. This may be an Object or primitive type.
  * @author Frechsack
  */
 public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>, IntFunction<E>
 {
     /**
      * Creates a new Array with the specified elements. The returned Array will write through the specified array.
+     *
      * @param array The elements.
-     * @param <E> The Array´s class type.
+     * @param <E>   The Array´s element type.
      * @return Returns the Array.
      */
+    @SafeVarargs
     static <E> Array<E> of(E... array)
     {
         return new ArrayFactory.GenericArray<>(array, true);
 
     }
+
     /**
      * Creates a new Array with the specified elements.
+     *
      * @param isReference Indicates if the Array should write through the specified elements.
-     * @param array The elements.
-     * @param <E> The Array´s class type.
+     * @param array       The elements.
+     * @param <E>         The Array´s element type.
      * @return Returns the Array.
      */
+    @SafeVarargs
     static <E> Array<E> of(boolean isReference, E... array)
     {
         return new ArrayFactory.GenericArray<>(array, isReference);
@@ -58,9 +62,10 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
 
     /**
      * Creates a new Array with the specified class type and length.
+     *
      * @param length The Array´s length.
-     * @param type The Array´s class type.
-     * @param <E> The Array´s class type.
+     * @param type   The Array´s class type.
+     * @param <E>    The Array´s class type.
      * @return Returns the Array.
      */
     static <E> Array<E> of(int length, Class<E> type)
@@ -69,25 +74,45 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     }
 
     /**
-     * Creates a new number Array with the specified elements.
+     * Creates a new number Array with the specified elements. The returned Array will write through the specified array.
      *
-     * @param array
-     * @param converter
-     * @param <E>
-     * @return
+     * @param array     The content.
+     * @param converter The function will convert {@link Number} to a type of {@code E}. When {@code null} is passed, the function must return a default value that is equal to {@code 0}.
+     * @param <E>       The Array´s element type.
+     * @return Returns the Array.
      */
+    @SafeVarargs
     static <E extends Number> Numbers<E> ofTypedNumber(Function<Number, E> converter, E... array)
     {
         checkNumberConverter(converter);
         return new ArrayFactory.GenericNumbers<>(array, true, converter);
     }
 
+    /**
+     * Creates a new number Array with the specified elements.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param converter   The function will convert {@link Number} to a type of {@code E}. When {@code null} is passed, the function must return a default value that is equal to {@code 0}.
+     * @param array       The content.
+     * @param <E>         The Array´s element type.
+     * @return Returns the Array.
+     */
+    @SafeVarargs
     static <E extends Number> Numbers<E> ofTypedNumber(boolean isReference, Function<Number, E> converter, E... array)
     {
         checkNumberConverter(converter);
         return new ArrayFactory.GenericNumbers<>(array, isReference, converter);
     }
 
+    /**
+     * Creates a new number Array with the specified length.
+     *
+     * @param length    The Array´s length.
+     * @param type      The Array´s element type.
+     * @param converter The function will convert {@link Number} to a type of {@code E}. When {@code null} is passed, the function must return a default value that is equal to {@code 0}.
+     * @param <E>       The Array´s element type.
+     * @return Returns the Array.
+     */
     static <E extends Number> Numbers<E> ofTypedNumber(int length, Class<E> type, Function<Number, E> converter)
     {
         checkNumberConverter(converter);
@@ -101,257 +126,579 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
             throw new IllegalArgumentException("The converter returned null when null was passed. But null is not a valid number");
     }
 
+    /**
+     * Creates an Array of {@code Number} with the specified content.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Number> ofNumber(boolean isReference, Number... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number);
     }
 
+    /**
+     * Creates an Array of {@code Number} with the specified content. The returned Array will write through the specified array.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Number> ofNumber(Number... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number);
     }
 
+    /**
+     * Creates an Array of {@code Number} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Number> ofNumber(int length)
     {
         return new ArrayFactory.GenericNumbers<>(length, Number.class, number -> number == null ? 0 : number);
     }
 
-
+    /**
+     * Creates an Array of {@code int} with the specified content. The Array will use a primitive int model.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Integer> ofInt(boolean isReference, int... array)
     {
         return new ArrayFactory.IntArray(array, isReference);
     }
 
+    /**
+     * Creates an Array of {@code int} with the specified content. The returned Array will write through the specified array. The Array will use a primitive int model.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Integer> ofInt(int... array)
     {
         return new ArrayFactory.IntArray(array, true);
     }
 
+    /**
+     * Creates an Array of {@code int} with the specified length. The Array will use a primitive int model.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Integer> ofInt(int length)
     {
         return new ArrayFactory.IntArray(length);
     }
 
+    /**
+     * Creates an Array of {@code Integer} with the specified content. The returned Array will write through the specified array.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Integer> ofGenericInt(Integer... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.intValue());
     }
 
+    /**
+     * Creates an Array of {@code Integer} with the specified content.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Integer> ofGenericInt(boolean isReference, Integer... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.intValue());
     }
 
+    /**
+     * Creates an Array of {@code Integer} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Integer> ofGenericInt(int length)
     {
         return new ArrayFactory.GenericNumbers<Integer>(length, Integer.class, number -> number == null ? 0 : number.intValue());
     }
 
+    /**
+     * Creates an Array of {@code byte} with the specified content. The Array will use a primitive byte model.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Byte> ofByte(boolean isReference, byte... array)
     {
         return new ArrayFactory.ByteArray(array, isReference);
     }
 
+    /**
+     * Creates an Array of {@code byte} with the specified content. The returned Array will write through the specified array. The Array will use a primitive byte model.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Byte> ofByte(byte... array)
     {
         return new ArrayFactory.ByteArray(array, true);
     }
 
+    /**
+     * Creates an Array of {@code byte} with the specified length. The Array will use a primitive byte model.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Byte> ofByte(int length)
     {
         return new ArrayFactory.ByteArray(length);
     }
 
+    /**
+     * Creates an Array of {@code Byte} with the specified content. The returned Array will write through the specified array.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Byte> ofGenericByte(Byte... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.byteValue());
     }
 
+    /**
+     * Creates an Array of {@code Byte} with the specified content.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Byte> ofGenericByte(boolean isReference, Byte... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.byteValue());
     }
 
+    /**
+     * Creates an Array of {@code Byte} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Byte> ofGenericByte(int length)
     {
         return new ArrayFactory.GenericNumbers<>(length, Byte.class, number -> number == null ? 0 : number.byteValue());
     }
 
+    /**
+     * Creates an Array of {@code short} with the specified content. The Array will use a primitive short model.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Short> ofShort(boolean isReference, short... array)
     {
         return new ArrayFactory.ShortArray(array, isReference);
     }
 
+    /**
+     * Creates an Array of {@code short} with the specified content. The returned Array will write through the specified array. The Array will use a primitive short model.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Short> ofShort(short... array)
     {
         return new ArrayFactory.ShortArray(array, true);
     }
 
+    /**
+     * Creates an Array of {@code short} with the specified length. The Array will use a primitive short model.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Short> ofShort(int length)
     {
         return new ArrayFactory.ShortArray(length);
     }
 
+    /**
+     * Creates an Array of {@code Short} with the specified content. The returned Array will write through the specified array.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Short> ofGenericShort(Short... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.shortValue());
     }
 
+    /**
+     * Creates an Array of {@code Short} with the specified content.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Short> ofGenericShort(boolean isReference, Short... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.shortValue());
     }
 
+    /**
+     * Creates an Array of {@code Short} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Short> ofGenericShort(int length)
     {
         return new ArrayFactory.GenericNumbers<>(length, Short.class, number -> number == null ? 0 : number.shortValue());
     }
 
+    /**
+     * Creates an Array of {@code float} with the specified content. The Array will use a primitive float model.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Float> ofFloat(boolean isReference, float... array)
     {
         return new ArrayFactory.FloatArray(array, isReference);
     }
 
+    /**
+     * Creates an Array of {@code float} with the specified content. The returned Array will write through the specified array. The Array will use a primitive float model.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Float> ofFloat(float... array)
     {
         return new ArrayFactory.FloatArray(array, true);
     }
 
+    /**
+     * Creates an Array of {@code float} with the specified length. The Array will use a primitive float model.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Float> ofFloat(int length)
     {
         return new ArrayFactory.FloatArray(length);
     }
 
+    /**
+     * Creates an Array of {@code Float} with the specified content. The returned Array will write through the specified array.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Float> ofGenericFloat(Float... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.floatValue());
     }
 
+    /**
+     * Creates an Array of {@code Float} with the specified content.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Float> ofGenericFloat(boolean isReference, Float... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.floatValue());
     }
 
+    /**
+     * Creates an Array of {@code Float} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Float> ofGenericFloat(int length)
     {
         return new ArrayFactory.GenericNumbers<>(length, Float.class, number -> number == null ? 0 : number.floatValue());
     }
 
+    /**
+     * Creates an Array of {@code double} with the specified content. The Array will use a primitive double model.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Double> ofDouble(boolean isReference, double... array)
     {
         return new ArrayFactory.DoubleArray(array, isReference);
     }
 
+    /**
+     * Creates an Array of {@code double} with the specified content. The returned Array will write through the specified array. The Array will use a primitive double model.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Double> ofDouble(double... array)
     {
         return new ArrayFactory.DoubleArray(array, true);
     }
 
+    /**
+     * Creates an Array of {@code double} with the specified length. The Array will use a primitive double model.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Double> ofDouble(int length)
     {
         return new ArrayFactory.DoubleArray(length);
     }
 
+    /**
+     * Creates an Array of {@code Double} with the specified content. The returned Array will write through the specified array.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Double> ofGenericDouble(Double... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.doubleValue());
     }
 
+    /**
+     * Creates an Array of {@code Double} with the specified content.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Double> ofGenericDouble(boolean isReference, Double... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.doubleValue());
     }
 
+    /**
+     * Creates an Array of {@code Double} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Double> ofGenericDouble(int length)
     {
         return new ArrayFactory.GenericNumbers<>(length, Double.class, number -> number == null ? 0 : number.doubleValue());
     }
 
+    /**
+     * Creates an Array of {@code long} with the specified content. The Array will use a primitive long model.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Long> ofLong(boolean isReference, long... array)
     {
         return new ArrayFactory.LongArray(array, isReference);
     }
 
+    /**
+     * Creates an Array of {@code long} with the specified content. The returned Array will write through the specified array. The Array will use a primitive long model.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Long> ofLong(long... array)
     {
         return new ArrayFactory.LongArray(array, true);
     }
 
+    /**
+     * Creates an Array of {@code long} with the specified length. The Array will use a primitive long model.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Long> ofLong(int length)
     {
         return new ArrayFactory.LongArray(length);
     }
 
+    /**
+     * Creates an Array of {@code Long} with the specified content. The returned Array will write through the specified array.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Numbers<Long> ofGenericLong(Long... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.longValue());
     }
 
+    /**
+     * Creates an Array of {@code Long} with the specified content.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Numbers<Long> ofGenericLong(boolean isReference, Long... array)
     {
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.longValue());
     }
 
+    /**
+     * Creates an Array of {@code Long} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Numbers<Long> ofGenericLong(int length)
     {
         return new ArrayFactory.GenericNumbers<>(length, Long.class, number -> number == null ? 0 : number.longValue());
     }
 
+    /**
+     * Creates an Array of {@code boolean} with the specified content. The Array will use a primitive boolean model.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Booleans ofBoolean(boolean isReference, boolean... array)
     {
         return new ArrayFactory.Booleans(array, isReference);
     }
 
+    /**
+     * Creates an Array of {@code boolean} with the specified content. The returned Array will write through the specified array. The Array will use a primitive boolean model.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Booleans ofBoolean(boolean... array)
     {
         return new ArrayFactory.Booleans(array, true);
     }
 
+    /**
+     * Creates an Array of {@code boolean} with the specified length. The Array will use a primitive boolean model.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Booleans ofBoolean(int length)
     {
         return new ArrayFactory.Booleans(length);
     }
 
+    /**
+     * Creates an Array of {@code Boolean} with the specified content. The returned Array will write through the specified array.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Booleans ofGenericBoolean(Boolean... array)
     {
         return new ArrayFactory.GenericBooleans(array, true);
     }
 
+    /**
+     * Creates an Array of {@code Boolean} with the specified content.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Booleans ofGenericBoolean(boolean isReference, Boolean... array)
     {
         return new ArrayFactory.GenericBooleans(array, isReference);
     }
 
+    /**
+     * Creates an Array of {@code Boolean} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Booleans ofGenericBoolean(int length)
     {
         return new ArrayFactory.GenericBooleans(length);
     }
 
+    /**
+     * Creates an Array of {@code char} with the specified content. The Array will use a primitive char model.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Characters ofChar(boolean isReference, char... array)
     {
         return new ArrayFactory.Characters(array, isReference);
     }
 
+    /**
+     * Creates an Array of {@code char} with the specified content. The returned Array will write through the specified array. The Array will use a primitive char model.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Characters ofChar(char... array)
     {
-        return new ArrayFactory.Characters(array, true);
+        return new ArrayFactory.Characters(Objects.requireNonNull(array), true);
     }
 
+    /**
+     * Creates an Array of {@code char} with the specified length. The Array will use a primitive char model.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Characters ofChar(int length)
     {
         return new ArrayFactory.Characters(length);
     }
 
+    /**
+     * Creates an Array of {@code Character} with the specified content. The returned Array will write through the specified array.
+     *
+     * @param array The content.
+     * @return Returns the Array.
+     */
     static Characters ofGenericChar(Character... array)
     {
         return new ArrayFactory.GenericCharacters(array, true);
     }
 
+    /**
+     * Creates an Array of {@code Character} with the specified content.
+     *
+     * @param isReference Indicates if the Array should write through the specified array.
+     * @param array       The content.
+     * @return Returns the Array.
+     */
     static Characters ofGenericChar(boolean isReference, Character... array)
     {
         return new ArrayFactory.GenericCharacters(array, isReference);
     }
 
+    /**
+     * Creates an Array of {@code Character} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @return Returns the Array.
+     */
     static Characters ofGenericChar(int length)
     {
         return new ArrayFactory.GenericCharacters(length);
@@ -645,7 +992,8 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
 
 
     @Override
-    default E apply(int index){
+    default E apply(int index)
+    {
         return get(index);
     }
 
