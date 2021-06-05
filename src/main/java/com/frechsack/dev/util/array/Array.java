@@ -33,24 +33,43 @@ import java.util.stream.Stream;
  */
 public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>, IntFunction<E>
 {
+    /**
+     * Creates a new Array with the specified elements. The returned Array will write through the specified array.
+     * @param array The elements.
+     * @param <E> The Array´s class type.
+     * @return Returns the Array.
+     */
     static <E> Array<E> of(E... array)
     {
         return new ArrayFactory.GenericArray<>(array, true);
 
     }
-
+    /**
+     * Creates a new Array with the specified elements.
+     * @param isReference Indicates if the Array should write through the specified elements.
+     * @param array The elements.
+     * @param <E> The Array´s class type.
+     * @return Returns the Array.
+     */
     static <E> Array<E> of(boolean isReference, E... array)
     {
         return new ArrayFactory.GenericArray<>(array, isReference);
     }
 
+    /**
+     * Creates a new Array with the specified class type and length.
+     * @param length The Array´s length.
+     * @param type The Array´s class type.
+     * @param <E> The Array´s class type.
+     * @return Returns the Array.
+     */
     static <E> Array<E> of(int length, Class<E> type)
     {
         return new ArrayFactory.GenericArray<>(length, type);
     }
 
     /**
-     * Converter: Null passed: Default
+     * Creates a new number Array with the specified elements.
      *
      * @param array
      * @param converter

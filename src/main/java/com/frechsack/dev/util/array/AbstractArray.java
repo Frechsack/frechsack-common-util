@@ -156,6 +156,7 @@ public abstract class AbstractArray<E> implements Array<E>
     @Override
     public Stream<E> stream()
     {
+        // return IntStream.range(0,length()).mapToObj(this::get);
         return StreamSupport.stream(spliterator(), false);
     }
 

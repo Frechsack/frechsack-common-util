@@ -1,16 +1,10 @@
 package com.frechsack.dev.util.route;
 
-import com.frechsack.dev.util.Pair;
-import com.frechsack.dev.util.function.NumberSupplier;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.IntConsumer;
-import java.util.function.IntFunction;
-import java.util.function.IntUnaryOperator;
+import java.util.function.*;
 
 /**
  * Package-private implementations of {@link Route}.
@@ -23,28 +17,21 @@ public class RouteFactory
     {
         private final IntFunction<E> items;
         private final int size;
-        private final IntConsumer removeFunction;
+        private final IntConsumer remove;
         private int index = -1;
 
-        FixedIndexRoute(IntFunction<E> items, int size, IntConsumer removeOperation)
+        FixedIndexRoute(IntFunction<E> items, int size, IntConsumer remove)
         {
             this.items = items;
             this.size = size;
-            this.removeFunction = removeOperation;
+            this.remove = remove;
         }
-
-        /*
-        FixedIndexRoute(IntFunction<E> items, int size)
-        {
-            this(items, size, null);
-        }
-        */
 
         @Override
         public final void remove()
         {
-            if (removeFunction == null) throw new UnsupportedOperationException("remove");
-            removeFunction.accept(index);
+            if (remove == null) throw new UnsupportedOperationException("remove");
+            remove.accept(index);
         }
 
 
@@ -95,7 +82,7 @@ public class RouteFactory
         @Override
         public String toString()
         {
-            return "FixedIndexRoute{" + "items=" + items + ", size=" + size + ", removeFunction=" + removeFunction + ", index=" + index + '}';
+            return "FixedIndexRoute{" + "items=" + items + ", size=" + size + ", removeFunction=" + remove + ", index=" + index + '}';
         }
 
         @Override
@@ -104,16 +91,13 @@ public class RouteFactory
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             FixedIndexRoute<?> that = (FixedIndexRoute<?>) o;
-            return index == that.index &&
-                   Objects.equals(items, that.items) &&
-                   Objects.equals(size, that.size) &&
-                   Objects.equals(removeFunction, that.removeFunction);
+            return index == that.index && Objects.equals(items, that.items) && Objects.equals(size, that.size) && Objects.equals(remove, that.remove);
         }
 
         @Override
         public int hashCode()
         {
-            return Objects.hash(items, size, removeFunction, index);
+            return Objects.hash(items, size, remove, index);
         }
     }
 
@@ -358,11 +342,11 @@ public class RouteFactory
     static class DynamicIndexRoute<E> implements Route<E>
     {
         private final IntFunction<E> items;
-        private final NumberSupplier<?> size;
+        private final IntSupplier size;
         private final IntUnaryOperator removeFunction;
         private int index = -1;
 
-        DynamicIndexRoute(IntFunction<E> items, NumberSupplier<?> size, IntUnaryOperator removeOperation)
+        DynamicIndexRoute(IntFunction<E> items, IntSupplier size, IntUnaryOperator removeOperation)
         {
             this.items = items;
             this.size = size;
@@ -410,7 +394,10 @@ public class RouteFactory
         public final E previous()
         {
             int index = this.index - 1;
-            Objects.checkIndex(index, size.getAsInt());
+            // Size may changed
+            int size = this.size.getAsInt();
+            if (index >= size) index = size - 1;
+            else Objects.checkIndex(index, size);
             this.index = index;
             return items.apply(index);
         }
