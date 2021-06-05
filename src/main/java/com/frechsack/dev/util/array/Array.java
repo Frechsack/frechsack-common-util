@@ -981,7 +981,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     default void rotate(int distance)
     {
-        Collections.rotate(asList(), distance);
+        Collections.rotate(asList(), distance *-1);
     }
 
     @Override

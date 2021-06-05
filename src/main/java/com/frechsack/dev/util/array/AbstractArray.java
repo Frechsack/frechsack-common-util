@@ -21,7 +21,7 @@ import java.util.stream.StreamSupport;
  * @param <E> The Array´s element type.
  * @author Frechsack
  */
-abstract class AbstractArray<E> implements Array<E>, Serializable
+abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
 {
     private Reference<ArrayList> arrayListReference;
 
@@ -224,7 +224,7 @@ abstract class AbstractArray<E> implements Array<E>, Serializable
     @Override
     public E[] toArray()
     {
-        E[] array = (E[]) java.lang.reflect.Array.newInstance(asArray().getClass().getComponentType(), length());
+        E[] array = generator().apply(length());
         if (length() < STREAM_PREFERRED_LENGTH)
         {
             for (int i = 0; i < length(); i++)

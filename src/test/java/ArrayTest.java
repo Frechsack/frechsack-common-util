@@ -2,6 +2,7 @@ import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.array.Array;
 import com.frechsack.dev.util.array.Numbers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -22,24 +23,15 @@ public class ArrayTest
 
     public static void main(String[] bca)
     {
-        IntStream.Builder builder = IntStream.builder();
-        IntStream.range(0,4100).forEach(builder::add);
-        for (int i = 0; i < 10; i++) builder.add(2);
+        Collection<Integer> numberClt = new ArrayList<>();
+        Numbers<Integer> array = Array.ofGenericInt(256,3,6,8,1,9,10,23,54,1,77,8,33);
+        numberClt.addAll(array.asList());
+        numberClt.addAll(array.asList());
 
-
-        Pair.of(1,2,3);
-
-
-        int[] array  = builder.build().toArray();
-        Numbers<Integer> numbers = Array.ofInt(array);
-
-        System.out.println(array.length);
-
-        long start = System.nanoTime();
-
-        System.out.println(numbers.firstIndexOf(2));
-
-        System.out.println(System.nanoTime() - start);
+        System.out.println(array);
+        System.out.println(array.firstIndexOf(i -> i == 3));
+        System.out.println(array);
+        System.out.println(Arrays.toString(array.toDoubleArray()));
     }
 
     private static void print(List<Integer> ls)
