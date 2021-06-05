@@ -4,28 +4,35 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
-public abstract class AbstractNumbers<E extends Number> extends AbstractArray<E> implements Numbers<E>
+/**
+ * Package-private implementations base of {@link Numbers}.
+ *
+ * @param <E> The Array´s element type.
+ * @author Frechsack
+ */
+abstract class AbstractNumbers<E extends Number> extends AbstractArray<E> implements Numbers<E>
 {
-    protected AbstractNumbers(){
+    protected AbstractNumbers()
+    {
         super();
     }
 
     @Override
     public IntStream intStream()
     {
-        return IntStream.range(0,length()).map(this::getInt);
+        return IntStream.range(0, length()).map(this::getInt);
     }
 
     @Override
     public DoubleStream doubleStream()
     {
-        return IntStream.range(0,length()).mapToDouble(this::getDouble);
+        return IntStream.range(0, length()).mapToDouble(this::getDouble);
     }
 
     @Override
     public LongStream longStream()
     {
-        return IntStream.range(0,length()).mapToLong(this::getLong);
+        return IntStream.range(0, length()).mapToLong(this::getLong);
     }
 
     @Override

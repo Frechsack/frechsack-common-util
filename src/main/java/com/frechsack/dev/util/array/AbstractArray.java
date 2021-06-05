@@ -2,6 +2,7 @@ package com.frechsack.dev.util.array;
 
 import com.frechsack.dev.util.Pair;
 
+import java.io.Serializable;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.*;
@@ -14,7 +15,13 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public abstract class AbstractArray<E> implements Array<E>
+/**
+ * Package-private implementations base of {@link Array}.
+ *
+ * @param <E> The Array´s element type.
+ * @author Frechsack
+ */
+abstract class AbstractArray<E> implements Array<E>, Serializable
 {
     private Reference<ArrayList> arrayListReference;
 
@@ -287,6 +294,7 @@ public abstract class AbstractArray<E> implements Array<E>
 
     }
 
+
     @Override
     public void transform(Function<E, E> mapper)
     {
@@ -329,7 +337,7 @@ public abstract class AbstractArray<E> implements Array<E>
         }
     }
 
-    private class ArrayList extends AbstractList<E>
+    private class ArrayList extends AbstractList<E> implements RandomAccess
     {
         @Override
         public E set(int index, E element)
