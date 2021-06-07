@@ -1,8 +1,5 @@
 package com.frechsack.dev.util.array;
 
-import java.util.Arrays;
-import java.util.Comparator;
-
 /**
  * Booleans is a boolean implementation of an {@link Array}.
  * <p>
