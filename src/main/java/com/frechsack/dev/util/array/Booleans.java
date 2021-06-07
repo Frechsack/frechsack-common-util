@@ -15,7 +15,10 @@ public interface Booleans extends Array<Boolean>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    boolean getBoolean(int index);
+   default boolean getBoolean(int index){
+       Boolean b = get(index);
+       return b != null && b;
+   }
 
     /**
      * Sets the specified boolean on the given position.
@@ -23,7 +26,9 @@ public interface Booleans extends Array<Boolean>
      * @param index   The position.
      * @param element The element.
      */
-    void setBoolean(int index, boolean element);
+    default void setBoolean(int index, boolean element){
+        set(index,element);
+    }
 
     /**
      * Sets the specified element on the given position and returns the previous value.
@@ -81,7 +86,12 @@ public interface Booleans extends Array<Boolean>
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    boolean[] toBooleanArray();
+   default boolean[] toBooleanArray(){
+       boolean[] clone = new boolean[length()];
+       for (int i = 0; i < length(); i++)
+           clone[i] = getBoolean(i);
+       return clone;
+   }
 
     /**
      * Checks if this Array´s contents and the specified array are equal. Those two array´s are considered as equal if their elements and order is equal.
@@ -89,7 +99,15 @@ public interface Booleans extends Array<Boolean>
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    boolean equals(boolean[] array);
+    default boolean equals(boolean[] array){
+        if(array == null) return false;
+        if(array.length != length()) return false;
+        for (int i = 0; i < length(); i++)
+        {
+            if(array[i] != getBoolean(i)) return false;
+        }
+        return true;
+    }
 
     /**
      * When sorting a {@code boolean} Array, it is assumed that {@code false} is less than {@code true}.

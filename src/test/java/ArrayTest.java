@@ -26,12 +26,11 @@ public class ArrayTest
     public static void equalTest()
     {
 
-        Array<Boolean> a = Array.ofBoolean(false,true,false,true,false);
-        Array<Boolean> b = Array.ofBoolean(true,true,false,false,false);
+        Array<Boolean> a = Array.ofGenericBoolean(false,true,false,true,false);
+        Array<Boolean> b = Array.ofGenericBoolean(true,true,false,false,false);
 
          a.sort();
          b.sort();
-         b.reverse();
 
 
         a.stream().forEach(e -> System.out.print(e + ","));

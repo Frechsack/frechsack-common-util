@@ -172,8 +172,7 @@ class ArrayFactory
             if (isReference) this.data = data;
             else
             {
-                this.data = new Character[data.length];
-                System.arraycopy(data, 0, this.data, 0, data.length);
+                this.data = Arrays.copyOf(data, data.length);
             }
         }
 
@@ -233,9 +232,9 @@ class ArrayFactory
         }
 
         @Override
-        public Route<Character> route()
+        public void sort(Comparator<? super Character> c)
         {
-            return Route.of(data);
+            Arrays.sort(data,c);
         }
 
         @Override
@@ -246,33 +245,15 @@ class ArrayFactory
         }
 
         @Override
+        public Route<Character> route()
+        {
+            return Route.of(i -> data[i], data.length, i -> data[i] = getVoid());
+        }
+
+        @Override
         public void setChar(int index, char element)
         {
             data[index] = element;
-        }
-
-        @Override
-        public char[] toCharArray()
-        {
-            char[] clone = new char[data.length];
-            IntStream.range(0, length()).parallel().forEach(index -> clone[index] = get(index));
-            return clone;
-        }
-
-        @Override
-        public boolean equals(char[] array)
-        {
-            if (data.length != array.length) return false;
-
-            if (length() < STREAM_PREFERRED_LENGTH)
-            {
-                for (int i = 0; i < length(); i++)
-                {
-                    if (getChar(i) != array[i]) return false;
-                }
-                return true;
-            }
-            return IntStream.range(0, length()).allMatch(index -> getChar(index) == array[index]);
         }
 
         @Override
@@ -286,6 +267,18 @@ class ArrayFactory
         {
             return Arrays.hashCode(data);
         }
+
+        @Override
+        public boolean equals(Character[] array)
+        {
+            return Arrays.equals(data,array);
+        }
+
+        @Override
+        public Character[] toArray()
+        {
+            return Arrays.copyOf(data, data.length);
+        }
     }
 
     static class GenericBooleans extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.Booleans
@@ -297,8 +290,7 @@ class ArrayFactory
             if (isReference) this.data = data;
             else
             {
-                this.data = new Boolean[data.length];
-                System.arraycopy(data, 0, this.data, 0, data.length);
+                this.data = Arrays.copyOf(data, data.length);
             }
         }
 
@@ -324,29 +316,6 @@ class ArrayFactory
         }
 
         @Override
-        public boolean[] toBooleanArray()
-        {
-            boolean[] clone = new boolean[data.length];
-            IntStream.range(0, data.length).parallel().forEach(index -> clone[index] = getBoolean(index));
-            return clone;
-        }
-
-        @Override
-        public boolean equals(boolean[] array)
-        {
-            if (length() != array.length) return false;
-            if (length() < STREAM_PREFERRED_LENGTH)
-            {
-                for (int i = 0; i < length(); i++)
-                {
-                    if (getBoolean(i) != array[i]) return false;
-                }
-                return true;
-            }
-            return IntStream.range(0, length()).allMatch(index -> getBoolean(index) == array[index]);
-        }
-
-        @Override
         public Object asArray()
         {
             return data;
@@ -363,6 +332,12 @@ class ArrayFactory
         {
             Boolean value = data[index];
             return value != null && value;
+        }
+
+        @Override
+        public Route<Boolean> route()
+        {
+            return Route.of(i -> data[i], data.length, i -> data[i] = false);
         }
 
         @Override
@@ -384,13 +359,6 @@ class ArrayFactory
         }
 
         @Override
-        public Route<Boolean> route()
-        {
-            return Route.of(data);
-        }
-
-
-        @Override
         public String toString()
         {
             return "GenericBooleanArray{" + Arrays.toString(data) + '}';
@@ -401,6 +369,18 @@ class ArrayFactory
         {
             return Arrays.hashCode(data);
         }
+
+        @Override
+        public boolean equals(Boolean[] array)
+        {
+            return Arrays.equals(array,data);
+        }
+
+        @Override
+        public Boolean[] toArray()
+        {
+            return Arrays.copyOf(data, data.length);
+        }
     }
 
     static class GenericNumbers<E extends Number> extends AbstractNumbers<E>
@@ -408,15 +388,13 @@ class ArrayFactory
         private final E[] data;
         private final Function<Number, E> converter;
 
-        @SuppressWarnings("unchecked")
         GenericNumbers(E[] data, boolean isReference, Function<Number, E> converter)
         {
             this.converter = converter;
             if (isReference) this.data = data;
             else
             {
-                this.data = (E[]) Array.newInstance(data.getClass().getComponentType(), data.length);
-                System.arraycopy(data, 0, this.data, 0, data.length);
+                this.data = Arrays.copyOf(data, data.length);
             }
         }
 
@@ -561,7 +539,7 @@ class ArrayFactory
         @Override
         public Route<E> route()
         {
-            return Route.of(data);
+            return Route.of(i -> data[i], data.length, i -> data[i] = getVoid());
         }
 
         @Override
@@ -571,27 +549,36 @@ class ArrayFactory
         }
 
         @Override
+        public boolean equals(E[] array)
+        {
+            return Arrays.equals(array,data);
+        }
+
+        @Override
         public int hashCode()
         {
             int result = Objects.hash(converter);
             result = 31 * result + Arrays.hashCode(data);
             return result;
         }
-    }
 
+        @Override
+        public E[] toArray()
+        {
+            return Arrays.copyOf(data, data.length);
+        }
+    }
 
     static class GenericArray<E> extends AbstractArray<E>
     {
         private final E[] data;
 
-        @SuppressWarnings("unchecked")
         GenericArray(E[] data, boolean isReference)
         {
             if (isReference) this.data = data;
             else
             {
-                this.data = (E[]) Array.newInstance(data.getClass().getComponentType(), data.length);
-                System.arraycopy(data, 0, this.data, 0, data.length);
+                this.data = Arrays.copyOf(data, data.length);
             }
         }
 
@@ -659,7 +646,7 @@ class ArrayFactory
         @Override
         public Route<E> route()
         {
-            return Route.of(data);
+            return Route.of(i -> data[i], data.length, i -> data[i] = null);
         }
 
         @Override
@@ -679,6 +666,12 @@ class ArrayFactory
         {
             return Arrays.hashCode(data);
         }
+
+        @Override
+        public E[] toArray()
+        {
+            return Arrays.copyOf(data, data.length);
+        }
     }
 
     static class LongArray extends AbstractNumbers<Long>
@@ -691,8 +684,7 @@ class ArrayFactory
             if (isReference) this.data = data;
             else
             {
-                this.data = new long[data.length];
-                System.arraycopy(data, 0, this.data, 0, data.length);
+                this.data = Arrays.copyOf(data, data.length);
             }
         }
 
@@ -825,12 +817,6 @@ class ArrayFactory
         }
 
         @Override
-        public Route<Long> route()
-        {
-            return Route.of(data);
-        }
-
-        @Override
         public String toString()
         {
             return "LongArray{" + Arrays.toString(data) + '}';
@@ -840,6 +826,12 @@ class ArrayFactory
         public int hashCode()
         {
             return Arrays.hashCode(data);
+        }
+
+        @Override
+        public long[] toLongArray()
+        {
+            return Arrays.copyOf(data, data.length);
         }
 
         @Override
@@ -858,8 +850,7 @@ class ArrayFactory
             if (isReference) this.data = data;
             else
             {
-                this.data = new double[data.length];
-                System.arraycopy(data, 0, this.data, 0, data.length);
+                this.data = Arrays.copyOf(data, data.length);
             }
         }
 
@@ -985,18 +976,16 @@ class ArrayFactory
             Arrays.sort(data);
         }
 
+        @Override
+        public double[] toDoubleArray()
+        {
+            return Arrays.copyOf(data, data.length);
+        }
 
         @Override
         public DoubleStream doubleStream()
         {
             return Arrays.stream(data);
-        }
-
-
-        @Override
-        public Route<Double> route()
-        {
-            return Route.of(data);
         }
 
         @Override
@@ -1027,8 +1016,7 @@ class ArrayFactory
             if (isReference) this.data = data;
             else
             {
-                this.data = new float[data.length];
-                System.arraycopy(data, 0, this.data, 0, data.length);
+                this.data = Arrays.copyOf(data, data.length);
             }
         }
 
@@ -1149,17 +1137,16 @@ class ArrayFactory
         }
 
         @Override
-        public Route<Float> route()
-        {
-            return Route.of(data);
-        }
-
-        @Override
         public void sort()
         {
             Arrays.sort(data);
         }
 
+        @Override
+        public float[] toFloatArray()
+        {
+            return Arrays.copyOf(data, data.length);
+        }
 
         @Override
         public int hashCode()
@@ -1189,8 +1176,7 @@ class ArrayFactory
             if (isReference) this.data = data;
             else
             {
-                this.data = new int[data.length];
-                System.arraycopy(data, 0, this.data, 0, data.length);
+                this.data = Arrays.copyOf(data, data.length);
             }
         }
 
@@ -1310,6 +1296,17 @@ class ArrayFactory
             Arrays.sort(data);
         }
 
+        @Override
+        public int[] toIntArray()
+        {
+            return Arrays.copyOf(data, data.length);
+        }
+
+        @Override
+        public boolean equals(int[] array)
+        {
+            return Arrays.equals(array, data);
+        }
 
         @Override
         public IntFunction<Integer[]> generator()
@@ -1318,17 +1315,10 @@ class ArrayFactory
         }
 
         @Override
-        public Route<Integer> route()
-        {
-            return Route.of(data);
-        }
-
-        @Override
         public IntStream intStream()
         {
             return Arrays.stream(data);
         }
-
 
         @Override
         public int hashCode()
@@ -1353,8 +1343,7 @@ class ArrayFactory
             if (isReference) this.data = data;
             else
             {
-                this.data = new short[data.length];
-                System.arraycopy(data, 0, this.data, 0, data.length);
+                this.data = Arrays.copyOf(data, data.length);
             }
         }
 
@@ -1474,17 +1463,10 @@ class ArrayFactory
             Arrays.sort(data);
         }
 
-
         @Override
         public IntFunction<Short[]> generator()
         {
             return Short[]::new;
-        }
-
-        @Override
-        public Route<Short> route()
-        {
-            return Route.of(data);
         }
 
         @Override
@@ -1497,6 +1479,12 @@ class ArrayFactory
         public int hashCode()
         {
             return Arrays.hashCode(data);
+        }
+
+        @Override
+        public short[] toShortArray()
+        {
+            return Arrays.copyOf(data, data.length);
         }
 
         @Override
@@ -1515,8 +1503,7 @@ class ArrayFactory
             if (isReference) this.data = data;
             else
             {
-                this.data = new byte[data.length];
-                System.arraycopy(data, 0, this.data, 0, data.length);
+                this.data = Arrays.copyOf(data, data.length);
             }
         }
 
@@ -1603,9 +1590,7 @@ class ArrayFactory
         @Override
         public byte[] toByteArray()
         {
-            byte[] clone = new byte[data.length];
-            System.arraycopy(data, 0, clone, 0, data.length);
-            return clone;
+            return Arrays.copyOf(data, data.length);
         }
 
         @Override
@@ -1648,13 +1633,6 @@ class ArrayFactory
         public void sort()
         {
             Arrays.sort(data);
-        }
-
-
-        @Override
-        public Route<Byte> route()
-        {
-            return Route.of(data);
         }
 
         @Override
@@ -1713,9 +1691,7 @@ class ArrayFactory
         @Override
         public char[] toCharArray()
         {
-            char[] clone = new char[data.length];
-            System.arraycopy(data, 0, clone, 0, data.length);
-            return clone;
+            return Arrays.copyOf(data, data.length);
         }
 
         @Override
@@ -1758,12 +1734,6 @@ class ArrayFactory
         public IntFunction<Character[]> generator()
         {
             return Character[]::new;
-        }
-
-        @Override
-        public Route<Character> route()
-        {
-            return Route.of(data);
         }
 
         @Override
@@ -1819,9 +1789,7 @@ class ArrayFactory
         @Override
         public boolean[] toBooleanArray()
         {
-            boolean[] clone = new boolean[data.length];
-            System.arraycopy(data, 0, clone, 0, data.length);
-            return clone;
+            return Arrays.copyOf(data, data.length);
         }
 
         @Override
@@ -1870,12 +1838,6 @@ class ArrayFactory
         public IntFunction<Boolean[]> generator()
         {
             return Boolean[]::new;
-        }
-
-        @Override
-        public Route<Boolean> route()
-        {
-            return Route.of(data);
         }
 
         @Override

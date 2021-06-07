@@ -652,14 +652,14 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     /**
      * Creates an Array of {@code Boolean} with the specified content.
      *
-     * @param isReference Indicates if the Array should write through the specified array.
+     * @param isReference Indicates if the Array should write through the specified array. If set to zero, a reference is used.
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Booleans ofGenericBoolean(boolean isReference, Boolean... array)
+    static Booleans ofGenericBoolean(byte isReference, Boolean... array)
     {
         Objects.requireNonNull(array);
-        return new ArrayFactory.GenericBooleans(array, isReference);
+        return new ArrayFactory.GenericBooleans(array, isReference == 0);
     }
 
     /**

@@ -20,7 +20,11 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    byte getByte(int index);
+    default byte getByte(int index)
+    {
+        Number n = get(index);
+        return n == null ? 0 : n.byteValue();
+    }
 
     /**
      * Returns the element on the specified index as a short.
@@ -28,7 +32,11 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    short getShort(int index);
+    default short getShort(int index)
+    {
+        Number n = get(index);
+        return n == null ? 0 : n.shortValue();
+    }
 
     /**
      * Returns the element on the specified index as an int.
@@ -36,7 +44,11 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    int getInt(int index);
+    default int getInt(int index)
+    {
+        Number n = get(index);
+        return n == null ? 0 : n.intValue();
+    }
 
     /**
      * Returns the element on the specified index as a float.
@@ -44,7 +56,11 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    float getFloat(int index);
+    default float getFloat(int index)
+    {
+        Number n = get(index);
+        return n == null ? 0 : n.floatValue();
+    }
 
     /**
      * Returns the element on the specified index as a double.
@@ -52,7 +68,11 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    double getDouble(int index);
+    default double getDouble(int index)
+    {
+        Number n = get(index);
+        return n == null ? 0 : n.doubleValue();
+    }
 
     /**
      * Returns the element on the specified index as a long.
@@ -60,7 +80,11 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    long getLong(int index);
+    default long getLong(int index)
+    {
+        Number n = get(index);
+        return n == null ? 0 : n.longValue();
+    }
 
     /**
      * Sets the specified byte on the given position. It depends on the implementation if a byte can be set. If not the element will be down-casted.
@@ -199,101 +223,218 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    byte[] toByteArray();
+    default byte[] toByteArray()
+    {
+        byte[] clone = new byte[length()];
+        for (int i = 0; i < length(); i++)
+        {
+            clone[i] = getByte(i);
+        }
+        return clone;
+    }
 
     /**
      * Returns a copy of this Array´s elements as shorts.
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    short[] toShortArray();
+    default short[] toShortArray()
+    {
+        short[] clone = new short[length()];
+        for (int i = 0; i < length(); i++)
+        {
+            clone[i] = getShort(i);
+        }
+        return clone;
+    }
 
     /**
      * Returns a copy of this Array´s elements as integers.
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    int[] toIntArray();
+    default int[] toIntArray()
+    {
+        int[] clone = new int[length()];
+        for (int i = 0; i < length(); i++)
+        {
+            clone[i] = getInt(i);
+        }
+        return clone;
+    }
 
     /**
      * Returns a copy of this Array´s elements as doubles.
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    double[] toDoubleArray();
+    default double[] toDoubleArray()
+    {
+        double[] clone = new double[length()];
+        for (int i = 0; i < length(); i++)
+        {
+            clone[i] = getDouble(i);
+        }
+        return clone;
+    }
 
     /**
      * Returns a copy of this Array´s elements as longs.
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    long[] toLongArray();
+    default long[] toLongArray()
+    {
+        long[] clone = new long[length()];
+        for (int i = 0; i < length(); i++)
+        {
+            clone[i] = getLong(i);
+        }
+        return clone;
+    }
 
     /**
      * Returns a copy of this Array´s elements as floats.
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    float[] toFloatArray();
+    default float[] toFloatArray()
+    {
+        float[] clone = new float[length()];
+        for (int i = 0; i < length(); i++)
+        {
+            clone[i] = getFloat(i);
+        }
+        return clone;
+    }
 
     /**
      * Checks if this Array´s contents and the specified array are equal. Those two array´s are considered as equal if their elements and order is equal.
+     *
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    boolean equals(int[] array);
+    default boolean equals(int[] array)
+    {
+        if (array == null) return false;
+        if (array.length != length()) return false;
+        for (int i = 0; i < length(); i++)
+        {
+            if (array[i] != getInt(i)) return false;
+        }
+        return true;
+    }
 
     /**
      * Checks if this Array´s contents and the specified array are equal. Those two array´s are considered as equal if their elements and order is equal.
+     *
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    boolean equals(float[] array);
+    default boolean equals(float[] array)
+    {
+
+        if (array == null) return false;
+        if (array.length != length()) return false;
+        for (int i = 0; i < length(); i++)
+        {
+            if (array[i] != getFloat(i)) return false;
+        }
+        return true;
+    }
 
     /**
      * Checks if this Array´s contents and the specified array are equal. Those two array´s are considered as equal if their elements and order is equal.
+     *
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    boolean equals(double[] array);
+    default boolean equals(double[] array)
+    {
+        if (array == null) return false;
+        if (array.length != length()) return false;
+        for (int i = 0; i < length(); i++)
+        {
+            if (array[i] != getDouble(i)) return false;
+        }
+        return true;
+    }
 
     /**
      * Checks if this Array´s contents and the specified array are equal. Those two array´s are considered as equal if their elements and order is equal.
+     *
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    boolean equals(long[] array);
+    default boolean equals(long[] array)
+    {
+        if (array == null) return false;
+        if (array.length != length()) return false;
+        for (int i = 0; i < length(); i++)
+        {
+            if (array[i] != getLong(i)) return false;
+        }
+        return true;
+    }
 
     /**
      * Checks if this Array´s contents and the specified array are equal. Those two array´s are considered as equal if their elements and order is equal.
+     *
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    boolean equals(short[] array);
+    default boolean equals(short[] array)
+    {
+        if (array == null) return false;
+        if (array.length != length()) return false;
+        for (int i = 0; i < length(); i++)
+        {
+            if (array[i] != getShort(i)) return false;
+        }
+        return true;
+    }
 
     /**
      * Checks if this Array´s contents and the specified array are equal. Those two array´s are considered as equal if their elements and order is equal.
+     *
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    boolean equals(byte[] array);
+    default boolean equals(byte[] array)
+    {
+        if (array == null) return false;
+        if (array.length != length()) return false;
+        for (int i = 0; i < length(); i++)
+        {
+            if (array[i] != getByte(i)) return false;
+        }
+        return true;
+    }
 
     /**
      * Creates an {@link IntStream} with the whole content of this Array.
      *
      * @return Returns a Stream.
      */
-    IntStream intStream();
+   default IntStream intStream(){
+       return IntStream.range(0, length()).map(this::getInt);
+   }
+
     /**
      * Creates a {@link DoubleStream} with the whole content of this Array.
      *
      * @return Returns a Stream.
      */
-    DoubleStream doubleStream();
+  default   DoubleStream doubleStream(){
+      return IntStream.range(0, length()).mapToDouble(this::getDouble);
+  }
+
     /**
      * Creates a {@link LongStream} with the whole content of this Array.
      *
      * @return Returns a Stream.
      */
-    LongStream longStream();
+   default LongStream longStream(){
+       return IntStream.range(0, length()).mapToLong(this::getLong);
+   }
 }

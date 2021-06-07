@@ -1,8 +1,6 @@
 package com.frechsack.dev.util.array;
 
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 
 /**
  * Package-private implementations base of {@link Numbers}.
@@ -15,72 +13,6 @@ abstract class AbstractNumbers<E extends Number> extends AbstractArray<E> implem
     protected AbstractNumbers()
     {
         super();
-    }
-
-    @Override
-    public IntStream intStream()
-    {
-        return IntStream.range(0, length()).map(this::getInt);
-    }
-
-    @Override
-    public DoubleStream doubleStream()
-    {
-        return IntStream.range(0, length()).mapToDouble(this::getDouble);
-    }
-
-    @Override
-    public LongStream longStream()
-    {
-        return IntStream.range(0, length()).mapToLong(this::getLong);
-    }
-
-    @Override
-    public byte[] toByteArray()
-    {
-        byte[] clone = new byte[length()];
-        IntStream.range(0, clone.length).parallel().forEach(index -> clone[index] = getByte(index));
-        return clone;
-    }
-
-    @Override
-    public short[] toShortArray()
-    {
-        short[] clone = new short[length()];
-        IntStream.range(0, clone.length).parallel().forEach(index -> clone[index] = getShort(index));
-        return clone;
-    }
-
-    @Override
-    public int[] toIntArray()
-    {
-        int[] clone = new int[length()];
-        IntStream.range(0, clone.length).parallel().forEach(index -> clone[index] = getInt(index));
-        return clone;
-    }
-
-    @Override
-    public double[] toDoubleArray()
-    {
-        double[] clone = new double[length()];
-        IntStream.range(0, clone.length).parallel().forEach(index -> clone[index] = getDouble(index));
-        return clone;
-    }
-
-    @Override
-    public long[] toLongArray()
-    {
-        long[] clone = new long[length()];
-        IntStream.range(0, clone.length).parallel().forEach(index -> clone[index] = getLong(index));
-        return clone;
-    }
-
-    @Override
-    public float[] toFloatArray()
-    {
-        float[] clone = new float[length()];
-        IntStream.range(0, clone.length).parallel().forEach(index -> clone[index] = getFloat(index));
-        return clone;
     }
 
     @Override
