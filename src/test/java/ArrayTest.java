@@ -1,12 +1,13 @@
-import com.frechsack.dev.util.Pair;
+import com.frechsack.dev.util.array.AbstractArray;
 import com.frechsack.dev.util.array.Array;
-import com.frechsack.dev.util.array.Numbers;
+import com.frechsack.dev.util.route.Route;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Spliterator;
+import java.util.function.IntFunction;
+import java.util.stream.Stream;
 
 public class ArrayTest
 {
@@ -21,23 +22,31 @@ public class ArrayTest
         return l;
     }
 
-    public static void main(String[] bca)
-    {
-        Collection<Integer> numberClt = new ArrayList<>();
-        Numbers<Integer> array = Array.ofGenericInt(256,3,6,8,1,9,10,23,54,1,77,8,33);
-        numberClt.addAll(array.asList());
-        numberClt.addAll(array.asList());
 
-        System.out.println(array);
-        System.out.println(array.firstIndexOf(i -> i == 3));
-        System.out.println(array);
-        System.out.println(Arrays.toString(array.toDoubleArray()));
+    public static void equalTest()
+    {
+
+        Array<Boolean> a = Array.ofBoolean(false,true,false,true,false);
+        Array<Boolean> b = Array.ofBoolean(true,true,false,false,false);
+
+         a.sort();
+         b.sort();
+         b.reverse();
+
+
+        a.stream().forEach(e -> System.out.print(e + ","));
+        System.out.println();
+        b.stream().forEach(e -> System.out.print(e + ","));
+        System.out.println();
+
+        System.out.println(a);
+        System.out.println(b);
+        System.out.println("Equals: " + a.equals(b));
+
     }
 
-    private static void print(List<Integer> ls)
+    public static void main(String[] bca)
     {
-        System.out.println(ls);
-
-        ls.set(2, 10);
+        equalTest();
     }
 }

@@ -1,6 +1,5 @@
 package com.frechsack.dev.util.array;
 
-import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.route.Route;
 
 import java.lang.reflect.Array;
@@ -10,6 +9,7 @@ import java.util.function.IntFunction;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 /**
  * Package-private implementations of {@link com.frechsack.dev.util.array.Array}.
@@ -18,6 +18,151 @@ import java.util.stream.LongStream;
  */
 class ArrayFactory
 {
+
+    static class ArrayList<E> extends AbstractList<E> implements RandomAccess
+    {
+        private final com.frechsack.dev.util.array.Array<E> array;
+
+        ArrayList(com.frechsack.dev.util.array.Array<E> array) {this.array = array;}
+
+        @Override
+        public E set(int index, E element)
+        {
+            return array.getAndSet(index, element);
+        }
+
+        @Override
+        public E get(int index)
+        {
+            return array.get(index);
+        }
+
+        @Override
+        public int size()
+        {
+            return array.length();
+        }
+
+        @Override
+        public int indexOf(Object o)
+        {
+            return array.indexOf(o);
+        }
+
+        @Override
+        public int lastIndexOf(Object o)
+        {
+            return array.lastIndexOf(o);
+        }
+
+        @Override
+        public void clear()
+        {
+            array.clear();
+        }
+
+        @Override
+        public boolean isEmpty()
+        {
+            return array.length() == 0;
+        }
+
+        @Override
+        public boolean contains(Object o)
+        {
+            return array.contains(o);
+        }
+
+        @Override
+        public Object[] toArray()
+        {
+            return array.toArray();
+        }
+
+        @Override
+        public <T> T[] toArray(IntFunction<T[]> generator)
+        {
+            return toArray(generator.apply(array.length()));
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T[] toArray(T[] a)
+        {
+            final T[] clone = a.length >= array.length() ? a : (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), array.length());
+            // Stream
+            for (int i = 0; i < array.length(); i++)
+            {
+                clone[i] = (T) array.get(i);
+            }
+            return clone;
+        }
+
+        @Override
+        public Stream<E> stream()
+        {
+            return array.stream();
+        }
+
+        @Override
+        public Stream<E> parallelStream()
+        {
+            return array.parallelStream();
+        }
+
+        @Override
+        public void sort(Comparator<? super E> c)
+        {
+            array.sort(c);
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o || array == o) return true;
+            if (o instanceof List) return super.equals(o);
+            if (o instanceof com.frechsack.dev.util.array.Array) return equals(((com.frechsack.dev.util.array.Array<?>) o).asList());
+            if (!(o instanceof Collection)) return false;
+            // Compare collection
+            return array.parallelStream().allMatch(((Collection<?>) o)::contains);
+        }
+    }
+
+    static class ArrayIterator<E> implements Iterator<E>
+    {
+        private final com.frechsack.dev.util.array.Array<E> array;
+
+
+        private int index = -1;
+
+        ArrayIterator(com.frechsack.dev.util.array.Array<E> array) {this.array = array;}
+
+        @Override
+        public boolean hasNext()
+        {
+            return index + 1 < array.length();
+        }
+
+        @Override
+        public E next()
+        {
+            return array.get(++index);
+        }
+
+        @Override
+        public void remove()
+        {
+            try
+            {
+                array.set(index, null);
+            }
+            catch (Exception ignored)
+            {
+            }
+        }
+    }
+
+
     static class GenericCharacters extends AbstractArray<Character> implements com.frechsack.dev.util.array.Characters
     {
         private final Character[] data;
@@ -31,6 +176,7 @@ class ArrayFactory
                 System.arraycopy(data, 0, this.data, 0, data.length);
             }
         }
+
         GenericCharacters(int length)
         {
             this.data = new Character[length];
@@ -116,7 +262,7 @@ class ArrayFactory
         @Override
         public boolean equals(char[] array)
         {
-            if(data.length != array.length) return false;
+            if (data.length != array.length) return false;
 
             if (length() < STREAM_PREFERRED_LENGTH)
             {
@@ -132,7 +278,7 @@ class ArrayFactory
         @Override
         public String toString()
         {
-            return "GenericCharacters{" +  Arrays.toString(data) + '}';
+            return "GenericCharacters{" + Arrays.toString(data) + '}';
         }
 
         @Override
@@ -247,7 +393,7 @@ class ArrayFactory
         @Override
         public String toString()
         {
-            return "GenericBooleanArray{" +  Arrays.toString(data) + '}';
+            return "GenericBooleanArray{" + Arrays.toString(data) + '}';
         }
 
         @Override
@@ -987,7 +1133,7 @@ class ArrayFactory
         @Override
         public void set(int index, Float element)
         {
-             setFloat(index, element == null ? getVoid() : element);
+            setFloat(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -1149,7 +1295,7 @@ class ArrayFactory
         @Override
         public void set(int index, Integer element)
         {
-             setInt(index, element == null ? getVoid() : element);
+            setInt(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -1313,7 +1459,7 @@ class ArrayFactory
         @Override
         public void set(int index, Short element)
         {
-             setShort(index, element == null ? getVoid() : element);
+            setShort(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -1483,7 +1629,7 @@ class ArrayFactory
         @Override
         public void set(int index, Byte element)
         {
-             setByte(index, element == null ? getVoid() : element);
+            setByte(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -1599,7 +1745,7 @@ class ArrayFactory
         @Override
         public void set(int index, Character element)
         {
-             setChar(index, element == null ? getVoid() : element);
+            setChar(index, element == null ? getVoid() : element);
         }
 
         @Override
@@ -1711,7 +1857,7 @@ class ArrayFactory
         @Override
         public void set(int index, Boolean element)
         {
-             setBoolean(index, element == null ? getVoid() : element);
+            setBoolean(index, element == null ? getVoid() : element);
         }
 
         @Override

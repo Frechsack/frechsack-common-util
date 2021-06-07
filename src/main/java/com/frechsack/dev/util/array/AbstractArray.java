@@ -1,6 +1,6 @@
 package com.frechsack.dev.util.array;
 
-import com.frechsack.dev.util.Pair;
+import com.frechsack.dev.util.route.Route;
 
 import java.io.Serializable;
 import java.lang.ref.Reference;
@@ -10,7 +10,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -21,7 +20,7 @@ import java.util.stream.StreamSupport;
  * @param <E> The Array´s element type.
  * @author Frechsack
  */
-abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
+public abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
 {
     private Reference<ArrayList> arrayListReference;
 
@@ -30,14 +29,6 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     protected static final int STREAM_PREFERRED_LENGTH = 4096;
 
     protected AbstractArray() {}
-
-    @Override
-    public E getAndSet(int index, E element)
-    {
-        E last = get(index);
-        set(index, element);
-        return last;
-    }
 
     @Override
     public int firstIndexOf(Object element)
@@ -89,6 +80,7 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     @Override
     public int indexOf(int start, int end, Predicate<E> predicate)
     {
+        Objects.requireNonNull(predicate);
         if (end - start < STREAM_PREFERRED_LENGTH)
         {
             for (int i = 0; i < length(); i++)
@@ -103,6 +95,7 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     @Override
     public int lastIndexOf(Predicate<E> predicate)
     {
+        Objects.requireNonNull(predicate);
         if (length() < STREAM_PREFERRED_LENGTH)
         {
             for (int i = length() - 1; i > 0; i--)
@@ -117,6 +110,7 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     @Override
     public int firstIndexOf(Predicate<E> predicate)
     {
+        Objects.requireNonNull(predicate);
         if (length() < STREAM_PREFERRED_LENGTH)
         {
             for (int i = 0; i < length(); i++)
@@ -156,6 +150,7 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     @Override
     public void forEach(Consumer<? super E> action)
     {
+        Objects.requireNonNull(action);
         if (length() < STREAM_PREFERRED_LENGTH) for (int i = 0; i < length(); i++) action.accept(get(i));
         else stream().forEach(action);
     }
@@ -168,18 +163,6 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     }
 
     @Override
-    public Stream<Pair<Integer, E>> streamIndices()
-    {
-        return IntStream.range(0, length()).mapToObj(index -> Pair.of(index, get(index)));
-    }
-
-    @Override
-    public Stream<Pair<Integer, E>> parallelStreamIndices()
-    {
-        return IntStream.range(0, length()).parallel().mapToObj(index -> Pair.of(index, get(index)));
-    }
-
-    @Override
     public Stream<E> parallelStream()
     {
         return StreamSupport.stream(spliterator(), true);
@@ -188,6 +171,7 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     @Override
     public boolean equals(E[] array)
     {
+        if(array == null) return false;
         if (array.length != length()) return false;
         if (length() < STREAM_PREFERRED_LENGTH)
         {
@@ -215,13 +199,6 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     }
 
     @Override
-    public Spliterator<E> spliterator()
-    {
-        return Spliterators.spliterator(iterator(), length(), Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.ORDERED);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
     public E[] toArray()
     {
         E[] array = generator().apply(length());
@@ -244,30 +221,6 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
         return arrayList;
     }
 
-    @Override
-    public void sort(Comparator<? super E> c)
-    {
-        java.util.ArrayList<E> ls = new java.util.ArrayList<>(length());
-        stream().sorted(c).collect(Collectors.toCollection(() -> ls));
-        // Replace
-        IntStream.range(0, ls.size()).parallel().forEach(index -> set(index, ls.get(index)));
-    }
-
-    @Override
-    public void sortReverse()
-    {
-        sort();
-        reverse();
-    }
-
-    @Override
-    public void sortReverse(Comparator<? super E> c)
-    {
-        java.util.ArrayList<E> ls = new java.util.ArrayList<>(length());
-        stream().sorted(c).collect(Collectors.toCollection(() -> ls));
-        // Replace
-        IntStream.range(0, ls.size()).parallel().forEach(index -> set(length() - 1 - index, ls.get(index)));
-    }
 
     @Override
     public void fill(E element)
@@ -285,12 +238,21 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     @Override
     public void reverse()
     {
-        IntStream.range(0, length() / 2).parallel().forEach(index ->
-                                                            {
-                                                                int swapIndex = length() - 1 - index;
-                                                                E swap = get(index);
-                                                                set(index, getAndSet(swapIndex, swap));
-                                                            });
+        if (length() < STREAM_PREFERRED_LENGTH)
+        {
+            int swapIndex;
+            for (int i = 0; i < length() / 2; i++)
+            {
+                swapIndex = length() - 1 - i;
+                set(i, getAndSet(swapIndex, get(i)));
+            }
+        }
+        else IntStream.range(0, length() / 2).parallel().forEach(index ->
+                                                                 {
+                                                                     int swapIndex = length() - 1 - index;
+                                                                     E swap = get(index);
+                                                                     set(index, getAndSet(swapIndex, swap));
+                                                                 });
 
     }
 
@@ -298,6 +260,7 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     @Override
     public void transform(Function<E, E> mapper)
     {
+        Objects.requireNonNull(mapper);
         if (length() < STREAM_PREFERRED_LENGTH)
         {
             for (int i = 0; i < length(); i++)
@@ -312,6 +275,12 @@ abstract class AbstractArray<E> implements Array<E>, Serializable, RandomAccess
     public final Iterator<E> iterator()
     {
         return new ArrayIterator();
+    }
+
+    @Override
+    public Route<E> route()
+    {
+        return Route.of(this::get, length(), i-> set(i, getVoid()));
     }
 
     private class ArrayIterator implements Iterator<E>

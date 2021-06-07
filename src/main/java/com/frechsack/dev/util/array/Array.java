@@ -2,11 +2,14 @@ package com.frechsack.dev.util.array;
 
 import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.route.Routable;
+import com.frechsack.dev.util.route.Route;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -42,6 +45,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     @SafeVarargs
     static <E> Array<E> of(E... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericArray<>(array, true);
 
     }
@@ -57,6 +61,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     @SafeVarargs
     static <E> Array<E> of(boolean isReference, E... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericArray<>(array, isReference);
     }
 
@@ -70,6 +75,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static <E> Array<E> of(int length, Class<E> type)
     {
+        Objects.requireNonNull(type);
         return new ArrayFactory.GenericArray<>(length, type);
     }
 
@@ -116,6 +122,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     static <E extends Number> Numbers<E> ofTypedNumber(int length, Class<E> type, Function<Number, E> converter)
     {
         checkNumberConverter(converter);
+        Objects.requireNonNull(type);
         return new ArrayFactory.GenericNumbers<>(length, type, converter);
     }
 
@@ -135,6 +142,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Number> ofNumber(boolean isReference, Number... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number);
     }
 
@@ -146,6 +154,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Number> ofNumber(Number... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number);
     }
 
@@ -169,6 +178,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Integer> ofInt(boolean isReference, int... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.IntArray(array, isReference);
     }
 
@@ -180,6 +190,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Integer> ofInt(int... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.IntArray(array, true);
     }
 
@@ -202,6 +213,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Integer> ofGenericInt(Integer... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.intValue());
     }
 
@@ -214,6 +226,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Integer> ofGenericInt(boolean isReference, Integer... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.intValue());
     }
 
@@ -237,6 +250,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Byte> ofByte(boolean isReference, byte... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.ByteArray(array, isReference);
     }
 
@@ -248,6 +262,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Byte> ofByte(byte... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.ByteArray(array, true);
     }
 
@@ -270,6 +285,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Byte> ofGenericByte(Byte... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.byteValue());
     }
 
@@ -282,6 +298,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Byte> ofGenericByte(boolean isReference, Byte... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.byteValue());
     }
 
@@ -305,6 +322,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Short> ofShort(boolean isReference, short... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.ShortArray(array, isReference);
     }
 
@@ -316,6 +334,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Short> ofShort(short... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.ShortArray(array, true);
     }
 
@@ -338,6 +357,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Short> ofGenericShort(Short... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.shortValue());
     }
 
@@ -350,6 +370,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Short> ofGenericShort(boolean isReference, Short... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.shortValue());
     }
 
@@ -373,6 +394,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Float> ofFloat(boolean isReference, float... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.FloatArray(array, isReference);
     }
 
@@ -384,6 +406,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Float> ofFloat(float... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.FloatArray(array, true);
     }
 
@@ -406,6 +429,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Float> ofGenericFloat(Float... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.floatValue());
     }
 
@@ -418,6 +442,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Float> ofGenericFloat(boolean isReference, Float... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.floatValue());
     }
 
@@ -441,6 +466,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Double> ofDouble(boolean isReference, double... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.DoubleArray(array, isReference);
     }
 
@@ -452,6 +478,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Double> ofDouble(double... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.DoubleArray(array, true);
     }
 
@@ -474,6 +501,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Double> ofGenericDouble(Double... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.doubleValue());
     }
 
@@ -486,6 +514,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Double> ofGenericDouble(boolean isReference, Double... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.doubleValue());
     }
 
@@ -509,6 +538,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Long> ofLong(boolean isReference, long... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.LongArray(array, isReference);
     }
 
@@ -520,6 +550,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Long> ofLong(long... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.LongArray(array, true);
     }
 
@@ -542,6 +573,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Long> ofGenericLong(Long... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.longValue());
     }
 
@@ -554,6 +586,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Long> ofGenericLong(boolean isReference, Long... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.longValue());
     }
 
@@ -571,13 +604,14 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     /**
      * Creates an Array of {@code boolean} with the specified content. The Array will use a primitive boolean model.
      *
-     * @param isReference Indicates if the Array should write through the specified array.
+     * @param isReference Indicates if the Array should write through the specified array. If set to zero, a reference is used.
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Booleans ofBoolean(boolean isReference, boolean... array)
+    static Booleans ofBoolean(byte isReference, boolean... array)
     {
-        return new ArrayFactory.Booleans(array, isReference);
+        Objects.requireNonNull(array);
+        return new ArrayFactory.Booleans(array, isReference == 0);
     }
 
     /**
@@ -588,6 +622,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Booleans ofBoolean(boolean... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.Booleans(array, true);
     }
 
@@ -610,6 +645,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Booleans ofGenericBoolean(Boolean... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericBooleans(array, true);
     }
 
@@ -622,6 +658,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Booleans ofGenericBoolean(boolean isReference, Boolean... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericBooleans(array, isReference);
     }
 
@@ -645,6 +682,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Characters ofChar(boolean isReference, char... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.Characters(array, isReference);
     }
 
@@ -656,6 +694,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Characters ofChar(char... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.Characters(Objects.requireNonNull(array), true);
     }
 
@@ -678,6 +717,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Characters ofGenericChar(Character... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericCharacters(array, true);
     }
 
@@ -690,6 +730,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Characters ofGenericChar(boolean isReference, Character... array)
     {
+        Objects.requireNonNull(array);
         return new ArrayFactory.GenericCharacters(array, isReference);
     }
 
@@ -738,7 +779,14 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      * @param element The value.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    int indexOf(int start, int end, Object element);
+    default int indexOf(int start, int end, Object element)
+    {
+        for (int i = start; i < end; i++)
+        {
+            if (Objects.equals(element, get(i))) return i;
+        }
+        return -1;
+    }
 
     /**
      * Returns an index, where the specified {@link Predicate} returns true.
@@ -774,7 +822,15 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      * @param predicate The predicate.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    int indexOf(int start, int end, Predicate<E> predicate);
+    default int indexOf(int start, int end, Predicate<E> predicate)
+    {
+        Objects.requireNonNull(predicate);
+        for (int i = 0; i < length(); i++)
+        {
+            if (predicate.test(get(i))) return i;
+        }
+        return -1;
+    }
 
     /**
      * Returns the last index of the specified element in this Array.
@@ -782,7 +838,14 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      * @param element The value.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    int lastIndexOf(Object element);
+    default int lastIndexOf(Object element)
+    {
+        for (int i = length() - 1; i > 0; i--)
+        {
+            if (Objects.equals(element, get(i))) return i;
+        }
+        return -1;
+    }
 
     /**
      * Returns the last index, where the specified {@link Predicate} returns true.
@@ -790,7 +853,15 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      * @param predicate The predicate.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    int lastIndexOf(Predicate<E> predicate);
+    default int lastIndexOf(Predicate<E> predicate)
+    {
+        Objects.requireNonNull(predicate);
+        for (int i = length() - 1; i > 0; i--)
+        {
+            if (predicate.test(get(i))) return i;
+        }
+        return -1;
+    }
 
     /**
      * Returns the first index of the specified element in this Array.
@@ -798,7 +869,14 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      * @param element The value.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    int firstIndexOf(Object element);
+    default int firstIndexOf(Object element)
+    {
+        for (int i = 0; i < length(); i++)
+        {
+            if (Objects.equals(element, get(i))) return i;
+        }
+        return -1;
+    }
 
     /**
      * Returns the first index, where the specified {@link Predicate} returns true.
@@ -806,12 +884,29 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      * @param predicate The predicate.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    int firstIndexOf(Predicate<E> predicate);
+    default int firstIndexOf(Predicate<E> predicate)
+    {
+        Objects.requireNonNull(predicate);
+        for (int i = 0; i < length(); i++)
+        {
+            if (predicate.test(get(i))) return i;
+        }
+        return -1;
+    }
 
     /**
-     * Try's to set any value in this Array to a default value. In case this Array contains primitive types, they will be set to their default value otherwise they will be set to null.
+     * Try's to set any value in this Array to a default value.
+     * In case this Array contains primitive types, they will be set to their default value otherwise they will be set to null.
+     *
+     * @implNote The default implementation will set any element in this Array to null.
      */
-    void clear();
+    default void clear()
+    {
+        for (int i = 0; i < length(); i++)
+        {
+            set(i, null);
+        }
+    }
 
     /**
      * Checks if this Array contains the specified element.
@@ -819,14 +914,27 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      * @param element The element.
      * @return Returns true if this Array contains the specified element, else false.
      */
-    boolean contains(Object element);
+    default boolean contains(Object element)
+    {
+        for (int i = 0; i < length(); i++) if (Objects.equals(element, get(i))) return true;
+        return false;
+    }
 
     /**
      * Returns a copy of this Array´s element.
      *
      * @return Returns a copy with the same size and content as this Array.
+     * @implNote The default implementation will create an clone with {@link #generator()} and then copy any element by reference.
      */
-    E[] toArray();
+    default E[] toArray()
+    {
+        E[] clone = generator().apply(length());
+        for (int i = 0; i < length(); i++)
+        {
+            clone[i] = get(i);
+        }
+        return clone;
+    }
 
     /**
      * Returns the underlying native array of this Array. Changes in the returned array will be reflected in this Object.
@@ -887,14 +995,20 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      *
      * @return Returns a Stream.
      */
-    Stream<Pair<Integer, E>> streamIndices();
+    default Stream<Pair<Integer, E>> streamIndices()
+    {
+        return IntStream.range(0, length()).mapToObj(index -> Pair.of(index, get(index)));
+    }
 
     /**
      * Creates an Index based parallel {@link Stream}. Each index in relation to it´s current element will be streamed in a {@link Pair}.
      *
      * @return Returns a Stream.
      */
-    Stream<Pair<Integer, E>> parallelStreamIndices();
+    default Stream<Pair<Integer, E>> parallelStreamIndices()
+    {
+        return IntStream.range(0, length()).parallel().mapToObj(index -> Pair.of(index, get(index)));
+    }
 
     /**
      * Creates a {@link Stream} with the whole content of this Array.
@@ -917,6 +1031,18 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     boolean isPrimitive();
 
+    @Override
+    default Iterator<E> iterator()
+    {
+        return new ArrayFactory.ArrayIterator<>(this);
+    }
+
+    @Override
+    default Route<E> route()
+    {
+        return Route.of(this::get, length(), i -> set(i, null));
+    }
+
     /**
      * Creates an {@link IntFunction} that creates an generic array of this Array´s type.
      *
@@ -925,7 +1051,10 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     IntFunction<E[]> generator();
 
     @Override
-    Spliterator<E> spliterator();
+    default Spliterator<E> spliterator()
+    {
+        return Spliterators.spliterator(iterator(), length(), Spliterator.SIZED | Spliterator.SUBSIZED);
+    }
 
     /**
      * Checks if this Array is equal to the specified array. They are considered as equal, when they contains the same elements in the same order.
@@ -933,45 +1062,83 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    boolean equals(E[] array);
+    default boolean equals(E[] array)
+    {
+        if (array == null) return false;
+        if (array.length != length()) return false;
+        for (int i = 0; i < length(); i++) if (!Objects.equals(array[i], get(i))) return false;
+        return true;
+    }
 
     /**
      * Returns a {@link List} that wraps this Array. Modifications in the returned List will be reflected in this Array.
      *
      * @return Returns a List.
      */
-    List<E> asList();
+    default List<E> asList()
+    {
+        return new ArrayFactory.ArrayList<>(this);
+    }
 
     /**
      * Sorts this Array with the given {@link Comparator}.
      *
      * @param c The Comparator.
+     * @implNote The default implementation will sort a copy of this Array and then reassign any element in it to this Array.
      */
-    void sort(Comparator<? super E> c);
+    default void sort(Comparator<? super E> c)
+    {
+        Objects.requireNonNull(c);
+        E[] array = toArray();
+        Arrays.sort(array, c);
+        for (int i = 0; i < length(); i++)
+        {
+            set(i, array[i]);
+        }
+    }
 
     /**
      * Replaces any position in this Array with the specified element.
      *
      * @param element The element.
      */
-    void fill(E element);
+    default void fill(E element)
+    {
+        for (int i = 0; i < length(); i++) set(i, element);
+    }
 
     /**
      * Sorts this Array in the opposite order.  This Array´s elements have to implement {@link Comparable}.
      */
-    void sortReverse();
+    default void sortReverse()
+    {
+        sort();
+        reverse();
+    }
 
     /**
      * Sorts this Array with the given {@link Comparator} in the opposite order.
      *
      * @param c The Comparator.
      */
-    void sortReverse(Comparator<? super E> c);
+    default void sortReverse(Comparator<? super E> c)
+    {
+        sort(c);
+        reverse();
+    }
 
     /**
      * Changes the order of this Array. The previous first element will now equal the last element.
      */
-    void reverse();
+    default void reverse()
+    {
+        int swapIndex;
+        for (int i = 0; i < length() / 2; i++)
+        {
+            swapIndex = length() - 1 - i;
+            set(i, getAndSet(swapIndex, get(i)));
+        }
+    }
 
     /**
      * Rotates the elements in this Array by the specified distance.
@@ -981,7 +1148,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     default void rotate(int distance)
     {
-        Collections.rotate(asList(), distance *-1);
+        Collections.rotate(asList(), distance * -1);
     }
 
     @Override
@@ -997,8 +1164,25 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
         return get(index);
     }
 
+    @Override
+    default void forEach(Consumer<? super E> action)
+    {
+        Objects.requireNonNull(action);
+        for (int i = 0; i < length(); i++) action.accept(get(i));
+    }
+
     /**
      * Sorts this Array. This Array´s elements have to implement {@link Comparable}.
+     *
+     * @implNote The default implementation will sort a copy of this Array and then reassign any element in it to this Array.
      */
-    void sort();
+    default void sort()
+    {
+        E[] array = toArray();
+        Arrays.sort(array);
+        for (int i = 0; i < length(); i++)
+        {
+            set(i, array[i]);
+        }
+    }
 }
