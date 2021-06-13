@@ -1,6 +1,6 @@
-package com.frechsack.dev.util.array;
+package frechsack.dev.util.array;
 
-import com.frechsack.dev.util.route.Route;
+import frechsack.dev.util.route.Route;
 
 import java.io.Serializable;
 import java.lang.ref.Reference;

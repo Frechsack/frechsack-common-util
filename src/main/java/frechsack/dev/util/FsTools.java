@@ -1,6 +1,6 @@
-package com.frechsack.dev.util;
+package frechsack.dev.util;
 
-import com.frechsack.dev.util.route.Route;
+import frechsack.dev.util.route.Route;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -77,12 +77,6 @@ public class FsTools
     {
         private Collections() {}
 
-        /**
-         * Streams a {@link Collection}
-         * @param clt
-         * @param <E>
-         * @return
-         */
         public static <E> Stream<Pair<Integer, E>> indexStream(java.util.Collection<E> clt)
         {
             Iterator<E> iterator = clt.iterator();

@@ -1,4 +1,4 @@
-package com.frechsack.dev.util;
+package frechsack.dev.util;
 
 import java.util.Map;
 import java.util.Objects;

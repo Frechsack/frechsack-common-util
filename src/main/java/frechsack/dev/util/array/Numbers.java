@@ -1,4 +1,4 @@
-package com.frechsack.dev.util.array;
+package frechsack.dev.util.array;
 
 import java.util.Objects;
 import java.util.stream.DoubleStream;

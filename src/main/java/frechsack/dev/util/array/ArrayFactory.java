@@ -1,6 +1,6 @@
-package com.frechsack.dev.util.array;
+package frechsack.dev.util.array;
 
-import com.frechsack.dev.util.route.Route;
+import frechsack.dev.util.route.Route;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -12,7 +12,7 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /**
- * Package-private implementations of {@link com.frechsack.dev.util.array.Array}.
+ * Package-private implementations of {@link frechsack.dev.util.array.Array}.
  *
  * @author Frechsack
  */
@@ -24,11 +24,11 @@ class ArrayFactory
         Objects.checkIndex(index, length);
     }
 
-    static class SubCharacters extends AbstractArray<Character> implements com.frechsack.dev.util.array.Characters
+    static class SubCharacters extends AbstractArray<Character> implements frechsack.dev.util.array.Characters
     {
-        private final com.frechsack.dev.util.array.Characters parent;
+        private final frechsack.dev.util.array.Characters parent;
 
-        protected SubCharacters(com.frechsack.dev.util.array.Characters parent, int fromIndex, int toIndex)
+        protected SubCharacters(frechsack.dev.util.array.Characters parent, int fromIndex, int toIndex)
         {
             this.parent = parent;
             this.offset = fromIndex;
@@ -110,11 +110,11 @@ class ArrayFactory
         }
     }
 
-    static class SubBooleans extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.Booleans
+    static class SubBooleans extends AbstractArray<Boolean> implements frechsack.dev.util.array.Booleans
     {
-        private final com.frechsack.dev.util.array.Booleans parent;
+        private final frechsack.dev.util.array.Booleans parent;
 
-        protected SubBooleans(com.frechsack.dev.util.array.Booleans parent, int fromIndex, int toIndex)
+        protected SubBooleans(frechsack.dev.util.array.Booleans parent, int fromIndex, int toIndex)
         {
             this.parent = parent;
             this.offset = fromIndex;
@@ -353,11 +353,11 @@ class ArrayFactory
         }
     }
 
-    static class SubArray<E> extends AbstractArray<E> implements com.frechsack.dev.util.array.Array<E>
+    static class SubArray<E> extends AbstractArray<E> implements frechsack.dev.util.array.Array<E>
     {
-        private final com.frechsack.dev.util.array.Array<E> parent;
+        private final frechsack.dev.util.array.Array<E> parent;
 
-        protected SubArray(com.frechsack.dev.util.array.Array<E> parent, int fromIndex, int toIndex)
+        protected SubArray(frechsack.dev.util.array.Array<E> parent, int fromIndex, int toIndex)
         {
             this.parent = parent;
             this.offset = fromIndex;
@@ -427,9 +427,9 @@ class ArrayFactory
 
     static class ArrayList<E> extends AbstractList<E> implements RandomAccess
     {
-        private final com.frechsack.dev.util.array.Array<E> array;
+        private final frechsack.dev.util.array.Array<E> array;
 
-        ArrayList(com.frechsack.dev.util.array.Array<E> array) {this.array = array;}
+        ArrayList(frechsack.dev.util.array.Array<E> array) {this.array = array;}
 
         @Override
         public E set(int index, E element)
@@ -527,7 +527,7 @@ class ArrayFactory
         {
             if (this == o || array == o) return true;
             if (o instanceof List) return super.equals(o);
-            if (o instanceof com.frechsack.dev.util.array.Array) return equals(((com.frechsack.dev.util.array.Array<?>) o).asList());
+            if (o instanceof frechsack.dev.util.array.Array) return equals(((frechsack.dev.util.array.Array<?>) o).asList());
             if (!(o instanceof Collection)) return false;
             // Compare collection
             return array.parallelStream().allMatch(((Collection<?>) o)::contains);
@@ -536,12 +536,12 @@ class ArrayFactory
 
     static class ArrayIterator<E> implements Iterator<E>
     {
-        private final com.frechsack.dev.util.array.Array<E> array;
+        private final frechsack.dev.util.array.Array<E> array;
 
 
         private int index = -1;
 
-        ArrayIterator(com.frechsack.dev.util.array.Array<E> array) {this.array = array;}
+        ArrayIterator(frechsack.dev.util.array.Array<E> array) {this.array = array;}
 
         @Override
         public boolean hasNext()
@@ -569,7 +569,7 @@ class ArrayFactory
     }
 
 
-    static class GenericCharacters extends AbstractArray<Character> implements com.frechsack.dev.util.array.Characters
+    static class GenericCharacters extends AbstractArray<Character> implements frechsack.dev.util.array.Characters
     {
         private final Character[] data;
 
@@ -687,7 +687,7 @@ class ArrayFactory
         }
     }
 
-    static class GenericBooleans extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.Booleans
+    static class GenericBooleans extends AbstractArray<Boolean> implements frechsack.dev.util.array.Booleans
     {
         private final Boolean[] data;
 
@@ -2060,7 +2060,7 @@ class ArrayFactory
         }
     }
 
-    static class Characters extends AbstractArray<Character> implements com.frechsack.dev.util.array.Characters
+    static class Characters extends AbstractArray<Character> implements frechsack.dev.util.array.Characters
     {
         private final char[] data;
 
@@ -2162,7 +2162,7 @@ class ArrayFactory
 
     }
 
-    static class Booleans extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.Booleans
+    static class Booleans extends AbstractArray<Boolean> implements frechsack.dev.util.array.Booleans
     {
 
         private final boolean[] data;

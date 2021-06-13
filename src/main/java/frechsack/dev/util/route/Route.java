@@ -1,6 +1,6 @@
-package com.frechsack.dev.util.route;
+package frechsack.dev.util.route;
 
-import com.frechsack.dev.util.array.Array;
+import frechsack.dev.util.array.Array;
 
 import java.util.*;
 import java.util.function.*;

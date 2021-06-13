@@ -1,4 +1,4 @@
-package com.frechsack.dev.util.route;
+package frechsack.dev.util.route;
 
 import java.util.ArrayList;
 import java.util.Iterator;

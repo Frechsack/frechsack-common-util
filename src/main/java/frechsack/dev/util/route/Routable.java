@@ -1,4 +1,4 @@
-package com.frechsack.dev.util.route;
+package frechsack.dev.util.route;
 
 /**
  * Implementing this interface marks an Object as Routable, that means it´s elements can be accessed through a {@link Route}.

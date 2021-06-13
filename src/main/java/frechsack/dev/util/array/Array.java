@@ -1,8 +1,8 @@
-package com.frechsack.dev.util.array;
+package frechsack.dev.util.array;
 
-import com.frechsack.dev.util.Pair;
-import com.frechsack.dev.util.route.Routable;
-import com.frechsack.dev.util.route.Route;
+import frechsack.dev.util.Pair;
+import frechsack.dev.util.route.Routable;
+import frechsack.dev.util.route.Route;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

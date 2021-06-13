@@ -1,4 +1,4 @@
-package com.frechsack.dev.util.function;
+package frechsack.dev.util.function;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
