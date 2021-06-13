@@ -103,13 +103,6 @@ class ArrayFactory
         }
 
         @Override
-        public final boolean equals(Object o)
-        {
-            if (super.equals(o)) return true;
-            return parent.equals(o);
-        }
-
-        @Override
         public int hashCode()
         {
             return Objects.hash(parent, offset, length);
@@ -193,13 +186,6 @@ class ArrayFactory
         public String toString()
         {
             return "SubBooleans{" + Arrays.toString(toArray()) + '}';
-        }
-
-        @Override
-        public final boolean equals(Object o)
-        {
-            if (super.equals(o)) return true;
-            return parent.equals(o);
         }
 
         @Override
@@ -360,13 +346,6 @@ class ArrayFactory
         }
 
         @Override
-        public final boolean equals(Object o)
-        {
-            if (super.equals(o)) return true;
-            return parent.equals(o);
-        }
-
-        @Override
         public int hashCode()
         {
             return Objects.hash(parent, offset, length);
@@ -436,14 +415,6 @@ class ArrayFactory
         {
             return "SubArray{" + Arrays.toString(toArray()) + '}';
         }
-
-        @Override
-        public final boolean equals(Object o)
-        {
-            if (super.equals(o)) return true;
-            return parent.equals(o);
-        }
-
 
         @Override
         public int hashCode()

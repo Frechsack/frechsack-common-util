@@ -19,10 +19,14 @@ public class ArrayTest
 
     public static void main(String[] bca)
     {
-        Numbers<Double> a = Array.ofDouble(1.0, 2.0, 3.0, 4.0, 5.0);
+        Numbers<Integer> a = Array.ofInt(1, 2, 3, 4, 5);
+        Numbers<Integer> b = a.subArray(0,3);
 
-        Array<Double> b = a.subArray(0, 3);
+        b.sortReverse();
 
+
+
+        System.out.println(b.equals(a));
         System.out.println("A: " + a);
         System.out.println("B: " + b);
     }
