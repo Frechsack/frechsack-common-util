@@ -1,5 +1,5 @@
-import com.frechsack.dev.util.array.Array;
-import com.frechsack.dev.util.array.Numbers;
+import frechsack.dev.util.array.Array;
+import frechsack.dev.util.array.Numbers;
 
 import java.util.Collection;
 

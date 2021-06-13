@@ -1,4 +1,4 @@
-import com.frechsack.dev.util.FsTools;
+import frechsack.dev.util.FsTools;
 
 import java.nio.file.Path;
 
