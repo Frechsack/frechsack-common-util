@@ -4,6 +4,8 @@ import com.frechsack.dev.util.Pair;
 import com.frechsack.dev.util.route.Routable;
 import com.frechsack.dev.util.route.Route;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -78,6 +80,127 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     {
         Objects.requireNonNull(type);
         return new ArrayFactory.GenericArray<>(length, type);
+    }
+
+    /**
+     * Creates a new number Array with the specified elements. How the Array will proceed with the specified numbers depends on the specified classtype.
+     *
+     * @param type  The Array´s element classtype.
+     * @param array The Array´s contents. The content may contain null elements.
+     * @param <E>   The Array´s element´s classtype.
+     * @return Returns the Array.
+     */
+    @SuppressWarnings("unchecked")
+    static <E extends Number> Numbers<E> ofTypedNumber(Class<E> type, Number... array)
+    {
+        Numbers<? extends Number> arr;
+        if (type.isPrimitive())
+        {
+            if (type.equals(Byte.TYPE))
+            {
+                arr = ofByte(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setByte(i, array[i] == null ? 0 : array[i].byteValue());
+            }
+            else if (type.equals(Short.TYPE))
+            {
+                arr = ofShort(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setShort(i, array[i] == null ? 0 : array[i].shortValue());
+            }
+            else if (type.equals(Integer.TYPE))
+            {
+                arr = ofInt(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setInt(i, array[i] == null ? 0 : array[i].intValue());
+            }
+            else if (type.equals(Float.TYPE))
+            {
+                arr = ofFloat(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setFloat(i, array[i] == null ? 0 : array[i].floatValue());
+            }
+            else if (type.equals(Double.TYPE))
+            {
+                arr = ofDouble(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setDouble(i, array[i] == null ? 0 : array[i].doubleValue());
+            }
+            else if (type.equals(Long.TYPE))
+            {
+                arr = ofLong(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setLong(i, array[i] == null ? 0 : array[i].longValue());
+            }
+            else throw new IllegalArgumentException("The classtype must be of type number");
+        }
+        else
+        {
+            if (type.equals(Byte.class))
+            {
+                arr = ofGenericByte(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setByte(i, array[i] == null ? 0 : array[i].byteValue());
+
+            }
+            else if (type.equals(Short.class))
+            {
+                arr = ofGenericShort(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setShort(i, array[i] == null ? 0 : array[i].shortValue());
+
+            }
+            else if (type.equals(Integer.class))
+            {
+                arr = ofGenericInt(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setInt(i, array[i] == null ? 0 : array[i].intValue());
+
+            }
+            else if (type.equals(Float.class))
+            {
+                arr = ofGenericFloat(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setFloat(i, array[i] == null ? 0 : array[i].floatValue());
+
+            }
+            else if (type.equals(Double.class))
+            {
+                arr = ofGenericDouble(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setDouble(i, array[i] == null ? 0 : array[i].doubleValue());
+
+            }
+            else if (type.equals(Long.class))
+            {
+                arr = ofGenericLong(array.length);
+                for (int i = 0; i < arr.length(); i++) arr.setLong(i, array[i] == null ? 0 : array[i].longValue());
+
+            }
+            else if (type.equals(BigInteger.class))
+            {
+                Numbers<BigInteger> bigIntegers;
+                Function<Number, BigInteger> converter = number ->
+                {
+                    if (number == null) return BigInteger.ZERO;
+                    if (number instanceof BigInteger) return (BigInteger) number;
+                    return BigInteger.valueOf(number.longValue());
+                };
+                bigIntegers = ofTypedNumber(array.length, BigInteger.class, converter);
+                for (int i = 0; i < bigIntegers.length(); i++)
+                {
+                    bigIntegers.set(i, converter.apply(array[i]));
+                }
+                return (Numbers<E>) bigIntegers;
+            }
+            else if (type.equals(BigDecimal.class))
+            {
+                Numbers<BigDecimal> bigDecimals;
+                Function<Number, BigDecimal> converter = number ->
+                {
+                    if (number == null) return BigDecimal.ZERO;
+                    if (number instanceof BigDecimal) return (BigDecimal) number;
+                    return BigDecimal.valueOf(number.doubleValue());
+                };
+                bigDecimals = ofTypedNumber(array.length, BigDecimal.class, converter);
+                for (int i = 0; i < bigDecimals.length(); i++)
+                {
+                    bigDecimals.set(i, converter.apply(array[i]));
+                }
+                return (Numbers<E>) bigDecimals;
+            }
+            else throw new IllegalArgumentException("Unsupported classtype. Provide a custom converter by ofTypeNumber(Function<Number, E>,E... array)");
+        }
+        return (Numbers<E>) arr;
     }
 
     /**
@@ -239,7 +362,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     static Numbers<Integer> ofGenericInt(int length)
     {
-        return new ArrayFactory.GenericNumbers<Integer>(length, Integer.class, number -> number == null ? 0 : number.intValue());
+        return new ArrayFactory.GenericNumbers<>(length, Integer.class, number -> number == null ? 0 : number.intValue());
     }
 
     /**
@@ -1204,7 +1327,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     default Array<E> subArray(int fromIndex, int toIndex)
     {
-        Objects.checkFromToIndex(fromIndex,toIndex,length());
+        Objects.checkFromToIndex(fromIndex, toIndex, length());
         return new ArrayFactory.SubArray<>(this, fromIndex, toIndex);
     }
 }

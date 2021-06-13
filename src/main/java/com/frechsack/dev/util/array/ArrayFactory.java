@@ -38,6 +38,7 @@ class ArrayFactory
         protected final int offset;
         protected final int length;
 
+        @SuppressWarnings("unchecked")
         @Override
         protected Character getVoid()
         {

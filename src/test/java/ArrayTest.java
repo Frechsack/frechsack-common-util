@@ -19,11 +19,12 @@ public class ArrayTest
 
     public static void main(String[] bca)
     {
-        Numbers<Integer> a = Array.ofInt(1, 2, 3, 4, 5);
+        Numbers<Integer> a = Array.ofTypedNumber(Integer.TYPE,1, 2, 3, 4, 5);
         Numbers<Integer> b = a.subArray(0,3);
 
         b.sortReverse();
 
+        System.out.println(b.isPrimitive());
 
 
         System.out.println(b.equals(a));

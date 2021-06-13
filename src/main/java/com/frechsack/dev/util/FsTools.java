@@ -3,7 +3,6 @@ package com.frechsack.dev.util;
 import com.frechsack.dev.util.route.Route;
 
 import java.nio.file.Path;
-import java.nio.file.Watchable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -17,6 +16,9 @@ public class FsTools
 {
     private FsTools() {}
 
+    /**
+     * Common FileSystem operations.
+     */
     public static class FileSystem
     {
         /**
@@ -68,10 +70,19 @@ public class FsTools
         }
     }
 
+    /**
+     * Common static operations for {@link Collection}.
+     */
     public static class Collections
     {
         private Collections() {}
 
+        /**
+         * Streams a {@link Collection}
+         * @param clt
+         * @param <E>
+         * @return
+         */
         public static <E> Stream<Pair<Integer, E>> indexStream(java.util.Collection<E> clt)
         {
             Iterator<E> iterator = clt.iterator();
@@ -83,12 +94,25 @@ public class FsTools
             return clt.stream().map(z -> Pair.of(ze.apply(z), zv.apply(z)));
         }
 
+        /**
+         * Converts a {@link Collection} to a {@link Set}.
+         * @param collection The collection.
+         * @param <E> The element´s classtype.
+         * @return Returns a Set.
+         */
         public static <E> Set<E> toSet(java.util.Collection<E> collection)
         {
             if (collection instanceof Set) return (Set<E>) collection;
             return new FsToolsSetWrapper<>(collection);
         }
 
+        /**
+         * Adds any element in the specified array to the specified {@link Collection}.
+         * @param collection The collection.
+         * @param array The array.
+         * @param <E> The element´s classtype.
+         * @return Returns the passed Collection.
+         */
         @SafeVarargs
         public static <E> Collection<E> addAll(Collection<E> collection, E... array)
         {
@@ -233,7 +257,6 @@ public class FsTools
                 throw new UnsupportedOperationException(op);
             }
         }
-
 
         private static class FsToolsSetWrapper<E> implements Set<E>
         {
