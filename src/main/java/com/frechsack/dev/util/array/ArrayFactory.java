@@ -19,6 +19,440 @@ import java.util.stream.Stream;
 class ArrayFactory
 {
 
+    private static void checkIndex(int index, int length)
+    {
+        Objects.checkIndex(index, length);
+    }
+
+    static class SubCharacters extends AbstractArray<Character> implements com.frechsack.dev.util.array.Characters
+    {
+        private final com.frechsack.dev.util.array.Characters parent;
+
+        protected SubCharacters(com.frechsack.dev.util.array.Characters parent, int fromIndex, int toIndex)
+        {
+            this.parent = parent;
+            this.offset = fromIndex;
+            this.length = toIndex - fromIndex;
+        }
+
+        protected final int offset;
+        protected final int length;
+
+        @Override
+        protected Character getVoid()
+        {
+            return (parent instanceof AbstractArray) ? ((AbstractArray<Character>) parent).getVoid() : ' ';
+        }
+
+        @Override
+        public Object asArray()
+        {
+            return parent.asArray();
+        }
+
+        @Override
+        public int length()
+        {
+            return length;
+        }
+
+        @Override
+        public Character get(int index)
+        {
+            checkIndex(index, length);
+            return parent.get(offset + index);
+        }
+
+        @Override
+        public void set(int index, Character element)
+        {
+            checkIndex(index, length);
+            parent.set(index + offset, element);
+        }
+
+        @Override
+        public boolean isPrimitive()
+        {
+            return parent.isPrimitive();
+        }
+
+        @Override
+        public IntFunction<Character[]> generator()
+        {
+            return parent.generator();
+        }
+
+        @Override
+        public char getChar(int index)
+        {
+            checkIndex(index, length);
+            return parent.getChar(index + offset);
+        }
+
+        @Override
+        public void setChar(int index, char element)
+        {
+            checkIndex(index, length);
+            parent.setChar(index + offset, element);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "SubCharacters{" + Arrays.toString(toArray()) + '}';
+        }
+
+        @Override
+        public final boolean equals(Object o)
+        {
+            if (super.equals(o)) return true;
+            return parent.equals(o);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(parent, offset, length);
+        }
+    }
+
+    static class SubBooleans extends AbstractArray<Boolean> implements com.frechsack.dev.util.array.Booleans
+    {
+        private final com.frechsack.dev.util.array.Booleans parent;
+
+        protected SubBooleans(com.frechsack.dev.util.array.Booleans parent, int fromIndex, int toIndex)
+        {
+            this.parent = parent;
+            this.offset = fromIndex;
+            this.length = toIndex - fromIndex;
+        }
+
+        protected final int offset;
+        protected final int length;
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected Boolean getVoid()
+        {
+            return (parent instanceof AbstractArray) ? ((AbstractArray<Boolean>) parent).getVoid() : false;
+        }
+
+        @Override
+        public Object asArray()
+        {
+            return parent.asArray();
+        }
+
+        @Override
+        public int length()
+        {
+            return length;
+        }
+
+        @Override
+        public Boolean get(int index)
+        {
+            checkIndex(index, length);
+            return parent.get(offset + index);
+        }
+
+        @Override
+        public void set(int index, Boolean element)
+        {
+            checkIndex(index, length);
+            parent.set(offset + index, element);
+        }
+
+        @Override
+        public boolean isPrimitive()
+        {
+            return parent.isPrimitive();
+        }
+
+        @Override
+        public IntFunction<Boolean[]> generator()
+        {
+            return parent.generator();
+        }
+
+        @Override
+        public boolean getBoolean(int index)
+        {
+            checkIndex(index, length);
+            return parent.getBoolean(offset + index);
+        }
+
+        @Override
+        public void setBoolean(int index, boolean element)
+        {
+            checkIndex(index, length);
+            parent.setBoolean(offset + index, element);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "SubBooleans{" + Arrays.toString(toArray()) + '}';
+        }
+
+        @Override
+        public final boolean equals(Object o)
+        {
+            if (super.equals(o)) return true;
+            return parent.equals(o);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(parent, offset, length);
+        }
+    }
+
+    static class SubNumbers<E extends Number> extends AbstractNumbers<E>
+    {
+
+        private final Numbers<E> parent;
+
+        protected SubNumbers(Numbers<E> parent, int fromIndex, int toIndex)
+        {
+            this.parent = parent;
+            this.offset = fromIndex;
+            this.length = toIndex - fromIndex;
+        }
+
+        protected final int offset;
+        protected final int length;
+
+        @Override
+        public byte getByte(int index)
+        {
+            checkIndex(index, length);
+            return parent.getByte(offset + index);
+        }
+
+        @Override
+        public short getShort(int index)
+        {
+            checkIndex(index, length);
+            return parent.getShort(offset + index);
+        }
+
+        @Override
+        public int getInt(int index)
+        {
+            checkIndex(index, length);
+            return parent.getInt(offset + index);
+        }
+
+        @Override
+        public float getFloat(int index)
+        {
+            checkIndex(index, length);
+            return parent.getFloat(offset + index);
+        }
+
+        @Override
+        public double getDouble(int index)
+        {
+            checkIndex(index, length);
+            return parent.getDouble(offset + index);
+        }
+
+        @Override
+        public long getLong(int index)
+        {
+            checkIndex(index, length);
+            return parent.getLong(offset + index);
+        }
+
+        @Override
+        public void setByte(int index, byte element)
+        {
+            checkIndex(index, length);
+            parent.setByte(index + offset, element);
+        }
+
+        @Override
+        public void setShort(int index, short element)
+        {
+            checkIndex(index, length);
+            parent.setShort(index + offset, element);
+        }
+
+        @Override
+        public void setInt(int index, int element)
+        {
+            checkIndex(index, length);
+            parent.setInt(index + offset, element);
+        }
+
+        @Override
+        public void setFloat(int index, float element)
+        {
+            checkIndex(index, length);
+            parent.setFloat(index + offset, element);
+        }
+
+        @Override
+        public void setDouble(int index, double element)
+        {
+            checkIndex(index, length);
+            parent.setDouble(index + offset, element);
+        }
+
+        @Override
+        public void setLong(int index, long element)
+        {
+            checkIndex(index, length);
+            parent.setLong(index + offset, element);
+        }
+
+        @Override
+        public Object asArray()
+        {
+            return parent.asArray();
+        }
+
+        @Override
+        public int length()
+        {
+            return length;
+        }
+
+        @Override
+        public E get(int index)
+        {
+            checkIndex(index, length);
+            return parent.get(index + offset);
+        }
+
+        @Override
+        public void set(int index, E element)
+        {
+            checkIndex(index, length);
+            parent.set(index + offset, element);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        protected E getVoid()
+        {
+            return (parent instanceof AbstractArray) ? ((AbstractArray<E>) parent).getVoid() : null;
+        }
+
+        @Override
+        public boolean isPrimitive()
+        {
+            return parent.isPrimitive();
+        }
+
+        @Override
+        public IntFunction<E[]> generator()
+        {
+            return parent.generator();
+        }
+
+        @Override
+        public String toString()
+        {
+            return "SubNumbers{" + Arrays.toString(toArray()) + '}';
+        }
+
+        @Override
+        public final boolean equals(Object o)
+        {
+            if (super.equals(o)) return true;
+            return parent.equals(o);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(parent, offset, length);
+        }
+    }
+
+    static class SubArray<E> extends AbstractArray<E> implements com.frechsack.dev.util.array.Array<E>
+    {
+        private final com.frechsack.dev.util.array.Array<E> parent;
+
+        protected SubArray(com.frechsack.dev.util.array.Array<E> parent, int fromIndex, int toIndex)
+        {
+            this.parent = parent;
+            this.offset = fromIndex;
+            this.length = toIndex - fromIndex;
+        }
+
+        protected final int offset;
+        protected final int length;
+
+        @Override
+        public Object asArray()
+        {
+            return parent.asArray();
+        }
+
+        @Override
+        public int length()
+        {
+            return length;
+        }
+
+        @Override
+        public E get(int index)
+        {
+            checkIndex(index, length);
+            return parent.get(index + offset);
+        }
+
+        @Override
+        public void set(int index, E element)
+        {
+            checkIndex(index, length);
+            parent.set(index + offset, element);
+        }
+
+        @Override
+        protected E getVoid()
+        {
+            return (parent instanceof AbstractArray) ? ((AbstractArray<E>) parent).getVoid() : null;
+        }
+
+        @Override
+        public boolean isPrimitive()
+        {
+            return parent.isPrimitive();
+        }
+
+        @Override
+        public IntFunction<E[]> generator()
+        {
+            return parent.generator();
+        }
+
+        @Override
+        public String toString()
+        {
+            return "SubArray{" + Arrays.toString(toArray()) + '}';
+        }
+
+        @Override
+        public final boolean equals(Object o)
+        {
+            if (super.equals(o)) return true;
+            return parent.equals(o);
+        }
+
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(parent, offset, length);
+        }
+    }
+
+
     static class ArrayList<E> extends AbstractList<E> implements RandomAccess
     {
         private final com.frechsack.dev.util.array.Array<E> array;
@@ -234,7 +668,7 @@ class ArrayFactory
         @Override
         public void sort(Comparator<? super Character> c)
         {
-            Arrays.sort(data,c);
+            Arrays.sort(data, c);
         }
 
         @Override
@@ -271,7 +705,7 @@ class ArrayFactory
         @Override
         public boolean equals(Character[] array)
         {
-            return Arrays.equals(data,array);
+            return Arrays.equals(data, array);
         }
 
         @Override
@@ -373,7 +807,7 @@ class ArrayFactory
         @Override
         public boolean equals(Boolean[] array)
         {
-            return Arrays.equals(array,data);
+            return Arrays.equals(array, data);
         }
 
         @Override
@@ -551,7 +985,7 @@ class ArrayFactory
         @Override
         public boolean equals(E[] array)
         {
-            return Arrays.equals(array,data);
+            return Arrays.equals(array, data);
         }
 
         @Override

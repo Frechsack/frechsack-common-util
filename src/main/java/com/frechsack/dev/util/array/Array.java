@@ -11,6 +11,7 @@ import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * An Array behaves like a native array.
@@ -1015,14 +1016,20 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      *
      * @return Returns a Stream.
      */
-    Stream<E> stream();
+    default Stream<E> stream()
+    {
+        return StreamSupport.stream(spliterator(), false);
+    }
 
     /**
      * Creates a parallel {@link Stream} with the whole content of this Array.
      *
      * @return Returns a Stream.
      */
-    Stream<E> parallelStream();
+    default Stream<E> parallelStream()
+    {
+        return StreamSupport.stream(spliterator(), true);
+    }
 
     /**
      * Checks if this Array´s elements are primitives.
@@ -1184,5 +1191,19 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
         {
             set(i, array[i]);
         }
+    }
+
+    /**
+     * A SubArray will reflect any operations on it into this Array.
+     * Basically a SubArray is a view of a certain range in this Array.
+     * The length of the SubArray will be equal to {@code toIndex - fromIndex}.
+     *
+     * @param fromIndex The inclusive first index.
+     * @param toIndex   The exclusive last index.
+     * @return Returns a view of this Array with the specified range.
+     */
+    default Array<E> subArray(int fromIndex, int toIndex)
+    {
+        return new ArrayFactory.SubArray<>(this, fromIndex, toIndex);
     }
 }

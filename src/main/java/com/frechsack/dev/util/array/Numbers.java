@@ -411,6 +411,12 @@ public interface Numbers<E extends Number> extends Array<E>
         return true;
     }
 
+    @Override
+    default Numbers<E> subArray(int fromIndex, int toIndex)
+    {
+        return new ArrayFactory.SubNumbers<>(this,fromIndex,toIndex);
+    }
+
     /**
      * Creates an {@link IntStream} with the whole content of this Array.
      *
@@ -425,7 +431,7 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a Stream.
      */
-  default   DoubleStream doubleStream(){
+  default  DoubleStream doubleStream(){
       return IntStream.range(0, length()).mapToDouble(this::getDouble);
   }
 
@@ -437,4 +443,6 @@ public interface Numbers<E extends Number> extends Array<E>
    default LongStream longStream(){
        return IntStream.range(0, length()).mapToLong(this::getLong);
    }
+
+
 }

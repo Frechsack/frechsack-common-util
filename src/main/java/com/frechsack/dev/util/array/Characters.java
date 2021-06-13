@@ -70,4 +70,10 @@ public interface Characters extends Array<Character>
         }
         return true;
     }
+
+    @Override
+    default Characters subArray(int fromIndex, int toIndex)
+    {
+        return new ArrayFactory.SubCharacters(this,fromIndex,toIndex);
+    }
 }

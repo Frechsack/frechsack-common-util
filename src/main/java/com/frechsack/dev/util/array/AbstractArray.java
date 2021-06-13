@@ -156,19 +156,6 @@ public abstract class AbstractArray<E> implements Array<E>, Serializable, Random
     }
 
     @Override
-    public Stream<E> stream()
-    {
-        // return IntStream.range(0,length()).mapToObj(this::get);
-        return StreamSupport.stream(spliterator(), false);
-    }
-
-    @Override
-    public Stream<E> parallelStream()
-    {
-        return StreamSupport.stream(spliterator(), true);
-    }
-
-    @Override
     public boolean equals(E[] array)
     {
         if(array == null) return false;
@@ -182,7 +169,7 @@ public abstract class AbstractArray<E> implements Array<E>, Serializable, Random
     }
 
     @Override
-    public final boolean equals(Object o)
+    public boolean equals(Object o)
     {
         if (this == o) return true;
         if (o instanceof Collection) return asList().equals(o);

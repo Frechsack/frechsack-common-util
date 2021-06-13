@@ -1,13 +1,7 @@
-import com.frechsack.dev.util.array.AbstractArray;
 import com.frechsack.dev.util.array.Array;
-import com.frechsack.dev.util.route.Route;
+import com.frechsack.dev.util.array.Numbers;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.function.IntFunction;
-import java.util.stream.Stream;
 
 public class ArrayTest
 {
@@ -23,29 +17,13 @@ public class ArrayTest
     }
 
 
-    public static void equalTest()
-    {
-
-        Array<Boolean> a = Array.ofGenericBoolean(false,true,false,true,false);
-        Array<Boolean> b = Array.ofGenericBoolean(true,true,false,false,false);
-
-         a.sort();
-         b.sort();
-
-
-        a.stream().forEach(e -> System.out.print(e + ","));
-        System.out.println();
-        b.stream().forEach(e -> System.out.print(e + ","));
-        System.out.println();
-
-        System.out.println(a);
-        System.out.println(b);
-        System.out.println("Equals: " + a.equals(b));
-
-    }
-
     public static void main(String[] bca)
     {
-        equalTest();
+        Numbers<Double> a = Array.ofDouble(1.0, 2.0, 3.0, 4.0, 5.0);
+
+        Array<Double> b = a.subArray(0, 3);
+
+        System.out.println("A: " + a);
+        System.out.println("B: " + b);
     }
 }

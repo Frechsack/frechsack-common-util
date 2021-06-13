@@ -61,7 +61,7 @@ public interface NumberSupplier<E extends Number> extends Supplier<E>, DoubleSup
      * @return Returns this Supplier´s value.
      * @implNote The default implementation will convert the value returned by {@link #get()} to a float, if {@link #get()} returns null, zero is returned.
      */
-    default float getFloat()
+    default float getAsFloat()
     {
         Number n = get();
         return n == null ? 0 : n.floatValue();

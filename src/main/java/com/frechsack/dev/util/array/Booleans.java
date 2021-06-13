@@ -123,4 +123,10 @@ public interface Booleans extends Array<Boolean>
         for (int i = length()-trueCount; i < length(); i++)    setBoolean(i, true);
 
     }
+
+    @Override
+    default Booleans subArray(int fromIndex, int toIndex)
+    {
+        return new ArrayFactory.SubBooleans(this,fromIndex,toIndex);
+    }
 }
