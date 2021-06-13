@@ -1204,6 +1204,7 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
      */
     default Array<E> subArray(int fromIndex, int toIndex)
     {
+        Objects.checkFromToIndex(fromIndex,toIndex,length());
         return new ArrayFactory.SubArray<>(this, fromIndex, toIndex);
     }
 }

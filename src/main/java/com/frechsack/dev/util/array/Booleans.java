@@ -1,5 +1,7 @@
 package com.frechsack.dev.util.array;
 
+import java.util.Objects;
+
 /**
  * Booleans is a boolean implementation of an {@link Array}.
  * <p>
@@ -127,6 +129,7 @@ public interface Booleans extends Array<Boolean>
     @Override
     default Booleans subArray(int fromIndex, int toIndex)
     {
+        Objects.checkFromToIndex(fromIndex, toIndex, length());
         return new ArrayFactory.SubBooleans(this,fromIndex,toIndex);
     }
 }

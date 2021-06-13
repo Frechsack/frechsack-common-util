@@ -1,5 +1,6 @@
 package com.frechsack.dev.util.array;
 
+import java.util.Objects;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -414,6 +415,7 @@ public interface Numbers<E extends Number> extends Array<E>
     @Override
     default Numbers<E> subArray(int fromIndex, int toIndex)
     {
+        Objects.checkFromToIndex(fromIndex, toIndex, length());
         return new ArrayFactory.SubNumbers<>(this,fromIndex,toIndex);
     }
 

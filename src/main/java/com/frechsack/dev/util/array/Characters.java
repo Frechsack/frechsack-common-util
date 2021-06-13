@@ -1,5 +1,7 @@
 package com.frechsack.dev.util.array;
 
+import java.util.Objects;
+
 /**
  * Characters is a character implementation of an {@link Array}.
  * <p>
@@ -74,6 +76,7 @@ public interface Characters extends Array<Character>
     @Override
     default Characters subArray(int fromIndex, int toIndex)
     {
+        Objects.checkFromToIndex(fromIndex, toIndex, length());
         return new ArrayFactory.SubCharacters(this,fromIndex,toIndex);
     }
 }
