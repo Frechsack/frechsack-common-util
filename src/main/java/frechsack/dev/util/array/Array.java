@@ -1330,4 +1330,28 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
         Objects.checkFromToIndex(fromIndex, toIndex, length());
         return new ArrayFactory.SubArray<>(this, fromIndex, toIndex);
     }
+
+    /**
+     * Creates a new Array, that retains as many elements as possible from this Array.
+     * @param length The length of the Array.
+     * @return Returns a new Array.
+     */
+    @SuppressWarnings("unchecked")
+    default Array<E> resized(int length){
+        // Create a new instance of this guy
+        Array<E> resized = (Array<E>) Array.of(length, asArray().getClass().getComponentType());
+        for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+        return resized;
+    }
+
+    /**
+     * Fills the specified Array with as many elements as possible with this Array´s contents.
+     * @param array The target array.
+     * @param <V> The target array´s type.
+     * @return Return the input array.
+     */
+    default <V extends Array<? super E>> V retain(V array){
+        for (int i = 0; i < length() && i < array.length(); i++)  array.set(i,get(i));
+        return array;
+    }
 }

@@ -97,6 +97,19 @@ class ArrayFactory
             parent.setChar(index + offset, element);
         }
 
+        @SuppressWarnings("unchecked")
+        @Override
+        public frechsack.dev.util.array.Characters resized(int length)
+        {
+            // Is parent primitive
+            Class<Character> parentType = (Class<Character>) parent.getClass().getComponentType();
+            frechsack.dev.util.array.Characters resized;
+            resized = parentType.isPrimitive() ? frechsack.dev.util.array.Array.ofChar(length) : frechsack.dev.util.array.Array.ofGenericChar(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
+        }
+
         @Override
         public String toString()
         {
@@ -183,6 +196,19 @@ class ArrayFactory
             parent.setBoolean(offset + index, element);
         }
 
+        @SuppressWarnings("unchecked")
+        @Override
+        public frechsack.dev.util.array.Booleans resized(int length)
+        {
+            // Is parent primitive
+            Class<Boolean> parentType = (Class<Boolean>) parent.getClass().getComponentType();
+            frechsack.dev.util.array.Booleans resized;
+            resized = parentType.isPrimitive() ? frechsack.dev.util.array.Array.ofBoolean(length) : frechsack.dev.util.array.Array.ofGenericBoolean(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
+        }
+
         @Override
         public String toString()
         {
@@ -198,7 +224,6 @@ class ArrayFactory
 
     static class SubNumbers<E extends Number> extends AbstractNumbers<E>
     {
-
         private final Numbers<E> parent;
 
         protected SubNumbers(Numbers<E> parent, int fromIndex, int toIndex)
@@ -293,6 +318,12 @@ class ArrayFactory
         {
             checkIndex(index, length);
             parent.setLong(index + offset, element);
+        }
+
+        @Override
+        public Numbers<E> resized(int length)
+        {
+            throw new UnsupportedOperationException("Can´t create an instance of a SubArray of a generic numeric.");
         }
 
         @Override
@@ -663,6 +694,15 @@ class ArrayFactory
         }
 
         @Override
+        public frechsack.dev.util.array.Characters resized(int length)
+        {
+            frechsack.dev.util.array.Characters resized = frechsack.dev.util.array.Array.ofGenericChar(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
+        }
+
+        @Override
         public String toString()
         {
             return "GenericCharacters{" + Arrays.toString(data) + '}';
@@ -719,6 +759,15 @@ class ArrayFactory
         public void setBoolean(int index, boolean element)
         {
             data[index] = element;
+        }
+
+        @Override
+        public frechsack.dev.util.array.Booleans resized(int length)
+        {
+            frechsack.dev.util.array.Booleans resized = frechsack.dev.util.array.Array.ofGenericBoolean(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
         }
 
         @Override
@@ -890,6 +939,16 @@ class ArrayFactory
         public void setLong(int index, long element)
         {
             data[index] = converter.apply(element);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Numbers<E> resized(int length)
+        {
+            frechsack.dev.util.array.Numbers<E> resized = frechsack.dev.util.array.Array.ofTypedNumber(length,(Class<E>) data.getClass().getComponentType(),converter);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
         }
 
         @Override
@@ -1223,6 +1282,15 @@ class ArrayFactory
         }
 
         @Override
+        public Numbers<Long> resized(int length)
+        {
+            Numbers<Long> resized = frechsack.dev.util.array.Array.ofLong(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
+        }
+
+        @Override
         public String toString()
         {
             return "LongArray{" + Arrays.toString(data) + '}';
@@ -1392,6 +1460,15 @@ class ArrayFactory
         public DoubleStream doubleStream()
         {
             return Arrays.stream(data);
+        }
+
+        @Override
+        public Numbers<Double> resized(int length)
+        {
+            Numbers<Double> resized = frechsack.dev.util.array.Array.ofDouble(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
         }
 
         @Override
@@ -1571,6 +1648,15 @@ class ArrayFactory
         {
             return Arrays.equals(array, data);
         }
+
+        @Override
+        public Numbers<Float> resized(int length)
+        {
+            Numbers<Float> resized = frechsack.dev.util.array.Array.ofFloat(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
+        }
     }
 
     static class IntArray extends AbstractNumbers<Integer>
@@ -1724,6 +1810,15 @@ class ArrayFactory
         public IntStream intStream()
         {
             return Arrays.stream(data);
+        }
+
+        @Override
+        public Numbers<Integer> resized(int length)
+        {
+            Numbers<Integer> resized = frechsack.dev.util.array.Array.ofInt(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
         }
 
         @Override
@@ -1898,6 +1993,17 @@ class ArrayFactory
         {
             return Arrays.equals(array, data);
         }
+
+        @Override
+        public Numbers<Short> resized(int length)
+        {
+            Numbers<Short> resized = frechsack.dev.util.array.Array.ofShort(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
+        }
+
+
     }
 
     static class ByteArray extends AbstractNumbers<Byte>
@@ -2058,6 +2164,15 @@ class ArrayFactory
         {
             return Arrays.equals(array, data);
         }
+
+        @Override
+        public Numbers<Byte> resized(int length)
+        {
+            Numbers<Byte> resized = frechsack.dev.util.array.Array.ofByte(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
+        }
     }
 
     static class Characters extends AbstractArray<Character> implements frechsack.dev.util.array.Characters
@@ -2104,6 +2219,15 @@ class ArrayFactory
         public boolean equals(char[] array)
         {
             return Arrays.equals(array, data);
+        }
+
+        @Override
+        public frechsack.dev.util.array.Characters resized(int length)
+        {
+            frechsack.dev.util.array.Characters resized = frechsack.dev.util.array.Array.ofChar(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
         }
 
         @Override
@@ -2202,6 +2326,15 @@ class ArrayFactory
         public boolean equals(boolean[] array)
         {
             return Arrays.equals(array, data);
+        }
+
+        @Override
+        public frechsack.dev.util.array.Booleans resized(int length)
+        {
+            frechsack.dev.util.array.Booleans resized = frechsack.dev.util.array.Array.ofBoolean(length);
+            // Copy
+            for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+            return resized;
         }
 
         @Override

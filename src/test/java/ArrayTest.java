@@ -1,4 +1,5 @@
 import frechsack.dev.util.array.Array;
+import frechsack.dev.util.array.Booleans;
 import frechsack.dev.util.array.Numbers;
 
 import java.util.Collection;
@@ -19,16 +20,12 @@ public class ArrayTest
 
     public static void main(String[] bca)
     {
-        Numbers<Integer> a = Array.ofTypedNumber(Integer.TYPE,1, 2, 3, 4, 5);
-        Numbers<Integer> b = a.subArray(0,3);
+        Booleans a = Array.of(true,true,true,false,true);
+        Booleans b = a.resized(8);
 
-        b.sortReverse();
+        System.out.println(b);
+        System.out.println(b.asArray().getClass());
 
-        System.out.println(b.isPrimitive());
 
-
-        System.out.println(b.equals(a));
-        System.out.println("A: " + a);
-        System.out.println("B: " + b);
     }
 }

@@ -132,4 +132,7 @@ public interface Booleans extends Array<Boolean>
         Objects.checkFromToIndex(fromIndex, toIndex, length());
         return new ArrayFactory.SubBooleans(this,fromIndex,toIndex);
     }
+
+    @Override
+    Booleans resized(int length);
 }

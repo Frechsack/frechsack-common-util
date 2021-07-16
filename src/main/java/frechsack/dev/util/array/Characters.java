@@ -79,4 +79,7 @@ public interface Characters extends Array<Character>
         Objects.checkFromToIndex(fromIndex, toIndex, length());
         return new ArrayFactory.SubCharacters(this,fromIndex,toIndex);
     }
+
+    @Override
+    Characters resized(int length);
 }
