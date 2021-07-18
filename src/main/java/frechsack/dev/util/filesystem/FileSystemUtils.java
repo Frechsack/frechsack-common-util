@@ -2,6 +2,10 @@ package frechsack.dev.util.filesystem;
 
 import java.nio.file.Path;
 
+/**
+ * Provides static functions for basic file-system operations.
+ * @author frechsack
+ */
 public class FileSystemUtils
 {
     private FileSystemUtils(){}

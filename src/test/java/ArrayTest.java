@@ -1,8 +1,6 @@
 import frechsack.dev.util.array.Array;
-import frechsack.dev.util.array.Booleans;
-import frechsack.dev.util.array.Numbers;
 
-import java.util.Collection;
+import java.util.*;
 
 public class ArrayTest
 {
@@ -20,12 +18,15 @@ public class ArrayTest
 
     public static void main(String[] bca)
     {
-        Booleans a = Array.of(true,true,true,false,true);
-        Booleans b = a.resized(8);
+        Deque<Integer> integers = new ArrayDeque<>();
 
-        System.out.println(b);
-        System.out.println(b.asArray().getClass());
+        integers.offer(1);
+        integers.offer(2);
+        integers.offer(3);
 
+        integers.poll();
+
+        System.out.println(integers);
 
     }
 }

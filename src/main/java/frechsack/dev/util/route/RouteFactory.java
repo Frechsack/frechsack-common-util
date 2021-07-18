@@ -353,12 +353,6 @@ public class RouteFactory
             this.removeFunction = removeOperation;
         }
 
-        /*
-        DynamicIndexRoute(IntFunction<E> items, NumberSupplier<?> size)
-        {
-            this(items, size, null);
-        }*/
-
         @Override
         public final void remove()
         {

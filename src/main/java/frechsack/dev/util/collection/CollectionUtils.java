@@ -5,6 +5,7 @@ import frechsack.dev.util.array.Array;
 import frechsack.dev.util.route.Route;
 
 import java.util.*;
+import java.util.concurrent.SynchronousQueue;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -13,6 +14,10 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * Provides static functions for Collection operations.
+ * @author frechsack
+ */
 public class CollectionUtils
 {
     private CollectionUtils() {}
@@ -49,9 +54,8 @@ public class CollectionUtils
     {
         if (array == null || array.length() == 0) return collection;
 
-        if(collection instanceof ArrayList)
-            ((ArrayList<E>) collection).ensureCapacity(collection.size() + array.length());
-        for (int i = 0; i < array.length();i++)
+        if (collection instanceof ArrayList) ((ArrayList<E>) collection).ensureCapacity(collection.size() + array.length());
+        for (int i = 0; i < array.length(); i++)
             collection.add(array.get(i));
         return collection;
     }
@@ -65,9 +69,8 @@ public class CollectionUtils
      */
     public static <E> Set<E> toSet(java.util.Collection<E> collection)
     {
-        Objects.requireNonNull(collection);
         if (collection instanceof Set) return (Set<E>) collection;
-        return new FsToolsSetWrapper<>(collection);
+        return new SetWrapper<>(Objects.requireNonNull(collection));
     }
 
     /**
@@ -75,7 +78,7 @@ public class CollectionUtils
      *
      * @param collection The collection.
      * @param array      The array.
-     * @param <E>        The element´s classtype.
+     * @param <E>        The element´s class-type.
      * @return Returns the passed Collection.
      */
     @SafeVarargs
@@ -83,15 +86,481 @@ public class CollectionUtils
     {
         if (array == null || array.length == 0) return collection;
         Objects.requireNonNull(collection);
-        collection.addAll(new FsStdReadonlyCollection<>(array));
+        collection.addAll(new ArrayWrapper<>(Objects.requireNonNull(array)));
         return collection;
     }
 
-    private static class FsStdReadonlyCollection<E> implements Collection<E>
+    /**
+     * Returns a synchronized version of the specified Queue.
+     *
+     * @param queue The Queue.
+     * @param <E>   The Queue elements type.
+     * @return Returns  a synchronized version of the specified Queue.
+     */
+    public static <E> Queue<E> synchronizedQueue(Queue<E> queue)
+    {
+        if (queue instanceof SynchronousQueue || queue instanceof SynchronizedQueue) return queue;
+        return new SynchronizedQueue<>(Objects.requireNonNull(queue));
+    }
+
+    /**
+     * Returns a synchronized version of the specified Deque.
+     *
+     * @param deque The Deque.
+     * @param <E>   The Deque elements type.
+     * @return Returns a synchronized version of the specified Deque.
+     */
+    public static <E> Queue<E> synchronizedDeque(Deque<E> deque)
+    {
+        if (deque instanceof SynchronousQueue) return deque;
+        return new SynchronizedDeque<>(Objects.requireNonNull(deque));
+    }
+
+    private static class SynchronizedDeque<E> extends SynchronizedQueue<E> implements Deque<E>
+    {
+
+        private final Deque<E> deque;
+
+        private SynchronizedDeque(Deque<E> deque)
+        {
+            super(deque);
+            this.deque = deque;
+        }
+
+        @Override
+        public void addFirst(E e)
+        {
+            synchronized (mutex)
+            {
+                deque.addFirst(e);
+            }
+        }
+
+        @Override
+        public void addLast(E e)
+        {
+            synchronized (mutex)
+            {
+                deque.addLast(e);
+            }
+        }
+
+        @Override
+        public boolean offerFirst(E e)
+        {
+            synchronized (mutex)
+            {
+                return deque.offerFirst(e);
+            }
+        }
+
+        @Override
+        public boolean offerLast(E e)
+        {
+            synchronized (mutex)
+            {
+                return deque.offerLast(e);
+            }
+        }
+
+        @Override
+        public E removeFirst()
+        {
+            synchronized (mutex)
+            {
+                return deque.removeFirst();
+            }
+        }
+
+        @Override
+        public E removeLast()
+        {
+            synchronized (mutex)
+            {
+                return deque.removeLast();
+            }
+        }
+
+        @Override
+        public E pollFirst()
+        {
+            synchronized (mutex)
+            {
+                return deque.pollFirst();
+            }
+        }
+
+        @Override
+        public E pollLast()
+        {
+            synchronized (mutex)
+            {
+                return deque.pollLast();
+            }
+        }
+
+        @Override
+        public E getFirst()
+        {
+            synchronized (mutex)
+            {
+                return deque.getFirst();
+            }
+        }
+
+        @Override
+        public E getLast()
+        {
+            synchronized (mutex)
+            {
+                return deque.getLast();
+            }
+        }
+
+        @Override
+        public E peekFirst()
+        {
+            synchronized (mutex)
+            {
+                return deque.peekFirst();
+            }
+        }
+
+        @Override
+        public E peekLast()
+        {
+            synchronized (mutex)
+            {
+                return deque.peekLast();
+            }
+        }
+
+        @Override
+        public boolean removeFirstOccurrence(Object o)
+        {
+            synchronized (mutex)
+            {
+                return deque.removeFirstOccurrence(o);
+            }
+        }
+
+        @Override
+        public boolean removeLastOccurrence(Object o)
+        {
+            synchronized (mutex)
+            {
+                return deque.removeLastOccurrence(o);
+            }
+        }
+
+        @Override
+        public void push(E e)
+        {
+            synchronized (mutex)
+            {
+                deque.push(e);
+            }
+        }
+
+        @Override
+        public E pop()
+        {
+            synchronized (mutex)
+            {
+                return deque.pop();
+            }
+        }
+
+        @Override
+        public Iterator<E> descendingIterator()
+        {
+            synchronized (mutex)
+            {
+                return deque.descendingIterator();
+            }
+        }
+
+        @Override
+        public String toString()
+        {
+            return "SynchronizedDeque{" + "deque=" + deque + '}';
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if( Objects.equals(deque,o)) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+            SynchronizedDeque<?> that = (SynchronizedDeque<?>) o;
+            return Objects.equals(deque, that.deque);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(super.hashCode(), deque);
+        }
+    }
+
+    private static class SynchronizedQueue<E> implements Queue<E>
+    {
+        protected final Object mutex;
+        protected final Queue<E> queue;
+
+        private SynchronizedQueue(Queue<E> queue)
+        {
+            this.queue = queue;
+            mutex = this;
+        }
+
+        @Override
+        public int size()
+        {
+            synchronized (mutex)
+            {
+                return queue.size();
+            }
+        }
+
+        @Override
+        public boolean isEmpty()
+        {
+            synchronized (mutex)
+            {
+                return queue.isEmpty();
+            }
+        }
+
+        @Override
+        public boolean contains(Object o)
+        {
+            synchronized (mutex)
+            {
+                return queue.contains(o);
+            }
+        }
+
+        @Override
+        public Iterator<E> iterator()
+        {
+            synchronized (mutex)
+            {
+                return queue.iterator();
+            }
+        }
+
+        @Override
+        public void forEach(Consumer<? super E> action)
+        {
+            synchronized (mutex)
+            {
+                queue.forEach(action);
+            }
+        }
+
+        @Override
+        public Object[] toArray()
+        {
+            synchronized (mutex)
+            {
+                return queue.toArray();
+            }
+        }
+
+        @SuppressWarnings("SuspiciousToArrayCall")
+        @Override
+        public <T> T[] toArray(T[] a)
+        {
+            synchronized (mutex)
+            {
+                return queue.toArray(a);
+            }
+        }
+
+        @SuppressWarnings("SuspiciousToArrayCall")
+        @Override
+        public <T> T[] toArray(IntFunction<T[]> generator)
+        {
+            synchronized (mutex)
+            {
+                return queue.toArray(generator);
+            }
+        }
+
+        @Override
+        public boolean add(E e)
+        {
+            synchronized (mutex)
+            {
+                return queue.add(e);
+            }
+        }
+
+        @Override
+        public boolean remove(Object o)
+        {
+            synchronized (mutex)
+            {
+                return queue.remove(o);
+            }
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> c)
+        {
+            synchronized (mutex)
+            {
+                return queue.containsAll(c);
+            }
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends E> c)
+        {
+            synchronized (mutex)
+            {
+                return queue.addAll(c);
+            }
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c)
+        {
+            synchronized (mutex)
+            {
+                return queue.removeAll(c);
+            }
+        }
+
+        @Override
+        public boolean removeIf(Predicate<? super E> filter)
+        {
+            synchronized (mutex)
+            {
+                return queue.removeIf(filter);
+            }
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c)
+        {
+            synchronized (mutex)
+            {
+                return queue.retainAll(c);
+            }
+        }
+
+        @Override
+        public void clear()
+        {
+            synchronized (mutex)
+            {
+                queue.clear();
+            }
+        }
+
+        @Override
+        public Spliterator<E> spliterator()
+        {
+            synchronized (mutex)
+            {
+                return queue.spliterator();
+            }
+        }
+
+        @Override
+        public Stream<E> stream()
+        {
+            synchronized (mutex)
+            {
+                return queue.stream();
+            }
+        }
+
+        @Override
+        public Stream<E> parallelStream()
+        {
+            synchronized (mutex)
+            {
+                return queue.parallelStream();
+            }
+        }
+
+        @Override
+        public boolean offer(E e)
+        {
+            synchronized (mutex)
+            {
+                return queue.offer(e);
+            }
+        }
+
+        @Override
+        public E remove()
+        {
+            synchronized (mutex)
+            {
+                return queue.remove();
+            }
+        }
+
+        @Override
+        public E poll()
+        {
+            synchronized (mutex)
+            {
+                return queue.poll();
+            }
+        }
+
+        @Override
+        public E element()
+        {
+            synchronized (mutex)
+            {
+                return queue.element();
+            }
+        }
+
+        @Override
+        public E peek()
+        {
+            synchronized (mutex)
+            {
+                return queue.peek();
+            }
+        }
+
+        @Override
+        public String toString()
+        {
+            return "SynchronizedQueue{" + "queue=" + queue + '}';
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if( Objects.equals(queue,o)) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            SynchronizedQueue<?> that = (SynchronizedQueue<?>) o;
+            return Objects.equals(mutex, that.mutex) && Objects.equals(queue, that.queue);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(mutex, queue);
+        }
+    }
+
+    private static class ArrayWrapper<E> implements Collection<E>
     {
         private final E[] array;
 
-        private FsStdReadonlyCollection(E[] array) {this.array = array;}
+        private ArrayWrapper(E[] array) {this.array = array;}
 
         @Override
         public int size()
@@ -222,11 +691,11 @@ public class CollectionUtils
         }
     }
 
-    private static class FsToolsSetWrapper<E> implements Set<E>
+    private static class SetWrapper<E> implements Set<E>
     {
         private final java.util.Collection<E> collection;
 
-        private FsToolsSetWrapper(java.util.Collection<E> collection) {this.collection = collection;}
+        private SetWrapper(java.util.Collection<E> collection) {this.collection = collection;}
 
         @Override
         public int size()
@@ -347,16 +816,16 @@ public class CollectionUtils
         @Override
         public String toString()
         {
-            return "FsToolsSetWrapper{" + "collection=" + collection + '}';
+            return "SetWrapper{" + "collection=" + collection + '}';
         }
 
         @Override
         public boolean equals(Object o)
         {
             if (this == o) return true;
-            if (Objects.equals(o, collection)) return true;
+            if (Objects.equals(collection,o)) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            FsToolsSetWrapper<?> that = (FsToolsSetWrapper<?>) o;
+            SetWrapper<?> that = (SetWrapper<?>) o;
             return Objects.equals(collection, that.collection);
         }
 
