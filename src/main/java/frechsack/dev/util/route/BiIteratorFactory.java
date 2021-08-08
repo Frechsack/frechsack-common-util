@@ -7,20 +7,20 @@ import java.util.Objects;
 import java.util.function.*;
 
 /**
- * Package-private implementations of {@link Route}.
+ * Package-private implementations of {@link BiIterator}.
  *
  * @author Frechsack
  */
-public class RouteFactory
+public class BiIteratorFactory
 {
-    static class FixedIndexRoute<E> implements Route<E>
+    static class FixedIndexBiIterator<E> implements BiIterator<E>
     {
         private final IntFunction<E> items;
         private final int size;
         private final IntConsumer remove;
         private int index = -1;
 
-        FixedIndexRoute(IntFunction<E> items, int size, IntConsumer remove)
+        FixedIndexBiIterator(IntFunction<E> items, int size, IntConsumer remove)
         {
             this.items = items;
             this.size = size;
@@ -90,7 +90,7 @@ public class RouteFactory
         {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            FixedIndexRoute<?> that = (FixedIndexRoute<?>) o;
+            FixedIndexBiIterator<?> that = (FixedIndexBiIterator<?>) o;
             return index == that.index && Objects.equals(items, that.items) && Objects.equals(size, that.size) && Objects.equals(remove, that.remove);
         }
 
@@ -101,11 +101,11 @@ public class RouteFactory
         }
     }
 
-    static class ListIteratorRoute<E> implements Route<E>
+    static class ListIteratorBiIterator<E> implements BiIterator<E>
     {
         private final ListIterator<E> listIterator;
 
-        ListIteratorRoute(ListIterator<E> listIterator)
+        ListIteratorBiIterator(ListIterator<E> listIterator)
         {
             this.listIterator = listIterator;
         }
@@ -147,13 +147,13 @@ public class RouteFactory
         }
     }
 
-    static class IteratorRoute<E> implements Route<E>
+    static class IteratorBiIterator<E> implements BiIterator<E>
     {
         private final Iterator<E> elementIterator;
         private final ArrayList<E> passedElementLs = new ArrayList<>();
         private int passedIndex = -1;
 
-        IteratorRoute(Iterator<E> elementIterator)
+        IteratorBiIterator(Iterator<E> elementIterator)
         {
             this.elementIterator = elementIterator;
         }
@@ -230,7 +230,7 @@ public class RouteFactory
         {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            IteratorRoute<?> that = (IteratorRoute<?>) o;
+            IteratorBiIterator<?> that = (IteratorBiIterator<?>) o;
             return passedIndex == that.passedIndex &&
                    Objects.equals(elementIterator, that.elementIterator) &&
                    Objects.equals(passedElementLs, that.passedElementLs);
@@ -243,7 +243,7 @@ public class RouteFactory
         }
     }
 
-    static class SingleRoute<E> implements Route<E>
+    static class SingleBiIterator<E> implements BiIterator<E>
     {
         private E single;
         private boolean isInitial = true;
@@ -253,7 +253,7 @@ public class RouteFactory
          *
          * @param value The element.
          */
-        SingleRoute(E value)
+        SingleBiIterator(E value)
         {
             setSingle(value);
         }
@@ -322,7 +322,7 @@ public class RouteFactory
         {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            SingleRoute<?> that = (SingleRoute<?>) o;
+            SingleBiIterator<?> that = (SingleBiIterator<?>) o;
             return isInitial == that.isInitial && Objects.equals(single, that.single);
         }
 
@@ -339,14 +339,14 @@ public class RouteFactory
         }
     }
 
-    static class DynamicIndexRoute<E> implements Route<E>
+    static class DynamicIndexBiIterator<E> implements BiIterator<E>
     {
         private final IntFunction<E> items;
         private final IntSupplier size;
         private final IntUnaryOperator removeFunction;
         private int index = -1;
 
-        DynamicIndexRoute(IntFunction<E> items, IntSupplier size, IntUnaryOperator removeOperation)
+        DynamicIndexBiIterator(IntFunction<E> items, IntSupplier size, IntUnaryOperator removeOperation)
         {
             this.items = items;
             this.size = size;
@@ -421,7 +421,7 @@ public class RouteFactory
         {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            DynamicIndexRoute<?> that = (DynamicIndexRoute<?>) o;
+            DynamicIndexBiIterator<?> that = (DynamicIndexBiIterator<?>) o;
             return index == that.index &&
                    Objects.equals(items, that.items) &&
                    Objects.equals(size, that.size) &&

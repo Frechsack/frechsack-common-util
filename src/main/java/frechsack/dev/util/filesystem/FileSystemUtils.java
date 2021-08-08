@@ -47,7 +47,7 @@ public class FileSystemUtils
      * Returns the name of a {@link Path}.
      *
      * @param path The Path.
-     * @return Returns the name. Returns an empty String if the Path does not contain a sibling.
+     * @return Returns the name without any extension. Returns an empty String if the Path does not contain a sibling.
      */
     public static String getName(Path path)
     {

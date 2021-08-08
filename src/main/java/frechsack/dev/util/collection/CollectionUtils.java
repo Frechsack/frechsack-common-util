@@ -2,7 +2,7 @@ package frechsack.dev.util.collection;
 
 import frechsack.dev.util.Pair;
 import frechsack.dev.util.array.Array;
-import frechsack.dev.util.route.Route;
+import frechsack.dev.util.route.BiIterator;
 
 import java.util.*;
 import java.util.concurrent.SynchronousQueue;
@@ -10,12 +10,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
  * Provides static functions for Collection operations.
+ *
  * @author frechsack
  */
 public class CollectionUtils
@@ -64,7 +66,7 @@ public class CollectionUtils
      * Converts a {@link Collection} to a {@link Set}.
      *
      * @param collection The collection.
-     * @param <E>        The element´s classtype.
+     * @param <E>        The element´s class-type.
      * @return Returns a Set.
      */
     public static <E> Set<E> toSet(java.util.Collection<E> collection)
@@ -88,6 +90,16 @@ public class CollectionUtils
         Objects.requireNonNull(collection);
         collection.addAll(new ArrayWrapper<>(Objects.requireNonNull(array)));
         return collection;
+    }
+
+    /**
+     * Returns an Enumeration based on a Iterator.
+     * @param iterator The Iterator.
+     * @param <E> The elements class-type.
+     * @return Returns an Enumeration.
+     */
+    public static <E> Enumeration<E> toEnumeration(Iterator<E> iterator){
+        return new IteratorWrapper<>(Objects.requireNonNull(iterator));
     }
 
     /**
@@ -290,7 +302,7 @@ public class CollectionUtils
         public boolean equals(Object o)
         {
             if (this == o) return true;
-            if( Objects.equals(deque,o)) return true;
+            if (Objects.equals(deque, o)) return true;
             if (o == null || getClass() != o.getClass()) return false;
             if (!super.equals(o)) return false;
             SynchronizedDeque<?> that = (SynchronizedDeque<?>) o;
@@ -543,7 +555,7 @@ public class CollectionUtils
         public boolean equals(Object o)
         {
             if (this == o) return true;
-            if( Objects.equals(queue,o)) return true;
+            if (Objects.equals(queue, o)) return true;
             if (o == null || getClass() != o.getClass()) return false;
             SynchronizedQueue<?> that = (SynchronizedQueue<?>) o;
             return Objects.equals(mutex, that.mutex) && Objects.equals(queue, that.queue);
@@ -583,7 +595,7 @@ public class CollectionUtils
         @Override
         public Iterator<E> iterator()
         {
-            return Route.of(array);
+            return BiIterator.of(array);
         }
 
         @Override
@@ -691,6 +703,52 @@ public class CollectionUtils
         }
     }
 
+    private static class IteratorWrapper<E> implements Enumeration<E>
+    {
+        private final Iterator<E> iterator;
+
+        private IteratorWrapper(Iterator<E> iterator) {this.iterator = iterator;}
+
+        @Override
+        public boolean hasMoreElements()
+        {
+            return iterator.hasNext();
+        }
+
+        @Override
+        public E nextElement()
+        {
+            return iterator.next();
+        }
+
+        @Override
+        public Iterator<E> asIterator()
+        {
+            return iterator;
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            IteratorWrapper<?> that = (IteratorWrapper<?>) o;
+            return Objects.equals(iterator, that.iterator);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(iterator);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "IteratorWrapper{" + "iterator=" + iterator + '}';
+        }
+    }
+
     private static class SetWrapper<E> implements Set<E>
     {
         private final java.util.Collection<E> collection;
@@ -750,6 +808,7 @@ public class CollectionUtils
         @Override
         public boolean add(E e)
         {
+            if (contains(e)) return false;
             return collection.add(e);
         }
 
@@ -768,7 +827,8 @@ public class CollectionUtils
         @Override
         public boolean addAll(java.util.Collection<? extends E> c)
         {
-            return collection.addAll(c);
+            if (c.isEmpty()) return false;
+            return collection.addAll(c.stream().filter(it -> !contains(it)).collect(Collectors.toSet()));
         }
 
         @Override
@@ -823,7 +883,7 @@ public class CollectionUtils
         public boolean equals(Object o)
         {
             if (this == o) return true;
-            if (Objects.equals(collection,o)) return true;
+            if (Objects.equals(collection, o)) return true;
             if (o == null || getClass() != o.getClass()) return false;
             SetWrapper<?> that = (SetWrapper<?>) o;
             return Objects.equals(collection, that.collection);

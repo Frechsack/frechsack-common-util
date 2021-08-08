@@ -1,6 +1,6 @@
 package frechsack.dev.util.array;
 
-import frechsack.dev.util.route.Route;
+import frechsack.dev.util.route.BiIterator;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -682,9 +682,9 @@ class ArrayFactory
         }
 
         @Override
-        public Route<Character> route()
+        public BiIterator<Character> biIterator()
         {
-            return Route.of(i -> data[i], data.length, i -> data[i] = getVoid());
+            return BiIterator.of(i -> data[i], data.length, i -> data[i] = getVoid());
         }
 
         @Override
@@ -790,9 +790,9 @@ class ArrayFactory
         }
 
         @Override
-        public Route<Boolean> route()
+        public BiIterator<Boolean> biIterator()
         {
-            return Route.of(i -> data[i], data.length, i -> data[i] = false);
+            return BiIterator.of(i -> data[i], data.length, i -> data[i] = false);
         }
 
         @Override
@@ -1002,9 +1002,9 @@ class ArrayFactory
         }
 
         @Override
-        public Route<E> route()
+        public BiIterator<E> biIterator()
         {
-            return Route.of(i -> data[i], data.length, i -> data[i] = getVoid());
+            return BiIterator.of(i -> data[i], data.length, i -> data[i] = getVoid());
         }
 
         @Override
@@ -1109,9 +1109,9 @@ class ArrayFactory
         }
 
         @Override
-        public Route<E> route()
+        public BiIterator<E> biIterator()
         {
-            return Route.of(i -> data[i], data.length, i -> data[i] = null);
+            return BiIterator.of(i -> data[i], data.length, i -> data[i] = null);
         }
 
         @Override

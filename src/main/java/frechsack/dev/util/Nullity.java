@@ -1,6 +1,7 @@
 package frechsack.dev.util;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
@@ -13,6 +14,18 @@ public class Nullity
     private Nullity() {}
 
     /**
+     * Performs an action if the specified value is not null.
+     * @param value The value.
+     * @param onAction The action that will be performed if the passed value is not null.
+     * @param <E> The value class-type.
+     * @return Returns the passed value.
+     */
+    public static <E> E ifPresent(final E value,final Consumer<E> onAction){
+        if(value != null) onAction.accept(value);
+        return value;
+    }
+
+    /**
      * Returns null if the given arguments are equal, otherwise the first not null argument is returned.
      *
      * @param a   The first argument.
@@ -20,7 +33,7 @@ public class Nullity
      * @param <E> The arguments class-type.
      * @return Returns null if both Objects are equal, otherwise the first not null argument.
      */
-    public static <E> E nullIf(E a, E b)
+    public static <E> E nullIfEqual(final E a,final E b)
     {
         return Objects.equals(a, b) ? null : a == null ? b : a;
     }
@@ -32,7 +45,7 @@ public class Nullity
      * @param <E>        The elements class-type.
      * @return Returns null if the Objects in the specified collection are equal, otherwise the first not null element is returned.
      */
-    public static <E> E nullIf(Collection<E> collection)
+    public static <E> E nullIfEqual(final Collection<E> collection)
     {
         E prev = null;
         E notNull = null;
@@ -48,14 +61,36 @@ public class Nullity
     }
 
     /**
+     * Returns null if the Objects returned by the iterator are equal, otherwise the first not null element is returned.
+     *
+     * @param iterator The specified iterator.
+     * @param <E>        The elements class-type.
+     * @return Returns null if the Objects in the specified collection are equal, otherwise the first not null element is returned.
+     */
+    public static <E> E nullIfEqual(final Iterator<E> iterator)
+    {
+        E prev = null;
+        E notNull = null;
+        E current;
+        while (iterator.hasNext())
+        {
+            current = iterator.next();
+            if (Objects.equals(current, prev)) return null;
+            prev = current;
+            if (notNull == null) notNull = prev;
+        }
+        return notNull;
+    }
+
+    /**
      * Checks if the specified value is null.
      *
      * @param e The element.
      * @return Returns true if the element is null, else false.
      */
-    public static boolean isNull(Object e)
+    public static boolean isNull(final Object e)
     {
-        return e == null;
+        return Objects.isNull(e);
     }
 
     /**
@@ -64,7 +99,7 @@ public class Nullity
      * @param e The element.
      * @return Returns true if the element is not null, else false.
      */
-    public static boolean isNonNull(Object e)
+    public static boolean isNonNull(final Object e)
     {
         return e != null;
     }
@@ -76,7 +111,7 @@ public class Nullity
      * @param b The second element.
      * @return Returns the first not null element.
      */
-    public static <E> Optional<E> nonNull(E a, E b)
+    public static <E> Optional<E> nonNull(final E a,final E b)
     {
         // Are both null?
         if (a == null && b == null) return Optional.empty();
@@ -92,7 +127,7 @@ public class Nullity
      * @param <E>          The elements class-type.
      * @return Returns a non null element.
      */
-    public static <E> E nonNull(Supplier<E> defaultValue, E a, E b)
+    public static <E> E nonNull(final Supplier<E> defaultValue,final E a,final E b)
     {
         return a != null ? a : b != null ? b : Objects.requireNonNull(defaultValue.get(), "Supplier must return a non null value.");
     }
@@ -107,7 +142,7 @@ public class Nullity
      * @param <E>          The elements class-type.
      * @return Returns a non null element.
      */
-    public static <E> E nonNull(Supplier<E> defaultValue, E a, E b, E c)
+    public static <E> E nonNull(final Supplier<E> defaultValue,final E a, final E b,final E c)
     {
         return a != null ? a : b != null ? b : c != null ? c : Objects.requireNonNull(defaultValue.get(), "Supplier must return a non null value.");
     }
@@ -120,7 +155,7 @@ public class Nullity
      * @param <E>          The elements class-type.
      * @return Returns a non null element.
      */
-    public static <E> E nonNull(Supplier<E> defaultValue, Collection<E> collection)
+    public static <E> E nonNull(final Supplier<E> defaultValue,final Collection<E> collection)
     {
         return Objects.requireNonNull(Objects.requireNonNull(collection)
                                              .parallelStream()
@@ -137,7 +172,7 @@ public class Nullity
      * @param <E>          The elements class-type.
      * @return Returns a non null element.
      */
-    public static <E> E nonNull(Supplier<E> defaultValue, Iterator<E> iterator)
+    public static <E> E nonNull(final Supplier<E> defaultValue,final Iterator<E> iterator)
     {
         return Objects.requireNonNull(StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), true)
                                                    .filter(Nullity::isNonNull)
@@ -154,7 +189,7 @@ public class Nullity
      * @return Returns a non null element.
      */
     @SafeVarargs
-    public static <E> E nonNull(Supplier<E> defaultValue, E... values)
+    public static <E> E nonNull(final Supplier<E> defaultValue,final E... values)
     {
         Objects.requireNonNull(values);
         for (int i = 0; i < values.length; i++) if (values[i] != null) return values[i];
@@ -167,7 +202,7 @@ public class Nullity
      * @param values The array.
      * @return Returns true if the array contains null, else false.
      */
-    public static boolean containsNull(Object... values)
+    public static boolean containsNull(final Object... values)
     {
         if(values == null) return false;
         for (int i = 0; i < values.length; i++) if (values[i] == null) return true;
@@ -180,7 +215,7 @@ public class Nullity
      * @param values The array.
      * @return Returns true if the array contains non null, else false.
      */
-    public static boolean containsNonNull(Object... values)
+    public static boolean containsNonNull(final Object... values)
     {
         if(values == null) return false;
         for (int i = 0; i < values.length; i++) if (values[i] != null) return true;
@@ -193,7 +228,7 @@ public class Nullity
      * @param values The array.
      * @return Returns true if the array contains null, else false.
      */
-    public static boolean containsNull(Collection<?> values)
+    public static boolean containsNull(final Collection<?> values)
     {
         if(values == null) return false;
         return values.parallelStream().anyMatch(Nullity::isNull);
@@ -205,7 +240,7 @@ public class Nullity
      * @param values The array.
      * @return Returns true if the array contains non null, else false.
      */
-    public static boolean containsNonNull(Collection<?> values)
+    public static boolean containsNonNull(final Collection<?> values)
     {
         if(values == null) return false;
         return values.parallelStream().noneMatch(Nullity::isNull);

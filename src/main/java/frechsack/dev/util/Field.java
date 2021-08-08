@@ -1,5 +1,9 @@
 package frechsack.dev.util;
 
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -9,8 +13,7 @@ import java.util.function.Supplier;
  */
 public abstract class Field<E> implements Supplier<E>
 {
-    private boolean isComputed;
-    private E computed;
+    private Reference<E> computedReference;
 
     /**
      * Recomputes this Field´s value.
@@ -22,16 +25,43 @@ public abstract class Field<E> implements Supplier<E>
      * Forces this Field to recompute it´s value.
      */
     public void recompute(){
-        isComputed = false;
+        if(computedReference != null) computedReference.enqueue();
+        computedReference = null;
     }
 
     @Override
     public synchronized E get()
     {
-        if(!isComputed) {
-            isComputed = true;
-            computed = compute();
+        Reference<E> reference = computedReference;
+        if(reference == null || reference.get() == null) {
+            computedReference = reference = new SoftReference<>(compute());
         }
-        return computed;
+        return reference.get();
+    }
+
+    public Optional<E> toOptional(){
+        return Optional.ofNullable(get());
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Field<?> field = (Field<?>) o;
+        return Objects.equals(computedReference, field.computedReference);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(computedReference);
+    }
+
+    @Override
+    public String toString()
+    {
+
+        return "Field{" + "computedReference=" + computedReference + '}';
     }
 }

@@ -1,8 +1,8 @@
 package frechsack.dev.util.array;
 
 import frechsack.dev.util.Pair;
-import frechsack.dev.util.route.Routable;
-import frechsack.dev.util.route.Route;
+import frechsack.dev.util.route.BiIterable;
+import frechsack.dev.util.route.BiIterator;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -36,7 +36,7 @@ import java.util.stream.StreamSupport;
  * @param <E> The element type of this Array. This may be an Object or primitive type.
  * @author Frechsack
  */
-public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>, IntFunction<E>
+public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, E>, IntFunction<E>
 {
     /**
      * Creates a new Array with the specified elements. The returned Array will write through the specified array.
@@ -1168,9 +1168,9 @@ public interface Array<E> extends Iterable<E>, Routable<E>, Function<Integer, E>
     }
 
     @Override
-    default Route<E> route()
+    default BiIterator<E> biIterator()
     {
-        return Route.of(this::get, length(), i -> set(i, null));
+        return BiIterator.of(this::get, length(), i -> set(i, null));
     }
 
     /**

@@ -1,6 +1,6 @@
 package frechsack.dev.util.array;
 
-import frechsack.dev.util.route.Route;
+import frechsack.dev.util.route.BiIterator;
 
 import java.io.Serializable;
 import java.lang.ref.Reference;
@@ -264,9 +264,9 @@ public abstract class AbstractArray<E> implements Array<E>, Serializable, Random
     }
 
     @Override
-    public Route<E> route()
+    public BiIterator<E> biIterator()
     {
-        return Route.of(this::get, length(), i-> set(i, getVoid()));
+        return BiIterator.of(this::get, length(), i-> set(i, getVoid()));
     }
 
     private class ArrayIterator implements Iterator<E>
