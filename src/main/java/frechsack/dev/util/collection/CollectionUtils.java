@@ -35,11 +35,26 @@ public class CollectionUtils
         return clt.stream().map(z -> Pair.of(ze.apply(z), zv.apply(z)));
     }
 
+    /**
+     * Adds any element that is returned by the Iterator to the specified Collection.
+     * @param collection The Collection.
+     * @param iterator The Iterator.
+     * @param <E> The element´s class-type.
+     * @return Return the Collection.
+     */
     public static <E> Collection<E> addAll(Collection<E> collection, Iterator<E> iterator)
     {
         return addAll(collection, iterator, 0);
     }
 
+    /**
+     * Adds any element that is returned by the Iterator to the specified Collection.
+     * @param collection The Collection.
+     * @param iterator The Iterator.
+     * @param size An optional size. May specify the amount of elements that will be returned by the iterator.
+     * @param <E> The element´s class-type.
+     * @return Return the Collection.
+     */
     public static <E> Collection<E> addAll(Collection<E> collection, Iterator<? extends E> iterator, int size)
     {
         Objects.requireNonNull(collection);
@@ -52,14 +67,18 @@ public class CollectionUtils
         return collection;
     }
 
-    public static <E> Collection<E> addAll(Collection<E> collection, Array<? extends E> array)
+    /**
+     * Returns the key of the specified element in the Map.
+     * @param map The Map.
+     * @param value The value.
+     * @param <E> The Map´s key class-type.
+     * @param <V> The Map´s value class-type.
+     * @return The Key.
+     */
+    public static <E, V> Optional<E> getKey(Map<E, V> map, V value)
     {
-        if (array == null || array.length() == 0) return collection;
-
-        if (collection instanceof ArrayList) ((ArrayList<E>) collection).ensureCapacity(collection.size() + array.length());
-        for (int i = 0; i < array.length(); i++)
-            collection.add(array.get(i));
-        return collection;
+        if(map == null) return Optional.empty();
+        return map.entrySet().parallelStream().filter(it -> Objects.equals(it.getValue(), value)).map(Map.Entry::getKey).findAny();
     }
 
     /**
@@ -94,11 +113,13 @@ public class CollectionUtils
 
     /**
      * Returns an Enumeration based on a Iterator.
+     *
      * @param iterator The Iterator.
-     * @param <E> The elements class-type.
+     * @param <E>      The elements class-type.
      * @return Returns an Enumeration.
      */
-    public static <E> Enumeration<E> toEnumeration(Iterator<E> iterator){
+    public static <E> Enumeration<E> toEnumeration(Iterator<E> iterator)
+    {
         return new IteratorWrapper<>(Objects.requireNonNull(iterator));
     }
 
