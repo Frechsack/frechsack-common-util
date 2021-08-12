@@ -39,17 +39,12 @@ public abstract class Field<E> implements Supplier<E>
         return reference.get();
     }
 
-    public Optional<E> toOptional(){
-        return Optional.ofNullable(get());
-    }
 
     @Override
     public boolean equals(Object o)
     {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Field<?> field = (Field<?>) o;
-        return Objects.equals(computedReference, field.computedReference);
+        return Objects.equals(get(),o);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package frechsack.dev.util.collection;
 
 import frechsack.dev.util.Pair;
-import frechsack.dev.util.array.Array;
 import frechsack.dev.util.route.BiIterator;
 
 import java.util.*;
@@ -35,11 +34,35 @@ public class CollectionUtils
         return clt.stream().map(z -> Pair.of(ze.apply(z), zv.apply(z)));
     }
 
+
+    public static <E> Stream<E> stream(Iterator<E> iterator)
+    {
+        return stream(iterator,-1);
+    }
+
+    public static <E> Stream<E> stream(Iterator<E> iterator, int size)
+    {
+        return StreamSupport.stream(size < 0 ? Spliterators.spliteratorUnknownSize(iterator, 0) : Spliterators.spliterator(iterator, size, Spliterator.SIZED),
+                false);
+    }
+
+    public static <E> Stream<E> parallelStream(Iterator<E> iterator)
+    {
+        return parallelStream(iterator,-1);
+    }
+
+
+    public static <E> Stream<E> parallelStream(Iterator<E> iterator, int size)
+    {
+        return StreamSupport.stream(size < 0 ? Spliterators.spliteratorUnknownSize(iterator, 0) : Spliterators.spliterator(iterator, size, 0), true);
+    }
+
     /**
      * Adds any element that is returned by the Iterator to the specified Collection.
+     *
      * @param collection The Collection.
-     * @param iterator The Iterator.
-     * @param <E> The element´s class-type.
+     * @param iterator   The Iterator.
+     * @param <E>        The element´s class-type.
      * @return Return the Collection.
      */
     public static <E> Collection<E> addAll(Collection<E> collection, Iterator<E> iterator)
@@ -49,10 +72,11 @@ public class CollectionUtils
 
     /**
      * Adds any element that is returned by the Iterator to the specified Collection.
+     *
      * @param collection The Collection.
-     * @param iterator The Iterator.
-     * @param size An optional size. May specify the amount of elements that will be returned by the iterator.
-     * @param <E> The element´s class-type.
+     * @param iterator   The Iterator.
+     * @param size       An optional size. May specify the amount of elements that will be returned by the iterator.
+     * @param <E>        The element´s class-type.
      * @return Return the Collection.
      */
     public static <E> Collection<E> addAll(Collection<E> collection, Iterator<? extends E> iterator, int size)
@@ -69,15 +93,16 @@ public class CollectionUtils
 
     /**
      * Returns the key of the specified element in the Map.
-     * @param map The Map.
+     *
+     * @param map   The Map.
      * @param value The value.
-     * @param <E> The Map´s key class-type.
-     * @param <V> The Map´s value class-type.
+     * @param <E>   The Map´s key class-type.
+     * @param <V>   The Map´s value class-type.
      * @return The Key.
      */
     public static <E, V> Optional<E> getKey(Map<E, V> map, V value)
     {
-        if(map == null) return Optional.empty();
+        if (map == null) return Optional.empty();
         return map.entrySet().parallelStream().filter(it -> Objects.equals(it.getValue(), value)).map(Map.Entry::getKey).findAny();
     }
 
@@ -905,9 +930,7 @@ public class CollectionUtils
         {
             if (this == o) return true;
             if (Objects.equals(collection, o)) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            SetWrapper<?> that = (SetWrapper<?>) o;
-            return Objects.equals(collection, that.collection);
+            return collection.equals(o);
         }
 
         @Override

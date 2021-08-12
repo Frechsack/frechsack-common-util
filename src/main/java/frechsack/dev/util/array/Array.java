@@ -351,7 +351,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     static Numbers<Integer> ofGenericInt(boolean isReference, Integer... array)
     {
         Objects.requireNonNull(array);
-        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.intValue());
+        return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.intValue());
     }
 
     /**
@@ -423,7 +423,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     static Numbers<Byte> ofGenericByte(boolean isReference, Byte... array)
     {
         Objects.requireNonNull(array);
-        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.byteValue());
+        return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.byteValue());
     }
 
     /**
@@ -495,7 +495,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     static Numbers<Short> ofGenericShort(boolean isReference, Short... array)
     {
         Objects.requireNonNull(array);
-        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.shortValue());
+        return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.shortValue());
     }
 
     /**
@@ -567,7 +567,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     static Numbers<Float> ofGenericFloat(boolean isReference, Float... array)
     {
         Objects.requireNonNull(array);
-        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.floatValue());
+        return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.floatValue());
     }
 
     /**
@@ -639,7 +639,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     static Numbers<Double> ofGenericDouble(boolean isReference, Double... array)
     {
         Objects.requireNonNull(array);
-        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.doubleValue());
+        return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.doubleValue());
     }
 
     /**
@@ -711,7 +711,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     static Numbers<Long> ofGenericLong(boolean isReference, Long... array)
     {
         Objects.requireNonNull(array);
-        return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.longValue());
+        return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.longValue());
     }
 
     /**

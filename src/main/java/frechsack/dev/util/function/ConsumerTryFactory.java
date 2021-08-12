@@ -2,7 +2,7 @@ package frechsack.dev.util.function;
 
 import java.util.function.Consumer;
 
-public class ConsumerTryFactory
+class ConsumerTryFactory
 {
     private ConsumerTryFactory(){}
 

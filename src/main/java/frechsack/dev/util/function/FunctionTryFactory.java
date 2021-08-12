@@ -2,7 +2,7 @@ package frechsack.dev.util.function;
 
 import java.util.function.Function;
 
-public class FunctionTryFactory
+class FunctionTryFactory
 {
     private FunctionTryFactory(){}
 

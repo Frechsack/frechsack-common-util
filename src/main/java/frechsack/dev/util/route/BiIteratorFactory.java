@@ -11,7 +11,7 @@ import java.util.function.*;
  *
  * @author Frechsack
  */
-public class BiIteratorFactory
+class BiIteratorFactory
 {
     static class FixedIndexBiIterator<E> implements BiIterator<E>
     {

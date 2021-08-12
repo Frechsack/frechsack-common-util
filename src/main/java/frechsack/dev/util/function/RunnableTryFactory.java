@@ -1,8 +1,6 @@
 package frechsack.dev.util.function;
 
-import java.util.function.Supplier;
-
-public class RunnableTryFactory
+class RunnableTryFactory
 {
     private RunnableTryFactory(){}
 
