@@ -703,6 +703,12 @@ class ArrayFactory
         }
 
         @Override
+        public frechsack.dev.util.array.Array<Character> copy()
+        {
+            return frechsack.dev.util.array.Array.ofGenericChar(true,Arrays.copyOf(data,data.length));
+        }
+
+        @Override
         public String toString()
         {
             return "GenericCharacters{" + Arrays.toString(data) + '}';
@@ -768,6 +774,12 @@ class ArrayFactory
             // Copy
             for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
             return resized;
+        }
+
+        @Override
+        public frechsack.dev.util.array.Array<Boolean> copy()
+        {
+            return frechsack.dev.util.array.Array.ofGenericBoolean((byte)0,Arrays.copyOf(data,data.length));
         }
 
         @Override
@@ -949,6 +961,12 @@ class ArrayFactory
             // Copy
             for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
             return resized;
+        }
+
+        @Override
+        public Numbers<E> copy()
+        {
+            return frechsack.dev.util.array.Array.ofTypedNumber(true,converter,Arrays.copyOf(data,data.length));
         }
 
         @Override
@@ -1137,6 +1155,12 @@ class ArrayFactory
         {
             return Arrays.copyOf(data, data.length);
         }
+
+        @Override
+        public frechsack.dev.util.array.Array<E> copy()
+        {
+            return frechsack.dev.util.array.Array.of(true,Arrays.copyOf(data,data.length));
+        }
     }
 
     static class LongArray extends AbstractNumbers<Long>
@@ -1288,6 +1312,12 @@ class ArrayFactory
             // Copy
             for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
             return resized;
+        }
+
+        @Override
+        public Numbers<Long> copy()
+        {
+            return frechsack.dev.util.array.Array.ofLong(true,Arrays.copyOf(data,data.length));
         }
 
         @Override
@@ -1469,6 +1499,12 @@ class ArrayFactory
             // Copy
             for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
             return resized;
+        }
+
+        @Override
+        public Numbers<Double> copy()
+        {
+            return frechsack.dev.util.array.Array.ofDouble(true,Arrays.copyOf(data,data.length));
         }
 
         @Override
@@ -1657,6 +1693,12 @@ class ArrayFactory
             for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
             return resized;
         }
+
+        @Override
+        public Numbers<Float> copy()
+        {
+            return frechsack.dev.util.array.Array.ofFloat(true,Arrays.copyOf(data,data.length));
+        }
     }
 
     static class IntArray extends AbstractNumbers<Integer>
@@ -1819,6 +1861,12 @@ class ArrayFactory
             // Copy
             for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
             return resized;
+        }
+
+        @Override
+        public Numbers<Integer> copy()
+        {
+            return frechsack.dev.util.array.Array.ofInt(true,Arrays.copyOf(data,data.length));
         }
 
         @Override
@@ -2003,7 +2051,11 @@ class ArrayFactory
             return resized;
         }
 
-
+        @Override
+        public Numbers<Short> copy()
+        {
+            return frechsack.dev.util.array.Array.ofShort(true,Arrays.copyOf(data,data.length));
+        }
     }
 
     static class ByteArray extends AbstractNumbers<Byte>
@@ -2173,6 +2225,12 @@ class ArrayFactory
             for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
             return resized;
         }
+
+        @Override
+        public Numbers<Byte> copy()
+        {
+            return frechsack.dev.util.array.Array.ofByte(true,Arrays.copyOf(data,data.length));
+        }
     }
 
     static class Characters extends AbstractArray<Character> implements frechsack.dev.util.array.Characters
@@ -2228,6 +2286,12 @@ class ArrayFactory
             // Copy
             for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
             return resized;
+        }
+
+        @Override
+        public frechsack.dev.util.array.Array<Character> copy()
+        {
+            return frechsack.dev.util.array.Array.ofChar(true,Arrays.copyOf(data,data.length));
         }
 
         @Override
@@ -2335,6 +2399,12 @@ class ArrayFactory
             // Copy
             for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
             return resized;
+        }
+
+        @Override
+        public frechsack.dev.util.array.Array<Boolean> copy()
+        {
+            return frechsack.dev.util.array.Array.ofBoolean((byte)0,Arrays.copyOf(data,data.length));
         }
 
         @Override

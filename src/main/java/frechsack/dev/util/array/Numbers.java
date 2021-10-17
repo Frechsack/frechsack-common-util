@@ -1,6 +1,7 @@
 package frechsack.dev.util.array;
 
 import java.util.Objects;
+import java.util.PrimitiveIterator;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -467,4 +468,60 @@ public interface Numbers<E extends Number> extends Array<E>
         return Array.combine(this, arraySize, stream);
     }
 
+    @Override
+    default Numbers<E> copy()
+    {
+        return resized(length());
+    }
+
+    default PrimitiveIterator.OfInt intIterator(){
+        return new PrimitiveIterator.OfInt() {
+            int index = 0;
+            @Override
+            public int nextInt()
+            {
+                return getInt(index++);
+            }
+
+            @Override
+            public boolean hasNext()
+            {
+                return index < length();
+            }
+        };
+    }
+
+    default PrimitiveIterator.OfLong longIterator(){
+        return new PrimitiveIterator.OfLong() {
+            int index = 0;
+            @Override
+            public long nextLong()
+            {
+                return getLong(index++);
+            }
+
+            @Override
+            public boolean hasNext()
+            {
+                return index < length();
+            }
+        };
+    }
+
+    default PrimitiveIterator.OfDouble doubleIterator(){
+        return new PrimitiveIterator.OfDouble() {
+            int index = 0;
+            @Override
+            public double nextDouble()
+            {
+                return getDouble(index++);
+            }
+
+            @Override
+            public boolean hasNext()
+            {
+                return index < length();
+            }
+        };
+    }
 }

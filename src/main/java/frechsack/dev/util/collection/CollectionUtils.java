@@ -137,7 +137,7 @@ public class CollectionUtils
     }
 
     /**
-     * Returns an Enumeration based on a Iterator.
+     * Returns an Enumeration based on an Iterator.
      *
      * @param iterator The Iterator.
      * @param <E>      The elements class-type.

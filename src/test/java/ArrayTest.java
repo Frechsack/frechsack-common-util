@@ -1,4 +1,5 @@
 import frechsack.dev.util.array.Array;
+import frechsack.dev.util.array.Numbers;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -19,10 +20,11 @@ public class ArrayTest
 
     public static void main(String[] bca)
     {
-        Array<Integer> array = Array.of(1,2,3,4,5);
-        array = Array.combine(array,6, Stream.of(1,2,3,4,5));
-        System.out.println(array);
-
-
+        Array<Integer> array = Array.ofInt(1,2,3,4,5);
+        System.out.println("array = " + array);
+        System.out.println("array.isPrimitive() = " + array.isPrimitive());
+        array = array.retainAll(Stream.of(1,2,5));
+        System.out.println("array = " + array);
+        System.out.println("array.isPrimitive() = " + array.isPrimitive());
     }
 }

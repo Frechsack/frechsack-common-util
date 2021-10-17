@@ -1413,6 +1413,13 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         return array;
     }
 
+    @Deprecated
+    default Array<E> retainAll(Stream<E> stream){
+        Array<Object> retain = of(true,stream.toArray());
+        stream.close();
+        return of(true,parallelStream().filter(retain::contains).toArray(generator()));
+    }
+
     default Array<E> copy(){
         return this.resized(length());
     }
@@ -1475,6 +1482,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         stream.close();
         return destination;
     }
+
 
 
 }

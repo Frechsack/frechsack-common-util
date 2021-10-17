@@ -24,8 +24,7 @@ public class FileSystemUtils
 
     private static String lastSibling(Path path)
     {
-        String lastName = path.getName(path.getNameCount() - 1).toString();
-        return lastName == null ? "" : lastName;
+        return path.getName(path.getNameCount() - 1).toString();
     }
 
     /**
