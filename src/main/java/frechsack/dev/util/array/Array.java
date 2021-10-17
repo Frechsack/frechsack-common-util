@@ -326,7 +326,13 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     {
         return new ArrayFactory.IntArray(length);
     }
-
+    /**
+     * Creates an Array of {@code int} with the specified length. The Array will use a primitive long model.
+     *
+     * @param length The Array´s length.
+     * @param stream The Array´s contents.
+     * @return Returns the Array.
+     */
     static Numbers<Integer> ofInt(int length, IntStream stream){
         Numbers<Integer> array = new ArrayFactory.IntArray(length);
         PrimitiveIterator.OfInt iterator = stream.iterator();
@@ -336,7 +342,13 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         stream.close();
         return array;
     }
-
+    /**
+     * Creates an Array of {@code Integer} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @param stream The Array´s contents.
+     * @return Returns the Array.
+     */
     static Numbers<Integer> ofGenericInt(int length, IntStream stream){
         Numbers<Integer> array = new ArrayFactory.GenericNumbers<>(length,Integer.class, number -> number == null ? 0 : number.intValue());
         PrimitiveIterator.OfInt iterator = stream.iterator();
@@ -635,6 +647,13 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         return new ArrayFactory.DoubleArray(length);
     }
 
+    /**
+     * Creates an Array of {@code double} with the specified length. The Array will use a primitive long model.
+     *
+     * @param length The Array´s length.
+     * @param stream The Array´s contents.
+     * @return Returns the Array.
+     */
     static Numbers<Double> ofDouble(int length, DoubleStream stream){
         Numbers<Double> array = new ArrayFactory.DoubleArray(length);
         PrimitiveIterator.OfDouble iterator = stream.iterator();
@@ -645,6 +664,13 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         return array;
     }
 
+    /**
+     * Creates an Array of {@code Long} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @param stream The Array´s contents.
+     * @return Returns the Array.
+     */
     static Numbers<Double> ofGenericDouble(int length, DoubleStream stream){
         Numbers<Double> array = new ArrayFactory.GenericNumbers<>(length,Double.class, number -> number == null ? 0 : number.doubleValue());
         PrimitiveIterator.OfDouble iterator = stream.iterator();
@@ -727,6 +753,13 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         return new ArrayFactory.LongArray(length);
     }
 
+    /**
+     * Creates an Array of {@code long} with the specified length. The Array will use a primitive long model.
+     *
+     * @param length The Array´s length.
+     * @param stream The Array´s contents.
+     * @return Returns the Array.
+     */
     static Numbers<Long> ofLong(int length, LongStream stream){
         Numbers<Long> array = new ArrayFactory.LongArray(length);
         PrimitiveIterator.OfLong iterator = stream.iterator();
@@ -737,6 +770,13 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         return array;
     }
 
+    /**
+     * Creates an Array of {@code Long} with the specified length.
+     *
+     * @param length The Array´s length.
+     * @param stream The Array´s contents.
+     * @return Returns the Array.
+     */
     static Numbers<Long> ofGenericLong(int length, LongStream stream){
         Numbers<Long> array = new ArrayFactory.GenericNumbers<>(length,Long.class, number -> number == null ? 0 : number.longValue());
         PrimitiveIterator.OfLong iterator = stream.iterator();
@@ -1413,24 +1453,50 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         return array;
     }
 
-    @Deprecated
+    /**
+     * Creates a new Array, with the contents of this array. Any element that is not present in the specified stream will be removed. This function behaves like {@link Collection#retainAll(Collection)}.
+     * If this Array does not contain any element, that is present in the specified Stream, this Array will be returned.
+     * @apiNote  This function does not handle Arrays with a primitive data model different from ones with an Object model. The resulting Array will have an Object model, since it creates an Array by the generator provided with {@link #generator()}.
+     * @param stream This Stream contains the elements that will not be removed.
+     * @return The Array.
+     *
+     */
     default Array<E> retainAll(Stream<E> stream){
         Array<Object> retain = of(true,stream.toArray());
         stream.close();
+        E[] array = parallelStream().filter(retain::contains).toArray(generator());
+        if(array.length == length()) return this;
         return of(true,parallelStream().filter(retain::contains).toArray(generator()));
     }
 
+    /**
+     * Creates a copy of this Array.
+     * @return The Arraycopy.
+     */
     default Array<E> copy(){
         return this.resized(length());
     }
 
-    default Array<E> append(int arraySize,Stream<? extends E> stream){
-        return combine(this,arraySize,stream);
+    /**
+     * Appends the elements present in the Stream.
+     * @param length The new size of the Array after adding the elements from the Stream. The size can´t be smaller than this Array´s length.
+     * @param stream The Stream with the elements that should be added.
+     * @return The Array.
+     */
+    default Array<E> append(int length,Stream<? extends E> stream){
+        return combine(this,length,stream);
     }
 
-    static <E> Array<E> combine(Array<E> array,int arraySize, Stream<? extends E> stream){
-        Objects.checkIndex(array.length()-1,arraySize);
-        Array<E>  destination = array.resized(arraySize);
+    /**
+     * Combines an Array and a Stream of elements.
+     * @param array The Array.
+     * @param length The length of the new Array.
+     * @param stream The Stream with the elements that should be added.
+     * @return The Array.
+     */
+    static <E> Array<E> combine(Array<E> array,int length, Stream<? extends E> stream){
+        Objects.checkIndex(array.length()-1,length);
+        Array<E>  destination = array.resized(length);
         int dI = array.length();
         Iterator<? extends E> iterator = stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
@@ -1438,10 +1504,16 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         stream.close();
         return destination;
     }
-
-    static <E extends Number> Numbers<E> combine(Numbers<E> array,int arraySize, Stream<? extends E> stream){
-        Objects.checkIndex(array.length()-1,arraySize);
-        Numbers<E>  destination = array.resized(arraySize);
+    /**
+     * Combines an Array and a Stream of elements.
+     * @param array The Array.
+     * @param length The length of the new Array.
+     * @param stream The Stream with the elements that should be added.
+     * @return The Array.
+     */
+    static <E extends Number> Numbers<E> combine(Numbers<E> array,int length, Stream<? extends E> stream){
+        Objects.checkIndex(array.length()-1,length);
+        Numbers<E>  destination = array.resized(length);
         int dI = array.length();
         Iterator<? extends E> iterator = stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
@@ -1449,10 +1521,16 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         stream.close();
         return destination;
     }
-
-    static <E extends Number> Numbers<E> combine(Numbers<E> array,int arraySize, IntStream stream){
-        Objects.checkIndex(array.length()-1,arraySize);
-        Numbers<E>  destination = array.resized(arraySize);
+    /**
+     * Combines an Array and a Stream of elements.
+     * @param array The Array.
+     * @param length The length of the new Array.
+     * @param stream The Stream with the elements that should be added.
+     * @return The Array.
+     */
+    static <E extends Number> Numbers<E> combine(Numbers<E> array,int length, IntStream stream){
+        Objects.checkIndex(array.length()-1,length);
+        Numbers<E>  destination = array.resized(length);
         int dI = array.length();
         PrimitiveIterator.OfInt iterator= stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
@@ -1460,10 +1538,16 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         stream.close();
         return destination;
     }
-
-    static <E extends Number> Numbers<E> combine(Numbers<E> array,int arraySize, DoubleStream stream){
-        Objects.checkIndex(array.length()-1,arraySize);
-        Numbers<E>  destination = array.resized(arraySize);
+    /**
+     * Combines an Array and a Stream of elements.
+     * @param array The Array.
+     * @param length The length of the new Array.
+     * @param stream The Stream with the elements that should be added.
+     * @return The Array.
+     */
+    static <E extends Number> Numbers<E> combine(Numbers<E> array,int length, DoubleStream stream){
+        Objects.checkIndex(array.length()-1,length);
+        Numbers<E>  destination = array.resized(length);
         int dI = array.length();
         PrimitiveIterator.OfDouble iterator= stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
@@ -1471,10 +1555,16 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         stream.close();
         return destination;
     }
-
-    static <E extends Number> Numbers<E> combine( Numbers<E> array,int arraySize, LongStream stream){
-        Objects.checkIndex(array.length()-1,arraySize);
-        Numbers<E>  destination = array.resized(arraySize);
+    /**
+     * Combines an Array and a Stream of elements.
+     * @param array The Array.
+     * @param length The length of the new Array.
+     * @param stream The Stream with the elements that should be added.
+     * @return The Array.
+     */
+    static <E extends Number> Numbers<E> combine( Numbers<E> array,int length, LongStream stream){
+        Objects.checkIndex(array.length()-1,length);
+        Numbers<E>  destination = array.resized(length);
         int dI = array.length();
         PrimitiveIterator.OfLong iterator= stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
