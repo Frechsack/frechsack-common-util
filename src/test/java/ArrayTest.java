@@ -1,6 +1,7 @@
 import frechsack.dev.util.array.Array;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class ArrayTest
 {
@@ -18,15 +19,10 @@ public class ArrayTest
 
     public static void main(String[] bca)
     {
-        Deque<Integer> integers = new ArrayDeque<>();
+        Array<Integer> array = Array.of(1,2,3,4,5);
+        array = Array.combine(array,6, Stream.of(1,2,3,4,5));
+        System.out.println(array);
 
-        integers.offer(1);
-        integers.offer(2);
-        integers.offer(3);
-
-        integers.poll();
-
-        System.out.println(integers);
 
     }
 }

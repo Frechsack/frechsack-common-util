@@ -11,9 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.stream.*;
 
 /**
  * An Array behaves like a native array.
@@ -329,6 +327,26 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         return new ArrayFactory.IntArray(length);
     }
 
+    static Numbers<Integer> ofInt(int length, IntStream stream){
+        Numbers<Integer> array = new ArrayFactory.IntArray(length);
+        PrimitiveIterator.OfInt iterator = stream.iterator();
+        int dI = 0;
+        while (dI < array.length() && iterator.hasNext())
+            array.setInt(dI++,iterator.nextInt());
+        stream.close();
+        return array;
+    }
+
+    static Numbers<Integer> ofGenericInt(int length, IntStream stream){
+        Numbers<Integer> array = new ArrayFactory.GenericNumbers<>(length,Integer.class, number -> number == null ? 0 : number.intValue());
+        PrimitiveIterator.OfInt iterator = stream.iterator();
+        int dI = 0;
+        while (dI < array.length() && iterator.hasNext())
+            array.setInt(dI++,iterator.nextInt());
+        stream.close();
+        return array;
+    }
+
     /**
      * Creates an Array of {@code Integer} with the specified content. The returned Array will write through the specified array.
      *
@@ -617,6 +635,26 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         return new ArrayFactory.DoubleArray(length);
     }
 
+    static Numbers<Double> ofDouble(int length, DoubleStream stream){
+        Numbers<Double> array = new ArrayFactory.DoubleArray(length);
+        PrimitiveIterator.OfDouble iterator = stream.iterator();
+        int dI = 0;
+        while (dI < array.length() && iterator.hasNext())
+            array.setDouble(dI++,iterator.nextDouble());
+        stream.close();
+        return array;
+    }
+
+    static Numbers<Double> ofGenericDouble(int length, DoubleStream stream){
+        Numbers<Double> array = new ArrayFactory.GenericNumbers<>(length,Double.class, number -> number == null ? 0 : number.doubleValue());
+        PrimitiveIterator.OfDouble iterator = stream.iterator();
+        int dI = 0;
+        while (dI < array.length() && iterator.hasNext())
+            array.setDouble(dI++,iterator.nextDouble());
+        stream.close();
+        return array;
+    }
+
     /**
      * Creates an Array of {@code Double} with the specified content. The returned Array will write through the specified array.
      *
@@ -687,6 +725,26 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     static Numbers<Long> ofLong(int length)
     {
         return new ArrayFactory.LongArray(length);
+    }
+
+    static Numbers<Long> ofLong(int length, LongStream stream){
+        Numbers<Long> array = new ArrayFactory.LongArray(length);
+        PrimitiveIterator.OfLong iterator = stream.iterator();
+        int dI = 0;
+        while (dI < array.length() && iterator.hasNext())
+            array.setLong(dI++,iterator.nextLong());
+        stream.close();
+        return array;
+    }
+
+    static Numbers<Long> ofGenericLong(int length, LongStream stream){
+        Numbers<Long> array = new ArrayFactory.GenericNumbers<>(length,Long.class, number -> number == null ? 0 : number.longValue());
+        PrimitiveIterator.OfLong iterator = stream.iterator();
+        int dI = 0;
+        while (dI < array.length() && iterator.hasNext())
+            array.setLong(dI++,iterator.nextLong());
+        stream.close();
+        return array;
     }
 
     /**
@@ -1350,8 +1408,73 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param <V> The target array´s type.
      * @return Return the input array.
      */
-    default <V extends Array<? super E>> V retain(V array){
+    default <V extends Array<? super E>> V copyTo(V array){
         for (int i = 0; i < length() && i < array.length(); i++)  array.set(i,get(i));
         return array;
     }
+
+    default Array<E> copy(){
+        return this.resized(length());
+    }
+
+    default Array<E> append(int arraySize,Stream<? extends E> stream){
+        return combine(this,arraySize,stream);
+    }
+
+    static <E> Array<E> combine(Array<E> array,int arraySize, Stream<? extends E> stream){
+        Objects.checkIndex(array.length()-1,arraySize);
+        Array<E>  destination = array.resized(arraySize);
+        int dI = array.length();
+        Iterator<? extends E> iterator = stream.iterator();
+        while (dI < destination.length() && iterator.hasNext())
+            destination.set(dI++,iterator.next());
+        stream.close();
+        return destination;
+    }
+
+    static <E extends Number> Numbers<E> combine(Numbers<E> array,int arraySize, Stream<? extends E> stream){
+        Objects.checkIndex(array.length()-1,arraySize);
+        Numbers<E>  destination = array.resized(arraySize);
+        int dI = array.length();
+        Iterator<? extends E> iterator = stream.iterator();
+        while (dI < destination.length() && iterator.hasNext())
+            destination.set(dI++,iterator.next());
+        stream.close();
+        return destination;
+    }
+
+    static <E extends Number> Numbers<E> combine(Numbers<E> array,int arraySize, IntStream stream){
+        Objects.checkIndex(array.length()-1,arraySize);
+        Numbers<E>  destination = array.resized(arraySize);
+        int dI = array.length();
+        PrimitiveIterator.OfInt iterator= stream.iterator();
+        while (dI < destination.length() && iterator.hasNext())
+            destination.setInt(dI++,iterator.nextInt());
+        stream.close();
+        return destination;
+    }
+
+    static <E extends Number> Numbers<E> combine(Numbers<E> array,int arraySize, DoubleStream stream){
+        Objects.checkIndex(array.length()-1,arraySize);
+        Numbers<E>  destination = array.resized(arraySize);
+        int dI = array.length();
+        PrimitiveIterator.OfDouble iterator= stream.iterator();
+        while (dI < destination.length() && iterator.hasNext())
+            destination.setDouble(dI++,iterator.nextDouble());
+        stream.close();
+        return destination;
+    }
+
+    static <E extends Number> Numbers<E> combine( Numbers<E> array,int arraySize, LongStream stream){
+        Objects.checkIndex(array.length()-1,arraySize);
+        Numbers<E>  destination = array.resized(arraySize);
+        int dI = array.length();
+        PrimitiveIterator.OfLong iterator= stream.iterator();
+        while (dI < destination.length() && iterator.hasNext())
+            destination.setDouble(dI++,iterator.nextLong());
+        stream.close();
+        return destination;
+    }
+
+
 }

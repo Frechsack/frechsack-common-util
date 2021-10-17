@@ -451,4 +451,20 @@ public interface Numbers<E extends Number> extends Array<E>
 
     @Override
     Numbers<E> resized(int length);
+
+    default Numbers<E> append(int arraySize, IntStream stream)
+    {
+        return Array.combine(this, arraySize, stream);
+    }
+
+    default Numbers<E> append(int arraySize, DoubleStream stream)
+    {
+        return Array.combine(this, arraySize, stream);
+    }
+
+    default Numbers<E> append(int arraySize, LongStream stream)
+    {
+        return Array.combine(this, arraySize, stream);
+    }
+
 }
