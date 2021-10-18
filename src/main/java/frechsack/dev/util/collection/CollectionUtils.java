@@ -23,41 +23,59 @@ public class CollectionUtils
 {
     private CollectionUtils() {}
 
+    /**
+     * Creates a Stream over all elements contained in the specified Collection. The elements will be mapped to their index in the collection. The order of the elements depends on the implementation of {@link Collection#iterator()}.
+     * @param clt The Collection.
+     * @param <E> The Stream´s elements class-type.
+     * @return The Stream.
+     */
     public static <E> Stream<Pair<Integer, E>> indexStream(java.util.Collection<E> clt)
     {
         Iterator<E> iterator = clt.iterator();
         return IntStream.range(0, clt.size()).mapToObj(index -> Pair.of(index, iterator.next()));
     }
 
-    public static <E, V, Z> Stream<Pair<E, V>> pairStream(Collection<Z> clt, Function<Z, E> ze, Function<Z, V> zv)
-    {
-        return clt.stream().map(z -> Pair.of(ze.apply(z), zv.apply(z)));
-    }
 
     /**
-     * Creates a Stream with an undefined amount of elements from the specified Iterator.
+     * Creates a Stream with an undefined amount of elements from the specified Iterator. This operation is similar to {@link StreamSupport#stream(Spliterator, boolean)}.
      * @param iterator The Iterator that supplies elements for the Stream.
      * @param <E> The Stream´s element class-type.
      * @return Returns a Stream with the elements from the specified Iterator.
      */
-
     public static <E> Stream<E> stream(Iterator<E> iterator)
     {
         return stream(iterator,-1);
     }
-
+    /**
+     * Creates a Stream with an undefined amount of elements from the specified Iterator. This operation is similar to {@link StreamSupport#stream(Spliterator, boolean)}.
+     * @param iterator The Iterator that supplies elements for the Stream.
+     * @param size The size specifies the amount of elements returned by the Iterator. If set to -1 this property is ignored.
+     * @param <E> The Stream´s element class-type.
+     * @return Returns a Stream with the elements from the specified Iterator.
+     */
     public static <E> Stream<E> stream(Iterator<E> iterator, int size)
     {
         return StreamSupport.stream(size < 0 ? Spliterators.spliteratorUnknownSize(iterator, 0) : Spliterators.spliterator(iterator, size, Spliterator.SIZED),
                 false);
     }
-
+    /**
+     * Creates a parallel Stream with an undefined amount of elements from the specified Iterator. This operation is similar to {@link StreamSupport#stream(Spliterator, boolean)}.
+     * @param iterator The Iterator that supplies elements for the Stream.
+     * @param <E> The Stream´s element class-type.
+     * @return Returns a Stream with the elements from the specified Iterator.
+     */
     public static <E> Stream<E> parallelStream(Iterator<E> iterator)
     {
         return parallelStream(iterator,-1);
     }
 
-
+    /**
+     * Creates a parallel Stream with an undefined amount of elements from the specified Iterator. This operation is similar to {@link StreamSupport#stream(Spliterator, boolean)}.
+     * @param iterator The Iterator that supplies elements for the Stream.
+     * @param size The size specifies the amount of elements returned by the Iterator. If set to -1 this property is ignored.
+     * @param <E> The Stream´s element class-type.
+     * @return Returns a Stream with the elements from the specified Iterator.
+     */
     public static <E> Stream<E> parallelStream(Iterator<E> iterator, int size)
     {
         return StreamSupport.stream(size < 0 ? Spliterators.spliteratorUnknownSize(iterator, 0) : Spliterators.spliterator(iterator, size, 0), true);
