@@ -34,6 +34,12 @@ public class CollectionUtils
         return clt.stream().map(z -> Pair.of(ze.apply(z), zv.apply(z)));
     }
 
+    /**
+     * Creates a Stream with an undefined amount of elements from the specified Iterator.
+     * @param iterator The Iterator that supplies elements for the Stream.
+     * @param <E> The Stream´s element class-type.
+     * @return Returns a Stream with the elements from the specified Iterator.
+     */
 
     public static <E> Stream<E> stream(Iterator<E> iterator)
     {

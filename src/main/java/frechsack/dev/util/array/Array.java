@@ -1566,12 +1566,13 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
         Objects.checkIndex(array.length()-1,length);
         Numbers<E>  destination = array.resized(length);
         int dI = array.length();
-        PrimitiveIterator.OfLong iterator= stream.iterator();
+        PrimitiveIterator.OfLong iterator = stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
             destination.setDouble(dI++,iterator.nextLong());
         stream.close();
         return destination;
     }
+
 
 
 
