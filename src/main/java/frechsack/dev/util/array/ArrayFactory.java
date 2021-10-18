@@ -529,9 +529,8 @@ class ArrayFactory
             final T[] clone = a.length >= array.length() ? a : (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), array.length());
             // Stream
             for (int i = 0; i < array.length(); i++)
-            {
                 clone[i] = (T) array.get(i);
-            }
+
             return clone;
         }
 
@@ -562,6 +561,13 @@ class ArrayFactory
             if (!(o instanceof Collection)) return false;
             // Compare collection
             return array.parallelStream().allMatch(((Collection<?>) o)::contains);
+        }
+
+        @Override
+        public String toString() {
+            return "ArrayList{" +
+                    "array=" + array +
+                    '}';
         }
     }
 

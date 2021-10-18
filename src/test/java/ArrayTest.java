@@ -11,8 +11,11 @@ public class ArrayTest
 {
     public static void main(String[] bca)
     {
-        Array<?> array = Array.ofLong(10, LongStream.of(1,2,3,4,5));
+        Numbers<?> array = Array.ofLong(10, LongStream.of(1,2,3,4,5));
         System.out.println("array = " + array);
         System.out.println("array.isPrimitive() = " + array.isPrimitive());
+
+        Collections.rotate(array.asList(),2);
+        System.out.println(array);
     }
 }
