@@ -1,4 +1,5 @@
 import frechsack.dev.util.array.Array;
+import frechsack.dev.util.array.Booleans;
 import frechsack.dev.util.array.Numbers;
 
 import java.util.*;
@@ -11,11 +12,11 @@ public class ArrayTest
 {
     public static void main(String[] bca)
     {
-        Numbers<?> array = Array.ofLong(10, LongStream.of(1,2,3,4,5));
+        Booleans array = Array.ofBoolean(false,false,false);
         System.out.println("array = " + array);
         System.out.println("array.isPrimitive() = " + array.isPrimitive());
 
-        Collections.rotate(array.asList(),2);
+        array.sort();
         System.out.println(array);
     }
 }

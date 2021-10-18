@@ -121,8 +121,19 @@ public interface Booleans extends Array<Boolean>
         // Get amount of false
         int trueCount = 0;
         for (int i = 0; i < length(); i++) if (getBoolean(i)) trueCount++;
-        for (int i = 0; i < length() - trueCount; i++)   setBoolean(i, false);
-        for (int i = length()-trueCount; i < length(); i++)    setBoolean(i, true);
+        if(trueCount == 0){
+            for (int i = 0; i < length(); i++)
+                setBoolean(i,false);
+        }
+        else if(trueCount == length()) {
+            for (int i = 0; i < length(); i++)
+                setBoolean(i,true);
+        }else{
+            for (int i = 0; i < length() - trueCount; i++)
+                setBoolean(i, false);
+            for (int i = length() - trueCount; i < length(); i++)
+                setBoolean(i, true);
+        }
 
     }
 
