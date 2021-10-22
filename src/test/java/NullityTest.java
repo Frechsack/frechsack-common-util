@@ -1,5 +1,7 @@
 import frechsack.dev.util.array.Array;
 
+import java.util.stream.Stream;
+
 import static frechsack.dev.util.Nullity.*;
 public class NullityTest
 {
@@ -8,10 +10,6 @@ public class NullityTest
         Object a = null;
         Object b = "value";
 
-        b = null;
-
-
-        System.out.println(containsNonNull(Array.of(null,null).asList()));
 
     }
 }

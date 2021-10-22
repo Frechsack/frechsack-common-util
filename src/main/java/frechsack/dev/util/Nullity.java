@@ -3,6 +3,8 @@ package frechsack.dev.util;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
@@ -65,7 +67,7 @@ public class Nullity
      *
      * @param iterator The specified iterator.
      * @param <E>        The elements class-type.
-     * @return Returns null if the Objects in the specified collection are equal, otherwise the first not null element is returned.
+     * @return Returns null if the Objects in the specified iterator are equal, otherwise the first not null element is returned.
      */
     public static <E> E nullIfEqual(final Iterator<E> iterator)
     {
@@ -83,6 +85,20 @@ public class Nullity
     }
 
     /**
+     * Returns null if the Objects returned by the Stream are equal, otherwise the first not null element is returned.
+     *
+     * @param stream The specified Stream.
+     * @param <E>        The elements class-type.
+     * @return Returns null if the Objects in the specified Stream are equal, otherwise the first not null element is returned.
+     */
+    public static <E> E nullIfEqual(final Stream<E> stream)
+    {
+        E element = nullIfEqual(stream.iterator());
+        stream.close();
+        return element;
+    }
+
+    /**
      * Checks if the specified value is null.
      *
      * @param e The element.
@@ -90,7 +106,7 @@ public class Nullity
      */
     public static boolean isNull(final Object e)
     {
-        return Objects.isNull(e);
+        return e == null;
     }
 
     /**
@@ -165,6 +181,24 @@ public class Nullity
     }
 
     /**
+     * Returns the first not null element. If every element in the specified Stream is null, a default value is requested.
+     *
+     * @param defaultValue A Supplier that returns a default value.
+     * @param stream   The Stream.
+     * @param <E>          The elements class-type.
+     * @return Returns a non null element.
+     */
+    public static <E> E nonNull(final Supplier<E> defaultValue,final Stream<E> stream)
+    {
+        E value= Objects.requireNonNull(Objects.requireNonNull(stream)
+                                             .filter(Nullity::isNonNull)
+                                             .findFirst()
+                                             .orElseGet(defaultValue), "Supplier must return a non null value.");
+        stream.close();
+        return value;
+    }
+
+    /**
      * Returns the first not null element. If every element returned by the specified Iterator is null, a default value is requested.
      *
      * @param defaultValue A Supplier that returns a default value.
@@ -195,55 +229,4 @@ public class Nullity
         for (int i = 0; i < values.length; i++) if (values[i] != null) return values[i];
         return Objects.requireNonNull(defaultValue.get(),"Supplier must return a non null value.");
     }
-
-    /**
-     * Checks if the specified array contains a null element.
-     * If the specified array is null, false is returned.
-     * @param values The array.
-     * @return Returns true if the array contains null, else false.
-     */
-    public static boolean containsNull(final Object... values)
-    {
-        if(values == null) return false;
-        for (int i = 0; i < values.length; i++) if (values[i] == null) return true;
-        return false;
-    }
-
-    /**
-     * Checks if the specified array contains a non null element.
-     * If the specified array is null, false is returned.
-     * @param values The array.
-     * @return Returns true if the array contains non null, else false.
-     */
-    public static boolean containsNonNull(final Object... values)
-    {
-        if(values == null) return false;
-        for (int i = 0; i < values.length; i++) if (values[i] != null) return true;
-        return false;
-    }
-
-    /**
-     * Checks if the specified Collection contains a null element.
-     * If the specified Collection is null, false is returned.
-     * @param values The array.
-     * @return Returns true if the array contains null, else false.
-     */
-    public static boolean containsNull(final Collection<?> values)
-    {
-        if(values == null) return false;
-        return values.parallelStream().anyMatch(Nullity::isNull);
-    }
-
-    /**
-     * Checks if the specified Collection contains a non null element.
-     * If the specified Collection is null, false is returned.
-     * @param values The array.
-     * @return Returns true if the array contains non null, else false.
-     */
-    public static boolean containsNonNull(final Collection<?> values)
-    {
-        if(values == null) return false;
-        return values.parallelStream().noneMatch(Nullity::isNull);
-    }
-
 }
