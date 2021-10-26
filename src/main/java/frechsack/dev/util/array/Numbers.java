@@ -14,16 +14,14 @@ import java.util.stream.LongStream;
  * @param <E> The class type of this Array. This may be an Object or primitive type.
  * @author Frechsack
  */
-public interface Numbers<E extends Number> extends Array<E>
-{
+public interface Numbers<E extends Number> extends Array<E> {
     /**
      * Returns the element on the specified index as a byte.
      *
      * @param index The element´s index.
      * @return Returns the element.
      */
-    default byte getByte(int index)
-    {
+    default byte getByte(int index) {
         Number n = get(index);
         return n == null ? 0 : n.byteValue();
     }
@@ -34,8 +32,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    default short getShort(int index)
-    {
+    default short getShort(int index) {
         Number n = get(index);
         return n == null ? 0 : n.shortValue();
     }
@@ -46,8 +43,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    default int getInt(int index)
-    {
+    default int getInt(int index) {
         Number n = get(index);
         return n == null ? 0 : n.intValue();
     }
@@ -58,8 +54,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    default float getFloat(int index)
-    {
+    default float getFloat(int index) {
         Number n = get(index);
         return n == null ? 0 : n.floatValue();
     }
@@ -70,8 +65,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    default double getDouble(int index)
-    {
+    default double getDouble(int index) {
         Number n = get(index);
         return n == null ? 0 : n.doubleValue();
     }
@@ -82,8 +76,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param index The element´s index.
      * @return Returns the element.
      */
-    default long getLong(int index)
-    {
+    default long getLong(int index) {
         Number n = get(index);
         return n == null ? 0 : n.longValue();
     }
@@ -143,8 +136,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param element The new element.
      * @return Returns the previous element.
      */
-    default byte getAndSetByte(int index, byte element)
-    {
+    default byte getAndSetByte(int index, byte element) {
         byte last = getByte(index);
         setByte(index, element);
         return last;
@@ -157,8 +149,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param element The new element.
      * @return Returns the previous element.
      */
-    default short getAndSetShort(int index, short element)
-    {
+    default short getAndSetShort(int index, short element) {
         short last = getShort(index);
         setShort(index, element);
         return last;
@@ -171,8 +162,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param element The new element.
      * @return Returns the previous element.
      */
-    default int getAndSetInt(int index, int element)
-    {
+    default int getAndSetInt(int index, int element) {
         int last = getInt(index);
         setInt(index, element);
         return last;
@@ -185,8 +175,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param element The new element.
      * @return Returns the previous element.
      */
-    default float getAndSetFloat(int index, float element)
-    {
+    default float getAndSetFloat(int index, float element) {
         float last = getFloat(index);
         setFloat(index, element);
         return last;
@@ -199,8 +188,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param element The new element.
      * @return Returns the previous element.
      */
-    default double getAndSetDouble(int index, double element)
-    {
+    default double getAndSetDouble(int index, double element) {
         double last = getDouble(index);
         setDouble(index, element);
         return last;
@@ -213,8 +201,7 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param element The new element.
      * @return Returns the previous element.
      */
-    default long getAndSetLong(int index, long element)
-    {
+    default long getAndSetLong(int index, long element) {
         long last = getLong(index);
         setLong(index, element);
         return last;
@@ -225,11 +212,9 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    default byte[] toByteArray()
-    {
+    default byte[] toByteArray() {
         byte[] clone = new byte[length()];
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             clone[i] = getByte(i);
         }
         return clone;
@@ -240,11 +225,9 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    default short[] toShortArray()
-    {
+    default short[] toShortArray() {
         short[] clone = new short[length()];
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             clone[i] = getShort(i);
         }
         return clone;
@@ -255,11 +238,9 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    default int[] toIntArray()
-    {
+    default int[] toIntArray() {
         int[] clone = new int[length()];
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             clone[i] = getInt(i);
         }
         return clone;
@@ -270,11 +251,9 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    default double[] toDoubleArray()
-    {
+    default double[] toDoubleArray() {
         double[] clone = new double[length()];
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             clone[i] = getDouble(i);
         }
         return clone;
@@ -285,11 +264,9 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    default long[] toLongArray()
-    {
+    default long[] toLongArray() {
         long[] clone = new long[length()];
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             clone[i] = getLong(i);
         }
         return clone;
@@ -300,11 +277,9 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a copy with the same size and content as this Array.
      */
-    default float[] toFloatArray()
-    {
+    default float[] toFloatArray() {
         float[] clone = new float[length()];
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             clone[i] = getFloat(i);
         }
         return clone;
@@ -316,12 +291,10 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    default boolean equals(int[] array)
-    {
+    default boolean equals(int[] array) {
         if (array == null) return false;
         if (array.length != length()) return false;
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             if (array[i] != getInt(i)) return false;
         }
         return true;
@@ -333,13 +306,11 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    default boolean equals(float[] array)
-    {
+    default boolean equals(float[] array) {
 
         if (array == null) return false;
         if (array.length != length()) return false;
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             if (array[i] != getFloat(i)) return false;
         }
         return true;
@@ -351,12 +322,10 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    default boolean equals(double[] array)
-    {
+    default boolean equals(double[] array) {
         if (array == null) return false;
         if (array.length != length()) return false;
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             if (array[i] != getDouble(i)) return false;
         }
         return true;
@@ -368,12 +337,10 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    default boolean equals(long[] array)
-    {
+    default boolean equals(long[] array) {
         if (array == null) return false;
         if (array.length != length()) return false;
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             if (array[i] != getLong(i)) return false;
         }
         return true;
@@ -385,12 +352,10 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    default boolean equals(short[] array)
-    {
+    default boolean equals(short[] array) {
         if (array == null) return false;
         if (array.length != length()) return false;
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             if (array[i] != getShort(i)) return false;
         }
         return true;
@@ -402,20 +367,17 @@ public interface Numbers<E extends Number> extends Array<E>
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    default boolean equals(byte[] array)
-    {
+    default boolean equals(byte[] array) {
         if (array == null) return false;
         if (array.length != length()) return false;
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             if (array[i] != getByte(i)) return false;
         }
         return true;
     }
 
     @Override
-    default Numbers<E> subArray(int fromIndex, int toIndex)
-    {
+    default Numbers<E> subArray(int fromIndex, int toIndex) {
         Objects.checkFromToIndex(fromIndex, toIndex, length());
         return new ArrayFactory.SubNumbers<>(this, fromIndex, toIndex);
     }
@@ -425,8 +387,7 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a Stream.
      */
-    default IntStream intStream()
-    {
+    default IntStream intStream() {
         return IntStream.range(0, length()).map(this::getInt);
     }
 
@@ -435,8 +396,7 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a Stream.
      */
-    default DoubleStream doubleStream()
-    {
+    default DoubleStream doubleStream() {
         return IntStream.range(0, length()).mapToDouble(this::getDouble);
     }
 
@@ -445,83 +405,74 @@ public interface Numbers<E extends Number> extends Array<E>
      *
      * @return Returns a Stream.
      */
-    default LongStream longStream()
-    {
+    default LongStream longStream() {
         return IntStream.range(0, length()).mapToLong(this::getLong);
     }
 
     @Override
     Numbers<E> resized(int length);
 
-    default Numbers<E> append(int arraySize, IntStream stream)
-    {
+    default Numbers<E> append(int arraySize, IntStream stream) {
         return Array.combine(this, arraySize, stream);
     }
 
-    default Numbers<E> append(int arraySize, DoubleStream stream)
-    {
+    default Numbers<E> append(int arraySize, DoubleStream stream) {
         return Array.combine(this, arraySize, stream);
     }
 
-    default Numbers<E> append(int arraySize, LongStream stream)
-    {
+    default Numbers<E> append(int arraySize, LongStream stream) {
         return Array.combine(this, arraySize, stream);
     }
-
 
 
     @Override
-    default Numbers<E> copy()
-    {
+    default Numbers<E> copy() {
         return resized(length());
     }
 
-    default PrimitiveIterator.OfInt intIterator(){
+    default PrimitiveIterator.OfInt intIterator() {
         return new PrimitiveIterator.OfInt() {
             int index = 0;
+
             @Override
-            public int nextInt()
-            {
+            public int nextInt() {
                 return getInt(index++);
             }
 
             @Override
-            public boolean hasNext()
-            {
+            public boolean hasNext() {
                 return index < length();
             }
         };
     }
 
-    default PrimitiveIterator.OfLong longIterator(){
+    default PrimitiveIterator.OfLong longIterator() {
         return new PrimitiveIterator.OfLong() {
             int index = 0;
+
             @Override
-            public long nextLong()
-            {
+            public long nextLong() {
                 return getLong(index++);
             }
 
             @Override
-            public boolean hasNext()
-            {
+            public boolean hasNext() {
                 return index < length();
             }
         };
     }
 
-    default PrimitiveIterator.OfDouble doubleIterator(){
+    default PrimitiveIterator.OfDouble doubleIterator() {
         return new PrimitiveIterator.OfDouble() {
             int index = 0;
+
             @Override
-            public double nextDouble()
-            {
+            public double nextDouble() {
                 return getDouble(index++);
             }
 
             @Override
-            public boolean hasNext()
-            {
+            public boolean hasNext() {
                 return index < length();
             }
         };

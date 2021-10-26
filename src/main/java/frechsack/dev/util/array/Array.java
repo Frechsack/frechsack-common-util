@@ -64,6 +64,20 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     }
 
     /**
+     * Creates a new Array with the specified elements.
+     *
+     * @param isReference Indicates if the Array should write through the specified elements. This is the case when set to 0.
+     * @param array       The elements.
+     * @param <E>         The Array´s element type.
+     * @return Returns the Array.
+     */
+    @SafeVarargs
+    static <E> Array<E> of(byte isReference, E... array) {
+        Objects.requireNonNull(array);
+        return new ArrayFactory.GenericArray<>(array, isReference == 0);
+    }
+
+    /**
      * Creates a new Array with the specified class type and length.
      *
      * @param length The Array´s length.

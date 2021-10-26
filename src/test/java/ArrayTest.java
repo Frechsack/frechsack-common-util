@@ -10,13 +10,13 @@ import java.util.stream.Stream;
 
 public class ArrayTest {
     public static void main(String[] bca) {
-        Booleans array = Array.ofBoolean(false, false, false);
+        Array<Boolean> array = Array.ofGenericBoolean((byte) 0, true, false, true, false);
         System.out.println("array = " + array);
         System.out.println("array.isPrimitive() = " + array.isPrimitive());
 
-        PrimitiveIterator.OfLong l;
 
-        array.sort();
-        System.out.println(array);
+        array = array.append(10, Stream.of(true, true, true, true, true));
+        System.out.println("array = " + array);
+        System.out.println("array.isPrimitive() = " + array.isPrimitive());
     }
 }
