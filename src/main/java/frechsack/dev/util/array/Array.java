@@ -34,8 +34,7 @@ import java.util.stream.*;
  * @param <E> The element type of this Array. This may be an Object or primitive type.
  * @author Frechsack
  */
-public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, E>, IntFunction<E>
-{
+public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, E>, IntFunction<E> {
     /**
      * Creates a new Array with the specified elements. The returned Array will write through the specified array.
      *
@@ -44,8 +43,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @return Returns the Array.
      */
     @SafeVarargs
-    static <E> Array<E> of(E... array)
-    {
+    static <E> Array<E> of(E... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericArray<>(array, true);
 
@@ -60,8 +58,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @return Returns the Array.
      */
     @SafeVarargs
-    static <E> Array<E> of(boolean isReference, E... array)
-    {
+    static <E> Array<E> of(boolean isReference, E... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericArray<>(array, isReference);
     }
@@ -74,98 +71,68 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param <E>    The Array´s class type.
      * @return Returns the Array.
      */
-    static <E> Array<E> of(int length, Class<E> type)
-    {
+    static <E> Array<E> of(int length, Class<E> type) {
         Objects.requireNonNull(type);
         return new ArrayFactory.GenericArray<>(length, type);
     }
 
     /**
-     * Creates a new number Array with the specified elements. How the Array will proceed with the specified numbers depends on the specified classtype.
+     * Creates a new number Array with the specified elements. How the Array will proceed with the specified numbers depends on the specified class-type.
      *
-     * @param type  The Array´s element classtype.
+     * @param type  The Array´s element class-type.
      * @param array The Array´s contents. The content may contain null elements.
-     * @param <E>   The Array´s element´s classtype.
+     * @param <E>   The Array´s element´s class-type.
      * @return Returns the Array.
      */
     @SuppressWarnings("unchecked")
-    static <E extends Number> Numbers<E> ofTypedNumber(Class<E> type, Number... array)
-    {
+    static <E extends Number> Numbers<E> ofTypedNumber(Class<E> type, Number... array) {
         Numbers<? extends Number> arr;
-        if (type.isPrimitive())
-        {
-            if (type.equals(Byte.TYPE))
-            {
+        if (type.isPrimitive()) {
+            if (type.equals(Byte.TYPE)) {
                 arr = ofByte(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setByte(i, array[i] == null ? 0 : array[i].byteValue());
-            }
-            else if (type.equals(Short.TYPE))
-            {
+            } else if (type.equals(Short.TYPE)) {
                 arr = ofShort(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setShort(i, array[i] == null ? 0 : array[i].shortValue());
-            }
-            else if (type.equals(Integer.TYPE))
-            {
+            } else if (type.equals(Integer.TYPE)) {
                 arr = ofInt(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setInt(i, array[i] == null ? 0 : array[i].intValue());
-            }
-            else if (type.equals(Float.TYPE))
-            {
+            } else if (type.equals(Float.TYPE)) {
                 arr = ofFloat(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setFloat(i, array[i] == null ? 0 : array[i].floatValue());
-            }
-            else if (type.equals(Double.TYPE))
-            {
+            } else if (type.equals(Double.TYPE)) {
                 arr = ofDouble(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setDouble(i, array[i] == null ? 0 : array[i].doubleValue());
-            }
-            else if (type.equals(Long.TYPE))
-            {
+            } else if (type.equals(Long.TYPE)) {
                 arr = ofLong(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setLong(i, array[i] == null ? 0 : array[i].longValue());
-            }
-            else throw new IllegalArgumentException("The classtype must be of type number");
-        }
-        else
-        {
-            if (type.equals(Byte.class))
-            {
+            } else throw new IllegalArgumentException("The class-type must be of type number");
+        } else {
+            if (type.equals(Byte.class)) {
                 arr = ofGenericByte(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setByte(i, array[i] == null ? 0 : array[i].byteValue());
 
-            }
-            else if (type.equals(Short.class))
-            {
+            } else if (type.equals(Short.class)) {
                 arr = ofGenericShort(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setShort(i, array[i] == null ? 0 : array[i].shortValue());
 
-            }
-            else if (type.equals(Integer.class))
-            {
+            } else if (type.equals(Integer.class)) {
                 arr = ofGenericInt(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setInt(i, array[i] == null ? 0 : array[i].intValue());
 
-            }
-            else if (type.equals(Float.class))
-            {
+            } else if (type.equals(Float.class)) {
                 arr = ofGenericFloat(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setFloat(i, array[i] == null ? 0 : array[i].floatValue());
 
-            }
-            else if (type.equals(Double.class))
-            {
+            } else if (type.equals(Double.class)) {
                 arr = ofGenericDouble(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setDouble(i, array[i] == null ? 0 : array[i].doubleValue());
 
-            }
-            else if (type.equals(Long.class))
-            {
+            } else if (type.equals(Long.class)) {
                 arr = ofGenericLong(array.length);
                 for (int i = 0; i < arr.length(); i++) arr.setLong(i, array[i] == null ? 0 : array[i].longValue());
 
-            }
-            else if (type.equals(BigInteger.class))
-            {
+            } else if (type.equals(BigInteger.class)) {
                 Numbers<BigInteger> bigIntegers;
                 Function<Number, BigInteger> converter = number ->
                 {
@@ -174,14 +141,11 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
                     return BigInteger.valueOf(number.longValue());
                 };
                 bigIntegers = ofTypedNumber(array.length, BigInteger.class, converter);
-                for (int i = 0; i < bigIntegers.length(); i++)
-                {
+                for (int i = 0; i < bigIntegers.length(); i++) {
                     bigIntegers.set(i, converter.apply(array[i]));
                 }
                 return (Numbers<E>) bigIntegers;
-            }
-            else if (type.equals(BigDecimal.class))
-            {
+            } else if (type.equals(BigDecimal.class)) {
                 Numbers<BigDecimal> bigDecimals;
                 Function<Number, BigDecimal> converter = number ->
                 {
@@ -190,13 +154,12 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
                     return BigDecimal.valueOf(number.doubleValue());
                 };
                 bigDecimals = ofTypedNumber(array.length, BigDecimal.class, converter);
-                for (int i = 0; i < bigDecimals.length(); i++)
-                {
+                for (int i = 0; i < bigDecimals.length(); i++) {
                     bigDecimals.set(i, converter.apply(array[i]));
                 }
                 return (Numbers<E>) bigDecimals;
-            }
-            else throw new IllegalArgumentException("Unsupported classtype. Provide a custom converter by ofTypeNumber(Function<Number, E>,E... array)");
+            } else
+                throw new IllegalArgumentException("Unsupported class-type. Provide a custom converter by ofTypeNumber(Function<Number, E>,E... array)");
         }
         return (Numbers<E>) arr;
     }
@@ -210,8 +173,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @return Returns the Array.
      */
     @SafeVarargs
-    static <E extends Number> Numbers<E> ofTypedNumber(Function<Number, E> converter, E... array)
-    {
+    static <E extends Number> Numbers<E> ofTypedNumber(Function<Number, E> converter, E... array) {
         checkNumberConverter(converter);
         return new ArrayFactory.GenericNumbers<>(array, true, converter);
     }
@@ -226,8 +188,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @return Returns the Array.
      */
     @SafeVarargs
-    static <E extends Number> Numbers<E> ofTypedNumber(boolean isReference, Function<Number, E> converter, E... array)
-    {
+    static <E extends Number> Numbers<E> ofTypedNumber(boolean isReference, Function<Number, E> converter, E... array) {
         checkNumberConverter(converter);
         return new ArrayFactory.GenericNumbers<>(array, isReference, converter);
     }
@@ -241,15 +202,13 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param <E>       The Array´s element type.
      * @return Returns the Array.
      */
-    static <E extends Number> Numbers<E> ofTypedNumber(int length, Class<E> type, Function<Number, E> converter)
-    {
+    static <E extends Number> Numbers<E> ofTypedNumber(int length, Class<E> type, Function<Number, E> converter) {
         checkNumberConverter(converter);
         Objects.requireNonNull(type);
         return new ArrayFactory.GenericNumbers<>(length, type, converter);
     }
 
-    private static void checkNumberConverter(Function<Number, ?> converter)
-    {
+    private static void checkNumberConverter(Function<Number, ?> converter) {
         Objects.requireNonNull(converter);
         if (converter.apply(null) == null)
             throw new IllegalArgumentException("The converter returned null when null was passed. But null is not a valid number");
@@ -262,8 +221,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Number> ofNumber(boolean isReference, Number... array)
-    {
+    static Numbers<Number> ofNumber(boolean isReference, Number... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number);
     }
@@ -274,8 +232,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Number> ofNumber(Number... array)
-    {
+    static Numbers<Number> ofNumber(Number... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number);
     }
@@ -286,8 +243,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Number> ofNumber(int length)
-    {
+    static Numbers<Number> ofNumber(int length) {
         return new ArrayFactory.GenericNumbers<>(length, Number.class, number -> number == null ? 0 : number);
     }
 
@@ -298,8 +254,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Integer> ofInt(boolean isReference, int... array)
-    {
+    static Numbers<Integer> ofInt(boolean isReference, int... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.IntArray(array, isReference);
     }
@@ -310,8 +265,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Integer> ofInt(int... array)
-    {
+    static Numbers<Integer> ofInt(int... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.IntArray(array, true);
     }
@@ -322,10 +276,10 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Integer> ofInt(int length)
-    {
+    static Numbers<Integer> ofInt(int length) {
         return new ArrayFactory.IntArray(length);
     }
+
     /**
      * Creates an Array of {@code int} with the specified length. The Array will use a primitive long model.
      *
@@ -333,15 +287,16 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param stream The Array´s contents.
      * @return Returns the Array.
      */
-    static Numbers<Integer> ofInt(int length, IntStream stream){
+    static Numbers<Integer> ofInt(int length, IntStream stream) {
         Numbers<Integer> array = new ArrayFactory.IntArray(length);
         PrimitiveIterator.OfInt iterator = stream.iterator();
         int dI = 0;
         while (dI < array.length() && iterator.hasNext())
-            array.setInt(dI++,iterator.nextInt());
+            array.setInt(dI++, iterator.nextInt());
         stream.close();
         return array;
     }
+
     /**
      * Creates an Array of {@code Integer} with the specified length.
      *
@@ -349,12 +304,12 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param stream The Array´s contents.
      * @return Returns the Array.
      */
-    static Numbers<Integer> ofGenericInt(int length, IntStream stream){
-        Numbers<Integer> array = new ArrayFactory.GenericNumbers<>(length,Integer.class, number -> number == null ? 0 : number.intValue());
+    static Numbers<Integer> ofGenericInt(int length, IntStream stream) {
+        Numbers<Integer> array = new ArrayFactory.GenericNumbers<>(length, Integer.class, number -> number == null ? 0 : number.intValue());
         PrimitiveIterator.OfInt iterator = stream.iterator();
         int dI = 0;
         while (dI < array.length() && iterator.hasNext())
-            array.setInt(dI++,iterator.nextInt());
+            array.setInt(dI++, iterator.nextInt());
         stream.close();
         return array;
     }
@@ -365,8 +320,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Integer> ofGenericInt(Integer... array)
-    {
+    static Numbers<Integer> ofGenericInt(Integer... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.intValue());
     }
@@ -378,8 +332,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Integer> ofGenericInt(boolean isReference, Integer... array)
-    {
+    static Numbers<Integer> ofGenericInt(boolean isReference, Integer... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.intValue());
     }
@@ -390,8 +343,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Integer> ofGenericInt(int length)
-    {
+    static Numbers<Integer> ofGenericInt(int length) {
         return new ArrayFactory.GenericNumbers<>(length, Integer.class, number -> number == null ? 0 : number.intValue());
     }
 
@@ -402,8 +354,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Byte> ofByte(boolean isReference, byte... array)
-    {
+    static Numbers<Byte> ofByte(boolean isReference, byte... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.ByteArray(array, isReference);
     }
@@ -414,8 +365,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Byte> ofByte(byte... array)
-    {
+    static Numbers<Byte> ofByte(byte... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.ByteArray(array, true);
     }
@@ -426,8 +376,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Byte> ofByte(int length)
-    {
+    static Numbers<Byte> ofByte(int length) {
         return new ArrayFactory.ByteArray(length);
     }
 
@@ -437,8 +386,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Byte> ofGenericByte(Byte... array)
-    {
+    static Numbers<Byte> ofGenericByte(Byte... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.byteValue());
     }
@@ -450,8 +398,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Byte> ofGenericByte(boolean isReference, Byte... array)
-    {
+    static Numbers<Byte> ofGenericByte(boolean isReference, Byte... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.byteValue());
     }
@@ -462,8 +409,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Byte> ofGenericByte(int length)
-    {
+    static Numbers<Byte> ofGenericByte(int length) {
         return new ArrayFactory.GenericNumbers<>(length, Byte.class, number -> number == null ? 0 : number.byteValue());
     }
 
@@ -474,8 +420,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Short> ofShort(boolean isReference, short... array)
-    {
+    static Numbers<Short> ofShort(boolean isReference, short... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.ShortArray(array, isReference);
     }
@@ -486,8 +431,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Short> ofShort(short... array)
-    {
+    static Numbers<Short> ofShort(short... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.ShortArray(array, true);
     }
@@ -498,8 +442,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Short> ofShort(int length)
-    {
+    static Numbers<Short> ofShort(int length) {
         return new ArrayFactory.ShortArray(length);
     }
 
@@ -509,8 +452,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Short> ofGenericShort(Short... array)
-    {
+    static Numbers<Short> ofGenericShort(Short... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.shortValue());
     }
@@ -522,8 +464,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Short> ofGenericShort(boolean isReference, Short... array)
-    {
+    static Numbers<Short> ofGenericShort(boolean isReference, Short... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.shortValue());
     }
@@ -534,8 +475,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Short> ofGenericShort(int length)
-    {
+    static Numbers<Short> ofGenericShort(int length) {
         return new ArrayFactory.GenericNumbers<>(length, Short.class, number -> number == null ? 0 : number.shortValue());
     }
 
@@ -546,8 +486,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Float> ofFloat(boolean isReference, float... array)
-    {
+    static Numbers<Float> ofFloat(boolean isReference, float... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.FloatArray(array, isReference);
     }
@@ -558,8 +497,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Float> ofFloat(float... array)
-    {
+    static Numbers<Float> ofFloat(float... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.FloatArray(array, true);
     }
@@ -570,8 +508,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Float> ofFloat(int length)
-    {
+    static Numbers<Float> ofFloat(int length) {
         return new ArrayFactory.FloatArray(length);
     }
 
@@ -581,8 +518,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Float> ofGenericFloat(Float... array)
-    {
+    static Numbers<Float> ofGenericFloat(Float... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.floatValue());
     }
@@ -594,8 +530,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Float> ofGenericFloat(boolean isReference, Float... array)
-    {
+    static Numbers<Float> ofGenericFloat(boolean isReference, Float... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.floatValue());
     }
@@ -606,8 +541,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Float> ofGenericFloat(int length)
-    {
+    static Numbers<Float> ofGenericFloat(int length) {
         return new ArrayFactory.GenericNumbers<>(length, Float.class, number -> number == null ? 0 : number.floatValue());
     }
 
@@ -618,8 +552,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Double> ofDouble(boolean isReference, double... array)
-    {
+    static Numbers<Double> ofDouble(boolean isReference, double... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.DoubleArray(array, isReference);
     }
@@ -630,8 +563,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Double> ofDouble(double... array)
-    {
+    static Numbers<Double> ofDouble(double... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.DoubleArray(array, true);
     }
@@ -642,8 +574,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Double> ofDouble(int length)
-    {
+    static Numbers<Double> ofDouble(int length) {
         return new ArrayFactory.DoubleArray(length);
     }
 
@@ -654,12 +585,12 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param stream The Array´s contents.
      * @return Returns the Array.
      */
-    static Numbers<Double> ofDouble(int length, DoubleStream stream){
+    static Numbers<Double> ofDouble(int length, DoubleStream stream) {
         Numbers<Double> array = new ArrayFactory.DoubleArray(length);
         PrimitiveIterator.OfDouble iterator = stream.iterator();
         int dI = 0;
         while (dI < array.length() && iterator.hasNext())
-            array.setDouble(dI++,iterator.nextDouble());
+            array.setDouble(dI++, iterator.nextDouble());
         stream.close();
         return array;
     }
@@ -671,12 +602,12 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param stream The Array´s contents.
      * @return Returns the Array.
      */
-    static Numbers<Double> ofGenericDouble(int length, DoubleStream stream){
-        Numbers<Double> array = new ArrayFactory.GenericNumbers<>(length,Double.class, number -> number == null ? 0 : number.doubleValue());
+    static Numbers<Double> ofGenericDouble(int length, DoubleStream stream) {
+        Numbers<Double> array = new ArrayFactory.GenericNumbers<>(length, Double.class, number -> number == null ? 0 : number.doubleValue());
         PrimitiveIterator.OfDouble iterator = stream.iterator();
         int dI = 0;
         while (dI < array.length() && iterator.hasNext())
-            array.setDouble(dI++,iterator.nextDouble());
+            array.setDouble(dI++, iterator.nextDouble());
         stream.close();
         return array;
     }
@@ -687,8 +618,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Double> ofGenericDouble(Double... array)
-    {
+    static Numbers<Double> ofGenericDouble(Double... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.doubleValue());
     }
@@ -700,8 +630,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Double> ofGenericDouble(boolean isReference, Double... array)
-    {
+    static Numbers<Double> ofGenericDouble(boolean isReference, Double... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.doubleValue());
     }
@@ -712,8 +641,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Double> ofGenericDouble(int length)
-    {
+    static Numbers<Double> ofGenericDouble(int length) {
         return new ArrayFactory.GenericNumbers<>(length, Double.class, number -> number == null ? 0 : number.doubleValue());
     }
 
@@ -724,8 +652,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Long> ofLong(boolean isReference, long... array)
-    {
+    static Numbers<Long> ofLong(boolean isReference, long... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.LongArray(array, isReference);
     }
@@ -736,8 +663,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Long> ofLong(long... array)
-    {
+    static Numbers<Long> ofLong(long... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.LongArray(array, true);
     }
@@ -748,8 +674,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Long> ofLong(int length)
-    {
+    static Numbers<Long> ofLong(int length) {
         return new ArrayFactory.LongArray(length);
     }
 
@@ -760,12 +685,12 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param stream The Array´s contents.
      * @return Returns the Array.
      */
-    static Numbers<Long> ofLong(int length, LongStream stream){
+    static Numbers<Long> ofLong(int length, LongStream stream) {
         Numbers<Long> array = new ArrayFactory.LongArray(length);
         PrimitiveIterator.OfLong iterator = stream.iterator();
         int dI = 0;
         while (dI < array.length() && iterator.hasNext())
-            array.setLong(dI++,iterator.nextLong());
+            array.setLong(dI++, iterator.nextLong());
         stream.close();
         return array;
     }
@@ -777,12 +702,12 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param stream The Array´s contents.
      * @return Returns the Array.
      */
-    static Numbers<Long> ofGenericLong(int length, LongStream stream){
-        Numbers<Long> array = new ArrayFactory.GenericNumbers<>(length,Long.class, number -> number == null ? 0 : number.longValue());
+    static Numbers<Long> ofGenericLong(int length, LongStream stream) {
+        Numbers<Long> array = new ArrayFactory.GenericNumbers<>(length, Long.class, number -> number == null ? 0 : number.longValue());
         PrimitiveIterator.OfLong iterator = stream.iterator();
         int dI = 0;
         while (dI < array.length() && iterator.hasNext())
-            array.setLong(dI++,iterator.nextLong());
+            array.setLong(dI++, iterator.nextLong());
         stream.close();
         return array;
     }
@@ -793,8 +718,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Numbers<Long> ofGenericLong(Long... array)
-    {
+    static Numbers<Long> ofGenericLong(Long... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, true, number -> number == null ? 0 : number.longValue());
     }
@@ -806,8 +730,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Numbers<Long> ofGenericLong(boolean isReference, Long... array)
-    {
+    static Numbers<Long> ofGenericLong(boolean isReference, Long... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericNumbers<>(array, isReference, number -> number == null ? 0 : number.longValue());
     }
@@ -818,8 +741,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Numbers<Long> ofGenericLong(int length)
-    {
+    static Numbers<Long> ofGenericLong(int length) {
         return new ArrayFactory.GenericNumbers<>(length, Long.class, number -> number == null ? 0 : number.longValue());
     }
 
@@ -830,8 +752,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Booleans ofBoolean(byte isReference, boolean... array)
-    {
+    static Booleans ofBoolean(byte isReference, boolean... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.Booleans(array, isReference == 0);
     }
@@ -842,8 +763,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Booleans ofBoolean(boolean... array)
-    {
+    static Booleans ofBoolean(boolean... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.Booleans(array, true);
     }
@@ -854,8 +774,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Booleans ofBoolean(int length)
-    {
+    static Booleans ofBoolean(int length) {
         return new ArrayFactory.Booleans(length);
     }
 
@@ -865,8 +784,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Booleans ofGenericBoolean(Boolean... array)
-    {
+    static Booleans ofGenericBoolean(Boolean... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericBooleans(array, true);
     }
@@ -878,8 +796,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Booleans ofGenericBoolean(byte isReference, Boolean... array)
-    {
+    static Booleans ofGenericBoolean(byte isReference, Boolean... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericBooleans(array, isReference == 0);
     }
@@ -890,8 +807,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Booleans ofGenericBoolean(int length)
-    {
+    static Booleans ofGenericBoolean(int length) {
         return new ArrayFactory.GenericBooleans(length);
     }
 
@@ -902,8 +818,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Characters ofChar(boolean isReference, char... array)
-    {
+    static Characters ofChar(boolean isReference, char... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.Characters(array, isReference);
     }
@@ -914,8 +829,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Characters ofChar(char... array)
-    {
+    static Characters ofChar(char... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.Characters(Objects.requireNonNull(array), true);
     }
@@ -926,8 +840,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Characters ofChar(int length)
-    {
+    static Characters ofChar(int length) {
         return new ArrayFactory.Characters(length);
     }
 
@@ -937,8 +850,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array The content.
      * @return Returns the Array.
      */
-    static Characters ofGenericChar(Character... array)
-    {
+    static Characters ofGenericChar(Character... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericCharacters(array, true);
     }
@@ -950,8 +862,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param array       The content.
      * @return Returns the Array.
      */
-    static Characters ofGenericChar(boolean isReference, Character... array)
-    {
+    static Characters ofGenericChar(boolean isReference, Character... array) {
         Objects.requireNonNull(array);
         return new ArrayFactory.GenericCharacters(array, isReference);
     }
@@ -962,8 +873,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param length The Array´s length.
      * @return Returns the Array.
      */
-    static Characters ofGenericChar(int length)
-    {
+    static Characters ofGenericChar(int length) {
         return new ArrayFactory.GenericCharacters(length);
     }
 
@@ -974,8 +884,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param element The value.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    default int indexOf(Object element)
-    {
+    default int indexOf(Object element) {
         return indexOf(0, length(), element);
     }
 
@@ -987,8 +896,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param element The value.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    default int indexOf(int start, Object element)
-    {
+    default int indexOf(int start, Object element) {
         return indexOf(start, length(), element);
     }
 
@@ -1001,10 +909,8 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param element The value.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    default int indexOf(int start, int end, Object element)
-    {
-        for (int i = start; i < end; i++)
-        {
+    default int indexOf(int start, int end, Object element) {
+        for (int i = start; i < end; i++) {
             if (Objects.equals(element, get(i))) return i;
         }
         return -1;
@@ -1017,8 +923,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param predicate The predicate.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    default int indexOf(Predicate<E> predicate)
-    {
+    default int indexOf(Predicate<E> predicate) {
         return indexOf(0, length(), predicate);
     }
 
@@ -1030,8 +935,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param predicate The predicate.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    default int indexOf(int start, Predicate<E> predicate)
-    {
+    default int indexOf(int start, Predicate<E> predicate) {
         return indexOf(start, length(), predicate);
     }
 
@@ -1044,11 +948,9 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param predicate The predicate.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    default int indexOf(int start, int end, Predicate<E> predicate)
-    {
+    default int indexOf(int start, int end, Predicate<E> predicate) {
         Objects.requireNonNull(predicate);
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             if (predicate.test(get(i))) return i;
         }
         return -1;
@@ -1060,10 +962,8 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param element The value.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    default int lastIndexOf(Object element)
-    {
-        for (int i = length() - 1; i > 0; i--)
-        {
+    default int lastIndexOf(Object element) {
+        for (int i = length() - 1; i > 0; i--) {
             if (Objects.equals(element, get(i))) return i;
         }
         return -1;
@@ -1075,11 +975,9 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param predicate The predicate.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    default int lastIndexOf(Predicate<E> predicate)
-    {
+    default int lastIndexOf(Predicate<E> predicate) {
         Objects.requireNonNull(predicate);
-        for (int i = length() - 1; i > 0; i--)
-        {
+        for (int i = length() - 1; i > 0; i--) {
             if (predicate.test(get(i))) return i;
         }
         return -1;
@@ -1091,10 +989,8 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param element The value.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    default int firstIndexOf(Object element)
-    {
-        for (int i = 0; i < length(); i++)
-        {
+    default int firstIndexOf(Object element) {
+        for (int i = 0; i < length(); i++) {
             if (Objects.equals(element, get(i))) return i;
         }
         return -1;
@@ -1106,11 +1002,9 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param predicate The predicate.
      * @return Returns an index, that matches the given value. If the value is not present in this Array -1 is returned.
      */
-    default int firstIndexOf(Predicate<E> predicate)
-    {
+    default int firstIndexOf(Predicate<E> predicate) {
         Objects.requireNonNull(predicate);
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             if (predicate.test(get(i))) return i;
         }
         return -1;
@@ -1122,10 +1016,8 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      *
      * @implNote The default implementation will set any element in this Array to null.
      */
-    default void clear()
-    {
-        for (int i = 0; i < length(); i++)
-        {
+    default void clear() {
+        for (int i = 0; i < length(); i++) {
             set(i, null);
         }
     }
@@ -1136,8 +1028,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param element The element.
      * @return Returns true if this Array contains the specified element, else false.
      */
-    default boolean contains(Object element)
-    {
+    default boolean contains(Object element) {
         for (int i = 0; i < length(); i++) if (Objects.equals(element, get(i))) return true;
         return false;
     }
@@ -1146,13 +1037,11 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * Returns a copy of this Array´s element.
      *
      * @return Returns a copy with the same size and content as this Array.
-     * @implNote The default implementation will create an clone with {@link #generator()} and then copy any element by reference.
+     * @implNote The default implementation will create a clone with {@link #generator()} and then copy any element by reference.
      */
-    default E[] toArray()
-    {
+    default E[] toArray() {
         E[] clone = generator().apply(length());
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             clone[i] = get(i);
         }
         return clone;
@@ -1195,8 +1084,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param element The new element.
      * @return Returns the previous element.
      */
-    default E getAndSet(int index, E element)
-    {
+    default E getAndSet(int index, E element) {
         E last = get(index);
         set(index, element);
         return last;
@@ -1207,8 +1095,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      *
      * @param mapper The transformation Function.
      */
-    default void transform(Function<E, E> mapper)
-    {
+    default void transform(Function<E, E> mapper) {
         for (int i = 0; i < length(); i++) set(i, mapper.apply(get(i)));
     }
 
@@ -1217,8 +1104,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      *
      * @return Returns a Stream.
      */
-    default Stream<Pair<Integer, E>> streamIndices()
-    {
+    default Stream<Pair<Integer, E>> streamIndices() {
         return IntStream.range(0, length()).mapToObj(index -> Pair.of(index, get(index)));
     }
 
@@ -1227,8 +1113,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      *
      * @return Returns a Stream.
      */
-    default Stream<Pair<Integer, E>> parallelStreamIndices()
-    {
+    default Stream<Pair<Integer, E>> parallelStreamIndices() {
         return IntStream.range(0, length()).parallel().mapToObj(index -> Pair.of(index, get(index)));
     }
 
@@ -1237,8 +1122,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      *
      * @return Returns a Stream.
      */
-    default Stream<E> stream()
-    {
+    default Stream<E> stream() {
         return StreamSupport.stream(spliterator(), false);
     }
 
@@ -1247,8 +1131,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      *
      * @return Returns a Stream.
      */
-    default Stream<E> parallelStream()
-    {
+    default Stream<E> parallelStream() {
         return StreamSupport.stream(spliterator(), true);
     }
 
@@ -1260,38 +1143,34 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     boolean isPrimitive();
 
     @Override
-    default Iterator<E> iterator()
-    {
+    default Iterator<E> iterator() {
         return new ArrayFactory.ArrayIterator<>(this);
     }
 
     @Override
-    default BiIterator<E> biIterator()
-    {
+    default BiIterator<E> biIterator() {
         return BiIterator.of(this::get, length(), i -> set(i, null));
     }
 
     /**
-     * Creates an {@link IntFunction} that creates an generic array of this Array´s type.
+     * Creates an {@link IntFunction} that creates n generic array of this Array´s type.
      *
      * @return Returns a generator.
      */
     IntFunction<E[]> generator();
 
     @Override
-    default Spliterator<E> spliterator()
-    {
+    default Spliterator<E> spliterator() {
         return Spliterators.spliterator(iterator(), length(), Spliterator.SIZED | Spliterator.SUBSIZED);
     }
 
     /**
-     * Checks if this Array is equal to the specified array. They are considered as equal, when they contains the same elements in the same order.
+     * Checks if this Array is equal to the specified array. They are considered as equal, when they contain the same elements in the same order.
      *
      * @param array The comparison array.
      * @return Returns true if this Array and the specified one are equal, else false.
      */
-    default boolean equals(E[] array)
-    {
+    default boolean equals(E[] array) {
         if (array == null) return false;
         if (array.length != length()) return false;
         for (int i = 0; i < length(); i++) if (!Objects.equals(array[i], get(i))) return false;
@@ -1303,8 +1182,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      *
      * @return Returns a List.
      */
-    default List<E> asList()
-    {
+    default List<E> asList() {
         return new ArrayFactory.ArrayList<>(this);
     }
 
@@ -1314,13 +1192,11 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param c The Comparator.
      * @implNote The default implementation will sort a copy of this Array and then reassign any element in it to this Array.
      */
-    default void sort(Comparator<? super E> c)
-    {
+    default void sort(Comparator<? super E> c) {
         Objects.requireNonNull(c);
         E[] array = toArray();
         Arrays.sort(array, c);
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             set(i, array[i]);
         }
     }
@@ -1330,16 +1206,14 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      *
      * @param element The element.
      */
-    default void fill(E element)
-    {
+    default void fill(E element) {
         for (int i = 0; i < length(); i++) set(i, element);
     }
 
     /**
      * Sorts this Array in the opposite order.  This Array´s elements have to implement {@link Comparable}.
      */
-    default void sortReverse()
-    {
+    default void sortReverse() {
         sort();
         reverse();
     }
@@ -1349,8 +1223,7 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      *
      * @param c The Comparator.
      */
-    default void sortReverse(Comparator<? super E> c)
-    {
+    default void sortReverse(Comparator<? super E> c) {
         sort(c);
         reverse();
     }
@@ -1358,11 +1231,9 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
     /**
      * Changes the order of this Array. The previous first element will now equal the last element.
      */
-    default void reverse()
-    {
+    default void reverse() {
         int swapIndex;
-        for (int i = 0; i < length() / 2; i++)
-        {
+        for (int i = 0; i < length() / 2; i++) {
             swapIndex = length() - 1 - i;
             set(i, getAndSet(swapIndex, get(i)));
         }
@@ -1374,27 +1245,23 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param distance The distance. The elements current position will differ by the specified distance after the call.
      * @implNote To rotate the elements in This Array, {@link Collections#rotate(List, int)} is used, to take advantage of the default optimizations.
      */
-    default void rotate(int distance)
-    {
+    default void rotate(int distance) {
         Collections.rotate(asList(), distance * -1);
     }
 
     @Override
-    default E apply(Integer index)
-    {
+    default E apply(Integer index) {
         return get(index == null ? 0 : index);
     }
 
 
     @Override
-    default E apply(int index)
-    {
+    default E apply(int index) {
         return get(index);
     }
 
     @Override
-    default void forEach(Consumer<? super E> action)
-    {
+    default void forEach(Consumer<? super E> action) {
         Objects.requireNonNull(action);
         for (int i = 0; i < length(); i++) action.accept(get(i));
     }
@@ -1404,12 +1271,10 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      *
      * @implNote The default implementation will sort a copy of this Array and then reassign any element in it to this Array.
      */
-    default void sort()
-    {
+    default void sort() {
         E[] array = toArray();
         Arrays.sort(array);
-        for (int i = 0; i < length(); i++)
-        {
+        for (int i = 0; i < length(); i++) {
             set(i, array[i]);
         }
     }
@@ -1423,157 +1288,166 @@ public interface Array<E> extends Iterable<E>, BiIterable<E>, Function<Integer, 
      * @param toIndex   The exclusive last index.
      * @return Returns a view of this Array with the specified range.
      */
-    default Array<E> subArray(int fromIndex, int toIndex)
-    {
+    default Array<E> subArray(int fromIndex, int toIndex) {
         Objects.checkFromToIndex(fromIndex, toIndex, length());
         return new ArrayFactory.SubArray<>(this, fromIndex, toIndex);
     }
 
     /**
      * Creates a new Array, that retains as many elements as possible from this Array.
+     *
      * @param length The length of the Array.
      * @return Returns a new Array.
      */
-    @SuppressWarnings("unchecked")
-    default Array<E> resized(int length){
+    default Array<E> resized(int length) {
         // Create a new instance of this guy
-        Array<E> resized = (Array<E>) Array.of(length, asArray().getClass().getComponentType());
-        for (int i = 0; i < length && i < this.length(); i++) resized.set(i,get(i));
+        Array<E> resized = Array.of(generator().apply(length));
+        for (int i = 0; i < length && i < this.length(); i++) resized.set(i, get(i));
         return resized;
     }
 
     /**
      * Fills the specified Array with as many elements as possible with this Array´s contents.
+     *
      * @param array The target array.
-     * @param <V> The target array´s type.
+     * @param <V>   The target array´s type.
      * @return Return the input array.
      */
-    default <V extends Array<? super E>> V copyTo(V array){
-        for (int i = 0; i < length() && i < array.length(); i++)  array.set(i,get(i));
+    default <V extends Array<? super E>> V copyTo(V array) {
+        for (int i = 0; i < length() && i < array.length(); i++) array.set(i, get(i));
         return array;
     }
 
     /**
      * Creates a new Array, with the contents of this array. Any element that is not present in the specified stream will be removed. This function behaves like {@link Collection#retainAll(Collection)}.
      * If this Array does not contain any element, that is present in the specified Stream, this Array will be returned.
-     * @apiNote  This function does not handle Arrays with a primitive data model different from ones with an Object model. The resulting Array will have an Object model, since it creates an Array by the generator provided with {@link #generator()}.
+     *
      * @param stream This Stream contains the elements that will not be removed.
      * @return The Array.
-     *
+     * @apiNote This function does not handle Arrays with a primitive data model different from ones with an Object model. The resulting Array will have an Object model, since it creates an Array by the generator provided with {@link #generator()}.
      */
-    default Array<E> retainAll(Stream<E> stream){
-        Array<Object> retain = of(true,stream.toArray());
+    default Array<E> retainAll(Stream<E> stream) {
+        Array<Object> retain = of(true, stream.toArray());
         stream.close();
         E[] array = parallelStream().filter(retain::contains).toArray(generator());
-        if(array.length == length()) return this;
-        return of(true,parallelStream().filter(retain::contains).toArray(generator()));
+        if (array.length == length()) return this;
+        return of(true, parallelStream().filter(retain::contains).toArray(generator()));
     }
 
     /**
      * Creates a copy of this Array.
+     *
      * @return The Arraycopy.
      */
-    default Array<E> copy(){
+    default Array<E> copy() {
         return this.resized(length());
     }
 
     /**
      * Appends the elements present in the Stream.
+     *
      * @param length The new size of the Array after adding the elements from the Stream. The size can´t be smaller than this Array´s length.
      * @param stream The Stream with the elements that should be added.
      * @return The Array.
      */
-    default Array<E> append(int length,Stream<? extends E> stream){
-        return combine(this,length,stream);
+    default Array<E> append(int length, Stream<? extends E> stream) {
+        return combine(this, length, stream);
     }
 
     /**
      * Combines an Array and a Stream of elements.
-     * @param array The Array.
+     *
+     * @param array  The Array.
      * @param length The length of the new Array.
      * @param stream The Stream with the elements that should be added.
      * @return The Array.
      */
-    static <E> Array<E> combine(Array<E> array,int length, Stream<? extends E> stream){
-        Objects.checkIndex(array.length()-1,length);
-        Array<E>  destination = array.resized(length);
+    static <E> Array<E> combine(Array<E> array, int length, Stream<? extends E> stream) {
+        Objects.checkIndex(array.length() - 1, length);
+        Array<E> destination = array.resized(length);
         int dI = array.length();
         Iterator<? extends E> iterator = stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
-            destination.set(dI++,iterator.next());
+            destination.set(dI++, iterator.next());
         stream.close();
         return destination;
     }
+
     /**
      * Combines an Array and a Stream of elements.
-     * @param array The Array.
+     *
+     * @param array  The Array.
      * @param length The length of the new Array.
      * @param stream The Stream with the elements that should be added.
      * @return The Array.
      */
-    static <E extends Number> Numbers<E> combine(Numbers<E> array,int length, Stream<? extends E> stream){
-        Objects.checkIndex(array.length()-1,length);
-        Numbers<E>  destination = array.resized(length);
+    static <E extends Number> Numbers<E> combine(Numbers<E> array, int length, Stream<? extends E> stream) {
+        Objects.checkIndex(array.length() - 1, length);
+        Numbers<E> destination = array.resized(length);
         int dI = array.length();
         Iterator<? extends E> iterator = stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
-            destination.set(dI++,iterator.next());
+            destination.set(dI++, iterator.next());
         stream.close();
         return destination;
     }
+
     /**
      * Combines an Array and a Stream of elements.
-     * @param array The Array.
+     *
+     * @param array  The Array.
      * @param length The length of the new Array.
      * @param stream The Stream with the elements that should be added.
      * @return The Array.
      */
-    static <E extends Number> Numbers<E> combine(Numbers<E> array,int length, IntStream stream){
-        Objects.checkIndex(array.length()-1,length);
-        Numbers<E>  destination = array.resized(length);
+    static <E extends Number> Numbers<E> combine(Numbers<E> array, int length, IntStream stream) {
+        Objects.checkIndex(array.length() - 1, length);
+        Numbers<E> destination = array.resized(length);
         int dI = array.length();
-        PrimitiveIterator.OfInt iterator= stream.iterator();
+        PrimitiveIterator.OfInt iterator = stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
-            destination.setInt(dI++,iterator.nextInt());
+            destination.setInt(dI++, iterator.nextInt());
         stream.close();
         return destination;
     }
+
     /**
      * Combines an Array and a Stream of elements.
-     * @param array The Array.
+     *
+     * @param array  The Array.
      * @param length The length of the new Array.
      * @param stream The Stream with the elements that should be added.
      * @return The Array.
      */
-    static <E extends Number> Numbers<E> combine(Numbers<E> array,int length, DoubleStream stream){
-        Objects.checkIndex(array.length()-1,length);
-        Numbers<E>  destination = array.resized(length);
+    static <E extends Number> Numbers<E> combine(Numbers<E> array, int length, DoubleStream stream) {
+        Objects.checkIndex(array.length() - 1, length);
+        Numbers<E> destination = array.resized(length);
         int dI = array.length();
-        PrimitiveIterator.OfDouble iterator= stream.iterator();
+        PrimitiveIterator.OfDouble iterator = stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
-            destination.setDouble(dI++,iterator.nextDouble());
+            destination.setDouble(dI++, iterator.nextDouble());
         stream.close();
         return destination;
     }
+
     /**
      * Combines an Array and a Stream of elements.
-     * @param array The Array.
+     *
+     * @param array  The Array.
      * @param length The length of the new Array.
      * @param stream The Stream with the elements that should be added.
      * @return The Array.
      */
-    static <E extends Number> Numbers<E> combine( Numbers<E> array,int length, LongStream stream){
-        Objects.checkIndex(array.length()-1,length);
-        Numbers<E>  destination = array.resized(length);
+    static <E extends Number> Numbers<E> combine(Numbers<E> array, int length, LongStream stream) {
+        Objects.checkIndex(array.length() - 1, length);
+        Numbers<E> destination = array.resized(length);
         int dI = array.length();
         PrimitiveIterator.OfLong iterator = stream.iterator();
         while (dI < destination.length() && iterator.hasNext())
-            destination.setDouble(dI++,iterator.nextLong());
+            destination.setDouble(dI++, iterator.nextLong());
         stream.close();
         return destination;
     }
-
-
 
 
 }
