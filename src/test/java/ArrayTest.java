@@ -15,17 +15,9 @@ public class ArrayTest {
         System.out.println("array = " + array);
         System.out.println("array.isPrimitive() = " + array.isPrimitive());
 
-        BiIterator<Integer> iterator = array.biIterator();
-
-        while (iterator.hasNext()) {
-            if (iterator.hasPrevious()) {
-                System.out.println("Prev: " + iterator.previous());
-                iterator.next();
-            }
-            System.out.print("Next: ");
-            System.out.println(iterator.next());
+        System.out.println(array.asList().iterator());
+        for (int i : array.asList()) {
+            System.out.println(i);
         }
-        System.out.println("ForEachPrev");
-        iterator.forEachPrevious(System.out::println);
     }
 }

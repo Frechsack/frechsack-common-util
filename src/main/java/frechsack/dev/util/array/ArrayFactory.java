@@ -399,6 +399,11 @@ class ArrayFactory {
         }
 
         @Override
+        public Iterator<E> iterator() {
+            return array.iterator();
+        }
+
+        @Override
         public E set(int index, E element) {
             return array.getAndSet(index, element);
         }
