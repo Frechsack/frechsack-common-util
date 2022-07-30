@@ -8,9 +8,9 @@ import java.util.function.Supplier;
  * Package-private implementations of {@link Pair}.
  * @author Frechsack
  */
-class PairFactory
+class Pairs
 {
-    private PairFactory(){}
+    private Pairs(){}
 
     static class PairEntry<E, V> implements Pair<E, V>
     {

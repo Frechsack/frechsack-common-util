@@ -42,7 +42,7 @@ public interface Pair<E, V>
      */
     static <E, V> Pair<E, V> of(E e, V v)
     {
-        return new PairFactory.SimplePair<>(e, v);
+        return new Pairs.SimplePair<>(e, v);
     }
 
     /**
@@ -60,7 +60,7 @@ public interface Pair<E, V>
     {
         Objects.requireNonNull(e);
         Objects.requireNonNull(v);
-        return new PairFactory.SupplierPair<>(e, v);
+        return new Pairs.SupplierPair<>(e, v);
     }
 
     /**
@@ -75,7 +75,7 @@ public interface Pair<E, V>
     static <E, V> Pair<E, V> of(Map.Entry<E, V> entry)
     {
         Objects.requireNonNull(entry);
-        return new PairFactory.PairEntry<>(entry);
+        return new Pairs.PairEntry<>(entry);
     }
 
     /**

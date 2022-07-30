@@ -3,7 +3,6 @@ package frechsack.dev.util;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
