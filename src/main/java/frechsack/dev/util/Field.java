@@ -12,13 +12,25 @@ import java.util.function.Supplier;
  */
 public abstract class Field<E> implements Supplier<E>
 {
+    private final Supplier<E> generator;
     private Reference<E> computedReference;
+
+    public Field(Supplier<E> generator) {
+        this.generator = generator;
+    }
+
+    public Field() {
+        this.generator = null;
+    }
 
     /**
      * Recomputes this Field´s value.
      * @return The new value returned by {@link #get()}.
      */
-    protected abstract E compute();
+    protected E compute(){
+        assert generator != null;
+        return generator.get();
+    }
 
     /**
      * Forces this Field to recompute it´s value.
@@ -55,7 +67,6 @@ public abstract class Field<E> implements Supplier<E>
     @Override
     public String toString()
     {
-
         return "Field{" + "computedReference=" + computedReference + '}';
     }
 }

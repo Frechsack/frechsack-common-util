@@ -36,7 +36,7 @@ public class CollectionUtils {
             break;
         }
 
-        return isRandomAccess ? new MergedLists.MergedRandomAccessList<>(lists) : new MergedLists.MergedLinkedList<>(lists);
+        return isRandomAccess ? new MergedListFactory.MergedRandomAccessList<>(lists) : new MergedListFactory.MergedLinkedList<>(lists);
     }
 
     /**
@@ -134,7 +134,7 @@ public class CollectionUtils {
      */
     public static <E> Set<E> toSet(java.util.Collection<E> collection) {
         if (collection instanceof Set) return (Set<E>) collection;
-        return new Wrappers.SetWrapper<>(Objects.requireNonNull(collection));
+        return new WrapperFactory.SetWrapper<>(Objects.requireNonNull(collection));
     }
 
     /**
@@ -161,7 +161,7 @@ public class CollectionUtils {
      * @return Returns an Enumeration.
      */
     public static <E> Enumeration<E> toEnumeration(Iterator<E> iterator) {
-        return new Wrappers.IteratorWrapper<>(Objects.requireNonNull(iterator));
+        return new WrapperFactory.IteratorWrapper<>(Objects.requireNonNull(iterator));
     }
 
     /**
@@ -172,8 +172,8 @@ public class CollectionUtils {
      * @return Returns  a synchronized version of the specified Queue.
      */
     public static <E> Queue<E> synchronizedQueue(Queue<E> queue) {
-        if (queue instanceof SynchronousQueue || queue instanceof Wrappers.SynchronizedQueueWrapper) return queue;
-        return new Wrappers.SynchronizedQueueWrapper<>(Objects.requireNonNull(queue));
+        if (queue instanceof SynchronousQueue || queue instanceof WrapperFactory.SynchronizedQueueWrapper) return queue;
+        return new WrapperFactory.SynchronizedQueueWrapper<>(Objects.requireNonNull(queue));
     }
 
     /**
@@ -185,7 +185,7 @@ public class CollectionUtils {
      */
     public <E> Queue<E> synchronizedDeque(Deque<E> deque) {
         if (deque instanceof SynchronousQueue) return deque;
-        return new Wrappers.SynchronizedDequeWrapper<>(Objects.requireNonNull(deque));
+        return new WrapperFactory.SynchronizedDequeWrapper<>(Objects.requireNonNull(deque));
     }
 
 

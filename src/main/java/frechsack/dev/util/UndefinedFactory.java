@@ -5,6 +5,7 @@ import java.util.Objects;
 class UndefinedFactory {
 
     private UndefinedFactory(){}
+
     private enum State {
         UNDEFINED, NULL
     }
@@ -35,12 +36,6 @@ class UndefinedFactory {
         if(undefined instanceof Long) return (Undefined.Number<java.lang.Long>) undefined;
         if(undefined.isUndefined()) return Undefined.ofLong();
         return Undefined.ofLong(undefined.isNull() ? null : undefined.getLong());
-    }
-
-    static Undefined.Number<?> pipeNumber(Undefined.Number<?> undefined){
-        if(undefined instanceof Number<?>) return undefined;
-        if(undefined.isUndefined()) return Undefined.ofNumber();
-        return Undefined.ofNumber(undefined.isNull() ? null : undefined.get());
     }
 
     static class Generic<E> extends NonEmpty<E> implements Undefined<E> {
@@ -203,6 +198,24 @@ class UndefinedFactory {
         public boolean isNull() {
             return false;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if( o instanceof Undefined<?> compare){
+                if(isUndefined() && compare.isUndefined()) return true;
+                if(isNull() && compare.isNull()) return true;
+                return Objects.equals(get(), compare.get());
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            if(isNull()) return Objects.hash(State.NULL);
+            if(isUndefined()) return Objects.hash(State.UNDEFINED);
+            return Objects.hash(get());
+        }
     }
 
     private static class Empty<T> implements Undefined<T> {
@@ -230,6 +243,27 @@ class UndefinedFactory {
         @Override
         public boolean isNull() {
             return state == State.NULL;
+        }
+
+        @Override
+        public String toString() {
+            return "Empty{" + state + '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if( o instanceof Undefined<?> compare){
+                if(isUndefined() && compare.isUndefined()) return true;
+                if(isNull() && compare.isNull()) return true;
+                return Objects.equals(get(), compare.get());
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(state);
         }
     }
 

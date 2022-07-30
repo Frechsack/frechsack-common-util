@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class Wrappers {
+class WrapperFactory {
 
     record SetWrapper<E>(Collection<E> collection) implements Set<E> {
 

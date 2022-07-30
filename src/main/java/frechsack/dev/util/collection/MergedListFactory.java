@@ -7,9 +7,9 @@ import java.util.*;
 /**
  * Merges two or more lists together.
  */
-class MergedLists {
+class MergedListFactory {
 
-    private MergedLists() {}
+    private MergedListFactory() {}
 
     private static <E> int computeListIndex(List<E>[] lists, int index){
         int listLastIndex = 0;
@@ -102,8 +102,8 @@ class MergedLists {
 
         @Override
         public boolean addAll(int index, Collection<? extends E> c) {
-            int listIndex = MergedLists.computeListIndex(lists,index);
-            return lists[listIndex].addAll(index - MergedLists.computeListIndex(lists,listIndex),c);
+            int listIndex = MergedListFactory.computeListIndex(lists,index);
+            return lists[listIndex].addAll(index - MergedListFactory.computeListIndex(lists,listIndex),c);
         }
 
         @Override
@@ -127,26 +127,26 @@ class MergedLists {
 
         @Override
         public E get(int index) {
-            int listIndex = MergedLists.computeListIndex(lists,index);
-            return lists[listIndex].get(index - MergedLists.computeListOffset(lists,listIndex));
+            int listIndex = MergedListFactory.computeListIndex(lists,index);
+            return lists[listIndex].get(index - MergedListFactory.computeListOffset(lists,listIndex));
         }
 
         @Override
         public E set(int index, E element) {
-            int listIndex = MergedLists.computeListIndex(lists,index);
-            return lists[listIndex].set(index - MergedLists.computeListOffset(lists,listIndex),element);
+            int listIndex = MergedListFactory.computeListIndex(lists,index);
+            return lists[listIndex].set(index - MergedListFactory.computeListOffset(lists,listIndex),element);
         }
 
         @Override
         public void add(int index, E element) {
-            int listIndex = MergedLists.computeListIndex(lists,index);
-            lists[listIndex].add(index - MergedLists.computeListOffset(lists,listIndex),element);
+            int listIndex = MergedListFactory.computeListIndex(lists,index);
+            lists[listIndex].add(index - MergedListFactory.computeListOffset(lists,listIndex),element);
         }
 
         @Override
         public E remove(int index) {
-            int listIndex = MergedLists.computeListIndex(lists,index);
-            return lists[listIndex].remove(index - MergedLists.computeListOffset(lists, listIndex));
+            int listIndex = MergedListFactory.computeListIndex(lists,index);
+            return lists[listIndex].remove(index - MergedListFactory.computeListOffset(lists, listIndex));
         }
 
         @Override
@@ -241,8 +241,8 @@ class MergedLists {
 
         @Override
         public boolean addAll(int index, Collection<? extends E> c) {
-            int listIndex = MergedLists.computeListIndex(lists,index);
-            return lists[listIndex].addAll(index - MergedLists.computeListOffset(lists,listIndex),c);
+            int listIndex = MergedListFactory.computeListIndex(lists,index);
+            return lists[listIndex].addAll(index - MergedListFactory.computeListOffset(lists,listIndex),c);
         }
 
         @Override
@@ -266,26 +266,26 @@ class MergedLists {
 
         @Override
         public E get(int index) {
-            int listIndex = MergedLists.computeListIndex(lists,index);
-            return lists[listIndex].get(index - MergedLists.computeListOffset(lists, listIndex));
+            int listIndex = MergedListFactory.computeListIndex(lists,index);
+            return lists[listIndex].get(index - MergedListFactory.computeListOffset(lists, listIndex));
         }
 
         @Override
         public E set(int index, E element) {
-            int listIndex = MergedLists.computeListIndex(lists,index);
-            return lists[listIndex].set(index - MergedLists.computeListOffset(lists, listIndex),element);
+            int listIndex = MergedListFactory.computeListIndex(lists,index);
+            return lists[listIndex].set(index - MergedListFactory.computeListOffset(lists, listIndex),element);
         }
 
         @Override
         public void add(int index, E element) {
-            int listIndex = MergedLists.computeListIndex(lists,index);
-            lists[listIndex].add(index - MergedLists.computeListOffset(lists, listIndex),element);
+            int listIndex = MergedListFactory.computeListIndex(lists,index);
+            lists[listIndex].add(index - MergedListFactory.computeListOffset(lists, listIndex),element);
         }
 
         @Override
         public E remove(int index) {
-            int listIndex = MergedLists.computeListIndex(lists,index);
-            return lists[listIndex].remove(index - MergedLists.computeListOffset(lists, listIndex));
+            int listIndex = MergedListFactory.computeListIndex(lists,index);
+            return lists[listIndex].remove(index - MergedListFactory.computeListOffset(lists, listIndex));
         }
 
         @Override

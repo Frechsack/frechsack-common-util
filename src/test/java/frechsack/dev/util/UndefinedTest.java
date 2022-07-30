@@ -3,7 +3,9 @@ package frechsack.dev.util;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.function.DoublePredicate;
+import java.util.function.Predicate;
 
 public class UndefinedTest {
 
@@ -38,16 +40,12 @@ public class UndefinedTest {
 
     @Test
     public void testModify(){
-
-
-        Undefined.Number<Integer> in = Undefined.ofInt(null).or(() -> 12);
-        Undefined.Number<Long> d = in.mapDouble(Integer::doubleValue).filter((DoublePredicate) value -> value == 10).mapLong(Double::longValue);
-
-        System.out.println(d.getClass());
-
-        System.out.println(d.isUndefined());
-       // System.out.println(d.get());
-
+        Undefined.Number<Integer> a = Undefined.ofInt(null).or(() -> 12);
+        Assert.assertEquals(12,a.getInt());
+        Assert.assertFalse(a.flatMapBoolean((it) -> Undefined.ofBoolean(false)).getBoolean());
+        Assert.assertEquals(12, a.flatMap((it) -> Undefined.of(new Object())).flatMapNumber(it -> Undefined.ofNumber(12)).getDouble(),1);
+        Assert.assertTrue(a.flatMap((it) -> Undefined.of()).flatMapNumber(it -> Undefined.ofNumber()).mapInt(it -> 12).isUndefined());
+        Assert.assertTrue(a.transform(it -> Undefined.ofNumber(BigInteger.valueOf(100)).filter((Predicate<BigInteger>) b -> b.compareTo(BigInteger.valueOf(200)) > 0)).isUndefined());
     }
 
 }

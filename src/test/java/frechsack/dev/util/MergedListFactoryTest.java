@@ -10,7 +10,7 @@ import java.util.*;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 
-public class MergedListsTest {
+public class MergedListFactoryTest {
 
     @Test
     public void testStructure(){

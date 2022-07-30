@@ -1,8 +1,11 @@
 package frechsack.dev.util;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.*;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 public interface Undefined<E> {
 
@@ -60,7 +63,7 @@ public interface Undefined<E> {
 
     @SuppressWarnings("unchecked")
     static <E extends java.lang.Number> Undefined.Number<E> ofNumber(E value){
-        return value == null ? (Number<E>) UndefinedFactory.NULL_NUMBER : new UndefinedFactory.Number<E>(value);
+        return value == null ? (Number<E>) UndefinedFactory.NULL_NUMBER : new UndefinedFactory.Number<>(value);
     }
 
     @SuppressWarnings("unchecked")
@@ -124,43 +127,184 @@ public interface Undefined<E> {
         return of(map.apply(get()));
     }
 
+    @SuppressWarnings("unchecked")
     default <T extends java.lang.Number> Undefined.Number<T> mapNumber(Function<E,T> map){
-        if(isEmpty()) return this instanceof Undefined.Number ? (Number<T>) this : ofNumber();
+        if(isEmpty()) {
+            if(this instanceof Undefined.Number)
+                return (Number<T>) this;
+            else{
+                if(isNull()) return (Number<T>) UndefinedFactory.NULL_NUMBER;
+                else return (Number<T>)  UndefinedFactory.UNDEFINED_NUMBER;
+            }
+        }
         if(map == null) return ofNumber();
         return ofNumber(map.apply(get()));
     }
 
+    @SuppressWarnings("unchecked")
     default Undefined.Number<Integer> mapInt(Function<E, Integer> map){
-        if(isEmpty()) return this instanceof Undefined.Number ? (Number<Integer>) this : ofInt();
+        if(isEmpty()) {
+            if(this instanceof Undefined.Number)
+                return (Number<Integer>) this;
+            else{
+                if(isNull()) return (Number<Integer>) UndefinedFactory.NULL_NUMBER;
+                else return (Number<Integer>)  UndefinedFactory.UNDEFINED_NUMBER;
+            }
+        }
         if(map == null) return ofInt();
         return ofInt(map.apply(get()));
     }
 
+    @SuppressWarnings("unchecked")
     default Undefined.Number<Long> mapLong(Function<E, Long> map){
-        if(isEmpty()) return this instanceof Undefined.Number ? (Number<Long>) this : ofLong();
+        if(isEmpty()) {
+            if(this instanceof Undefined.Number)
+                return (Number<Long>) this;
+            else{
+                if(isNull()) return (Number<Long>) UndefinedFactory.NULL_NUMBER;
+                else return (Number<Long>)  UndefinedFactory.UNDEFINED_NUMBER;
+            }
+        }
         if(map == null) return ofLong();
         return ofLong(map.apply(get()));
     }
 
+    @SuppressWarnings("unchecked")
     default Undefined.Number<Double> mapDouble(Function<E, Double> map){
-        if(isEmpty()) return this instanceof Undefined.Number ? (Number<Double>) this : ofDouble();
+        if(isEmpty()) {
+            if(this instanceof Undefined.Number)
+                return (Number<Double>) this;
+            else{
+                if(isNull()) return (Number<Double>) UndefinedFactory.NULL_NUMBER;
+                else return (Number<Double>)  UndefinedFactory.UNDEFINED_NUMBER;
+            }
+        }
         if(map == null) return ofDouble();
         return ofDouble(map.apply(get()));
     }
 
     default Undefined.Boolean mapBoolean(Function<E, java.lang.Boolean> map){
-        if(isEmpty()) return this instanceof Undefined.Boolean ? (Boolean) this : ofBoolean();
+        if(isEmpty()) {
+            if(this instanceof Undefined.Boolean)
+                return (Boolean) this;
+            else{
+                if(isNull()) return UndefinedFactory.NULL_BOOLEAN;
+                else return UndefinedFactory.UNDEFINED_BOOLEAN;
+            }
+        }
         if(map == null) return ofBoolean();
         return ofBoolean(map.apply(get()));
     }
-
-    default Undefined<E> mapNull(){
-        if(isNull()) return this;
-        return of();
+    @SuppressWarnings("unchecked")
+    default <T> Undefined<T> flatMap(Function<E, Undefined<T>> map){
+        if(isEmpty()) return (Undefined<T>) this;
+        if(map == null) return of();
+        return map.apply(get());
     }
 
-    // TODO: Flat-map
-    // TODO: transform
+    @SuppressWarnings("unchecked")
+    default <T extends java.lang.Number> Undefined.Number<T> flatMapNumber(Function<E, Undefined.Number<T>> map){
+        if(isEmpty()) {
+            if(this instanceof Undefined.Number)
+                return (Number<T>) this;
+            else{
+                if(isNull()) return (Number<T>) UndefinedFactory.NULL_NUMBER;
+                else return (Number<T>)  UndefinedFactory.UNDEFINED_NUMBER;
+            }
+        }
+        if(map == null) return ofNumber();
+        return map.apply(get());
+    }
+
+    @SuppressWarnings("unchecked")
+    default Undefined.Number<Integer> flatMapInt(Function<E, Undefined.Number<Integer>> map){
+        if(isEmpty()) {
+            if(this instanceof Undefined.Number)
+                return (Number<Integer>) this;
+            else{
+                if(isNull()) return (Number<Integer>) UndefinedFactory.NULL_NUMBER;
+                else return (Number<Integer>)  UndefinedFactory.UNDEFINED_NUMBER;
+            }
+        }
+        if(map == null) return ofInt();
+        return map.apply(get());
+    }
+
+    @SuppressWarnings("unchecked")
+    default Undefined.Number<Long> flatMapLong(Function<E, Undefined.Number<Long>> map){
+        if(isEmpty()) {
+            if(this instanceof Undefined.Number)
+                return (Number<Long>) this;
+            else{
+                if(isNull()) return (Number<Long>) UndefinedFactory.NULL_NUMBER;
+                else return (Number<Long>)  UndefinedFactory.UNDEFINED_NUMBER;
+            }
+        }
+        if(map == null) return ofLong();
+        return map.apply(get());
+    }
+
+    @SuppressWarnings("unchecked")
+    default Undefined.Number<Double> flatMapDouble(Function<E, Undefined.Number<Double>> map){
+        if(isEmpty()) {
+            if(this instanceof Undefined.Number)
+                return (Number<Double>) this;
+            else{
+                if(isNull()) return (Number<Double>) UndefinedFactory.NULL_NUMBER;
+                else return (Number<Double>)  UndefinedFactory.UNDEFINED_NUMBER;
+            }
+        }
+        if(map == null) return ofDouble();
+        return map.apply(get());
+    }
+
+    default Undefined.Boolean flatMapBoolean(Function<E, Undefined.Boolean> map){
+        if(isEmpty()) {
+            if(this instanceof Undefined.Boolean)
+                return (Boolean) this;
+            else{
+                if(isNull()) return UndefinedFactory.NULL_BOOLEAN;
+                else return UndefinedFactory.UNDEFINED_BOOLEAN;
+            }
+        }
+        if(map == null) return ofBoolean();
+        return map.apply(get());
+    }
+
+    default <T> Undefined<T> transform(Function<Undefined<E>, Undefined<T>> map){
+        if(map == null) return of();
+        return map.apply(this);
+    }
+
+    default <T extends java.lang.Number> Undefined.Number<T> transformToNumber(Function<Undefined<E>, Undefined.Number<T>> map){
+        if(map == null) return ofNumber();
+        return map.apply(this);
+    }
+
+    default Undefined.Boolean transformToBoolean(Function<Undefined<E>, Undefined.Boolean> map){
+        if(map == null) return ofBoolean();
+        return map.apply(this);
+    }
+
+    default Stream<E> stream(){
+        return isEmpty() ? Stream.of() : Stream.of(get());
+    }
+
+    default void ifPresent(Consumer<E> consumer){
+        if(isPresent()) consumer.accept(get());
+    }
+
+    default void ifPresentOrElse(Consumer<E> consumer, Runnable empty){
+        if(isPresent()) consumer.accept(get());
+        else empty.run();
+    }
+
+    default <T> Undefined<E> ifMatches(Predicate<Undefined<E>> condition, Function<Undefined<E>, T> extractor, Consumer<T> function) {
+        if(condition.test(this))
+            function.accept(extractor.apply(this));
+        return this;
+    }
+
 
     interface Number<E extends java.lang.Number> extends Undefined<E>{
 
@@ -254,7 +398,80 @@ public interface Undefined<E> {
             return ofDouble(map.apply(get()));
         }
 
+        default Undefined.Number<Integer> flatMapInt(IntFunction<Undefined.Number<Integer>> map){
+            if(isEmpty()) return UndefinedFactory.pipeInteger(this);
+            if(map == null) return ofInt();
+            return map.apply(getInt());
+        }
 
+        default Undefined.Number<Long> flatMapLong(LongFunction<Undefined.Number<Long>> map){
+            if(isEmpty()) return UndefinedFactory.pipeLong(this);
+            if(map == null) return ofLong();
+            return map.apply(getLong());
+        }
+
+        default Undefined.Number<Double> flatMapDouble(DoubleFunction<Undefined.Number<Double>> map){
+            if(isEmpty()) return UndefinedFactory.pipeDouble(this);
+            if(map == null) return ofDouble();
+            return map.apply(getDouble());
+        }
+
+        default IntStream streamInt(){
+            return isEmpty() ? IntStream.empty() : IntStream.of(getInt());
+        }
+
+        default DoubleStream streamDouble(){
+            return isEmpty() ? DoubleStream.empty() : DoubleStream.of(getDouble());
+        }
+
+        default LongStream streamLong(){
+            return isEmpty() ? LongStream.empty() : LongStream.of(getLong());
+        }
+
+        default void ifPresent(IntConsumer consumer){
+            if(isPresent()) consumer.accept(getInt());
+        }
+
+        default void ifPresentOrElse(IntConsumer consumer, Runnable empty){
+            if(isPresent()) consumer.accept(getInt());
+            else empty.run();
+        }
+
+        default void ifPresent(DoubleConsumer consumer){
+            if(isPresent()) consumer.accept(getDouble());
+        }
+
+        default void ifPresentOrElse(DoubleConsumer consumer, Runnable empty){
+            if(isPresent()) consumer.accept(getDouble());
+            else empty.run();
+        }
+
+        default void ifPresent(LongConsumer consumer){
+            if(isPresent()) consumer.accept(getLong());
+        }
+
+        default void ifPresentOrElse(LongConsumer consumer, Runnable empty){
+            if(isPresent()) consumer.accept(getLong());
+            else empty.run();
+        }
+
+        default Undefined.Number<E> ifMatches(Predicate<Number<E>> condition, IntConsumer function) {
+            if(condition.test(this))
+                function.accept(getInt());
+            return this;
+        }
+
+        default Undefined.Number<E> ifMatches(Predicate<Number<E>> condition, DoubleConsumer function) {
+            if(condition.test(this))
+                function.accept(getDouble());
+            return this;
+        }
+
+        default Undefined.Number<E> ifMatches(Predicate<Number<E>> condition, LongConsumer function) {
+            if(condition.test(this))
+                function.accept(getLong());
+            return this;
+        }
     }
 
     interface Boolean extends Undefined<java.lang.Boolean> {
