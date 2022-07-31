@@ -100,6 +100,35 @@ class UndefinedFactory {
         }
     }
 
+    static class Float extends NonEmpty<java.lang.Float> implements Undefined.Number<java.lang.Float> {
+
+        private final float value;
+
+        Float(float value) {
+            this.value = value;
+        }
+
+        @Override
+        public java.lang.Float get() {
+            return value;
+        }
+
+        @Override
+        public int getInt() {
+            return (int) value;
+        }
+
+        @Override
+        public double getDouble() {
+            return value;
+        }
+
+        @Override
+        public long getLong() {
+            return (long) value;
+        }
+    }
+
     static class Long extends NonEmpty<java.lang.Long> implements Undefined.Number<java.lang.Long> {
 
         private final long value;

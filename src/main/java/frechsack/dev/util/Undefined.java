@@ -1,5 +1,6 @@
 package frechsack.dev.util;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.DoubleStream;
@@ -7,7 +8,7 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-public interface Undefined<E> {
+public interface Undefined<E> extends Iterable<E> {
 
     @SuppressWarnings("unchecked")
     static <E> Undefined<E> of(E value){
@@ -31,6 +32,20 @@ public interface Undefined<E> {
 
     static Undefined.Number<Integer> ofInt(int value){
         return new UndefinedFactory.Int(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    static Undefined.Number<Float> ofFloat(Float value){
+        return value == null ? (Number<Float>) UndefinedFactory.NULL_NUMBER : new UndefinedFactory.Float(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    static Undefined.Number<Float> ofFloat(){
+        return (Number<Float>) UndefinedFactory.UNDEFINED_NUMBER;
+    }
+
+    static Undefined.Number<Float> ofFloat(float value){
+        return new UndefinedFactory.Float(value);
     }
 
     @SuppressWarnings("unchecked")
@@ -305,6 +320,23 @@ public interface Undefined<E> {
         return this;
     }
 
+    @Override
+    default Iterator<E> iterator(){
+        return new Iterator<>() {
+            private boolean isInitial = true;
+
+            @Override
+            public boolean hasNext() {
+                return isInitial && isPresent();
+            }
+
+            @Override
+            public E next() {
+                isInitial = false;
+                return get();
+            }
+        };
+    }
 
     interface Number<E extends java.lang.Number> extends Undefined<E>{
 
