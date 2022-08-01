@@ -15,7 +15,7 @@ class ArrayFactory {
 
     private ArrayFactory() {}
 
-    static class PrimitiveBoolean extends Primitive<java.lang.Boolean> implements Array.Boolean {
+    static class PrimitiveBoolean extends Primitive<java.lang.Boolean> implements Array.Boolean, Cloneable {
 
         private final boolean[] array;
 
@@ -55,13 +55,20 @@ class ArrayFactory {
             array[index] = value;
         }
 
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        @Override
+        public Boolean clone() {
+            boolean[] copy = (boolean[]) toArray();
+            return new PrimitiveBoolean(copy);
+        }
+
         @Override
         public Object nativeArray() {
             return array;
         }
 
         @Override
-        public java.lang.Boolean[] copyBoxed(int start, int length) {
+        public java.lang.Boolean[] toArrayBoxed(int start, int length) {
             Objects.checkFromToIndex(start,start+length,length());
             java.lang.Boolean[] array = new java.lang.Boolean[length];
             for (int i = 0; i < length; i++) {
@@ -71,12 +78,12 @@ class ArrayFactory {
         }
 
         @Override
-        public Object copy(int start, int length) {
+        public Object toArray(int start, int length) {
             return Arrays.copyOfRange(array,start,start + length);
         }
     }
 
-    static class PrimitiveFloat extends Primitive<java.lang.Float> implements Array.Number<java.lang.Float> {
+    static class PrimitiveFloat extends Primitive<java.lang.Float> implements Array.Number<java.lang.Float>, Cloneable {
 
         private final float[] array;
 
@@ -104,6 +111,13 @@ class ArrayFactory {
         @Override
         public LongStream streamLong() {
             return stream().mapToLong(java.lang.Float::longValue);
+        }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        @Override
+        public Number<Float> clone() {
+            float[] copy = (float[]) toArray();
+            return new PrimitiveFloat(copy);
         }
 
         @Override
@@ -157,7 +171,7 @@ class ArrayFactory {
         }
 
         @Override
-        public Float[] copyBoxed(int start, int length) {
+        public Float[] toArrayBoxed(int start, int length) {
             Objects.checkFromToIndex(start,start+length,length());
             Float[] array = new Float[length];
             for (int i = 0; i < length; i++) {
@@ -167,7 +181,7 @@ class ArrayFactory {
         }
 
         @Override
-        public Object copy(int start, int length) {
+        public Object toArray(int start, int length) {
             return Arrays.copyOfRange(array,start,start + length);
         }
     }
@@ -199,6 +213,13 @@ class ArrayFactory {
         @Override
         public LongStream streamLong() {
             return LongStream.of(array);
+        }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        @Override
+        public Number<Long> clone() {
+            long[] copy = (long[]) toArray();
+            return new PrimitiveLong(copy);
         }
 
         @Override
@@ -252,7 +273,7 @@ class ArrayFactory {
         }
 
         @Override
-        public Long[] copyBoxed(int start, int length) {
+        public Long[] toArrayBoxed(int start, int length) {
             Objects.checkFromToIndex(start,start+length,length());
             Long[] array = new Long[length];
             for (int i = 0; i < length; i++) {
@@ -262,12 +283,12 @@ class ArrayFactory {
         }
 
         @Override
-        public Object copy(int start, int length) {
+        public Object toArray(int start, int length) {
             return Arrays.copyOfRange(array,start,start + length);
         }
     }
 
-    static class PrimitiveDouble extends Primitive<java.lang.Double> implements Array.Number<java.lang.Double> {
+    static class PrimitiveDouble extends Primitive<java.lang.Double> implements Array.Number<java.lang.Double>, Cloneable {
 
         private final double[] array;
 
@@ -298,6 +319,13 @@ class ArrayFactory {
         @Override
         public LongStream streamLong() {
             return DoubleStream.of(array).mapToLong(it -> (long)it);
+        }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        @Override
+        public Number<Double> clone() {
+            double[] copy = (double[]) toArray();
+            return new PrimitiveDouble(copy);
         }
 
         @Override
@@ -346,7 +374,7 @@ class ArrayFactory {
         }
 
         @Override
-        public Double[] copyBoxed(int start, int length) {
+        public Double[] toArrayBoxed(int start, int length) {
             Objects.checkFromToIndex(start,start+length,length());
             Double[] array = new Double[length];
             for (int i = 0; i < length; i++) {
@@ -356,12 +384,12 @@ class ArrayFactory {
         }
 
         @Override
-        public Object copy(int start, int length) {
+        public Object toArray(int start, int length) {
             return Arrays.copyOfRange(array,start,start + length);
         }
     }
 
-    static class PrimitiveInt extends Primitive<Integer> implements Array.Number<Integer> {
+    static class PrimitiveInt extends Primitive<Integer> implements Array.Number<Integer>, Cloneable {
 
         private final int[] array;
 
@@ -395,7 +423,7 @@ class ArrayFactory {
         }
 
         @Override
-        public Integer[] copyBoxed(int start, int length) {
+        public Integer[] toArrayBoxed(int start, int length) {
             Objects.checkFromToIndex(start,start+length,length());
             Integer[] array = new Integer[length];
             for (int i = 0; i < length; i++) {
@@ -405,7 +433,7 @@ class ArrayFactory {
         }
 
         @Override
-        public Object copy(int start, int length) {
+        public Object toArray(int start, int length) {
             return Arrays.copyOfRange(array,start,start + length);
         }
 
@@ -422,6 +450,13 @@ class ArrayFactory {
         @Override
         public LongStream streamLong(){
             return streamInt().asLongStream();
+        }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        @Override
+        public Number<Integer> clone() {
+            int[] copy = (int[]) toArray();
+            return new PrimitiveInt(copy);
         }
 
         @Override
@@ -455,7 +490,7 @@ class ArrayFactory {
         }
     }
 
-    static class GenericBoolean extends Generic<Boolean> implements Array.Boolean{
+    static class GenericBoolean extends Generic<Boolean> implements Array.Boolean, Cloneable{
 
         GenericBoolean(java.lang.Boolean[] array) {
             super(array);
@@ -471,9 +506,15 @@ class ArrayFactory {
         public void setBoolean(int index, boolean value) {
             array[index] = value;
         }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        @Override
+        public Boolean clone() {
+            return new GenericBoolean(toArrayBoxed());
+        }
     }
 
-    static class GenericNumber<E extends java.lang.Number> extends Generic<E> implements Array.Number<E> {
+    static class GenericNumber<E extends java.lang.Number> extends Generic<E> implements Array.Number<E>, Cloneable {
         private final IntFunction<E> intTransformer;
         private final DoubleFunction<E> doubleTransformer;
         private final LongFunction<E> longTransformer;
@@ -503,6 +544,12 @@ class ArrayFactory {
         @Override
         public int length() {
             return array.length;
+        }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        @Override
+        public Number<E> clone() {
+            return new GenericNumber<>(toArrayBoxed(),intTransformer,doubleTransformer,longTransformer);
         }
 
         @Override
@@ -539,7 +586,7 @@ class ArrayFactory {
         }
     }
 
-    static class Generic<E> extends AbstractArray<E> implements Array<E>{
+    static class Generic<E> extends AbstractArray<E> implements Array<E>, Cloneable{
         final E[] array;
 
         Generic(E[] array) {
@@ -578,7 +625,7 @@ class ArrayFactory {
 
         @SuppressWarnings("unchecked")
         @Override
-        public E[] copyBoxed(int start, int length) {
+        public E[] toArrayBoxed(int start, int length) {
             Objects.checkFromToIndex(start,start+length,length());
             E[] array = (E[]) java.lang.reflect.Array.newInstance(this.array.getClass().componentType(),length);
             System.arraycopy(this.array,start,array,0,length);
@@ -586,8 +633,26 @@ class ArrayFactory {
         }
 
         @Override
-        public Object copy(int start, int length) {
-            return copyBoxed(start,length);
+        public Object toArray(int start, int length) {
+            return toArrayBoxed(start,length);
+        }
+
+        @SuppressWarnings("MethodDoesntCallSuperMethod")
+        @Override
+        public Array<E> clone() {
+            E[] copy = toArrayBoxed();
+            return new Generic<>(copy);
+        }
+
+        @Override
+        public String toString() {
+            var stringBuilder = new StringBuilder();
+            for (int i = 0; i < array.length; i++) {
+                stringBuilder.append(array[i]);
+                if(i < array.length -1)
+                    stringBuilder.append(", ");
+            }
+            return "GenericArray{" + stringBuilder +  "}";
         }
     }
 
@@ -596,6 +661,18 @@ class ArrayFactory {
         @Override
         public boolean isPrimitive() {
             return true;
+        }
+
+        @Override
+        public String toString() {
+            var stringBuilder = new StringBuilder();
+            for(var iterator = this.iterator(); iterator.hasNext(); ){
+                var next = iterator.next();
+                stringBuilder.append(next);
+                if(iterator.hasNext())
+                    stringBuilder.append(", ");
+            }
+            return "PrimitiveArray{" + stringBuilder +  "}";
         }
     }
 
@@ -609,6 +686,11 @@ class ArrayFactory {
             if(list == null)
                 listReference = new SoftReference<>(list = new ArrayFactory.ArrayList<>(this));
             return list;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(nativeArray());
         }
     }
 
@@ -641,7 +723,7 @@ class ArrayFactory {
 
         @Override
         public Object[] toArray() {
-            return array.copyBoxed();
+            return array.toArrayBoxed();
         }
 
         @Override

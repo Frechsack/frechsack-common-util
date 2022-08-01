@@ -8,6 +8,14 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+/**
+ * An {@link Undefined} may contain a value, is null or is undefined.
+ * This type behaves like {@link java.util.Optional} but allows more than two states ('empty' and 'present').
+ * An Undefined has three possible states: 'undefined', 'null' or 'present'.
+ * To check if this instance represents 'undefined' use {@link #isUndefined()} and {@link  #isNull()} to check if it is 'null'.
+ * In contexts where this class type is used, it should never be considered, that an instance if this type is null. Instead, an instance of {@link #of()} should be passed.
+ * @param <E> The element-type.
+ */
 public interface Undefined<E> extends Iterable<E> {
 
     @SuppressWarnings("unchecked")
@@ -99,24 +107,55 @@ public interface Undefined<E> extends Iterable<E> {
     }
 
 
+    /**
+     * Returns the value, if this instance is not empty. May throws an exception in case it is empty.
+     * @return The value wrapped by this instance.
+     */
     E get();
 
+    /**
+     * Checks if this instance is of state 'undefined'.
+     * @return True if this instance represents 'undefined', otherwise false.
+     */
     boolean isUndefined();
 
+    /**
+     * Checks if this instance is of state 'null'.
+     * @return True if this instance represents 'null', otherwise false.
+     */
     boolean isNull();
 
+    /**
+     * Checks if this instance represents 'null' or 'undefined'.
+     * @return True if this instance is 'null' or 'undefined', otherwise false.
+     */
     default boolean isEmpty(){
         return isUndefined() || isNull();
     }
 
+    /**
+     * Checks if this instance contains an actual value.
+     * Such an instance will be considered as 'present'. Behaves like the opposite of {@link #isEmpty()}.
+     * @return True if this instance is not empty, otherwise false.
+     */
     default boolean isPresent(){
         return !isUndefined() && !isNull();
     }
 
+    /**
+     * If this instance contains a value, that value is returned, otherwise the passed argument is returned.
+     * @param value The value, that is returned in case this instance contains no value.
+     * @return This instance´s value or the passed one.
+     */
     default E orElse(E value) {
         return isEmpty() ? value : get();
     }
 
+    /**
+     * Returns a new {@link Undefined}, that contains the value of this instance if the specified test is passed. If not an {@link Undefined} with the state 'undefined' is returned.
+     * @param predicate The test.
+     * @return An instance of {@link Undefined}.
+     */
     default Undefined<E> filter(Predicate<E> predicate) {
         if(isEmpty()) return this;
         if(predicate == null) return Undefined.of();

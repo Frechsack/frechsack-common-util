@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class ArrayTest {
 
@@ -22,5 +23,7 @@ public class ArrayTest {
         Assert.assertEquals(10d,bigDecimals.replace(1,2),0.1);
         Assert.assertFalse(bigDecimals.isPrimitive());
 
+        Array.Number<BigInteger> bigIntegers = Array.ofNumber(BigInteger.ONE, BigInteger.ZERO);
+        Assert.assertArrayEquals(new BigInteger[]{BigInteger.ONE, BigInteger.ZERO},bigIntegers.toArrayBoxed());
     }
 }

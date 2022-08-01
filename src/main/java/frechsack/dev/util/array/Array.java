@@ -31,7 +31,7 @@ public interface Array<E> extends Iterable<E> {
         if(componentType == Byte.class)
             return (Number<E>) new ArrayFactory.GenericNumber<>((Byte[])array, it -> (byte) it, it -> (byte) it, it -> (byte) it);
         if(componentType == Short.class)
-            return (Number<E>) new ArrayFactory.GenericNumber<Short>((Short[])array, it -> (short) it, it -> (short) it, it -> (short) it);
+            return (Number<E>) new ArrayFactory.GenericNumber<>((Short[])array, it -> (short) it, it -> (short) it, it -> (short) it);
         throw new IllegalArgumentException("Unknown class-type: " + componentType + ". Please provide some custom converters for this type by: " + "ofNumber(array,intTransformer,doubleTransformer,longTransformer)");
     }
 
@@ -102,23 +102,28 @@ public interface Array<E> extends Iterable<E> {
 
     Object nativeArray();
 
-    default E[] copyBoxed(){
-        return copyBoxed(0,length());
+    default E[] toArrayBoxed(){
+        return toArrayBoxed(0,length());
     }
 
-    default E[] copyBoxed(int start){
-        return copyBoxed(start,length()-start);
+    default E[] toArrayBoxed(int start){
+        return toArrayBoxed(start,length()-start);
     }
-    E[] copyBoxed(int start, int length);
+    E[] toArrayBoxed(int start, int length);
 
-    default Object copy(){
-        return copy(0,length());
+    default Object toArray(){
+        return toArray(0,length());
     }
 
-    default Object copy(int start){
-        return copy(start,length()-start);
+    default Object toArray(int start){
+        return toArray(start,length()-start);
     }
-    Object copy(int start, int length);
+    Object toArray(int start, int length);
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    default Array<E> clone() {
+        return new ArrayFactory.Generic<>(toArrayBoxed());
+    }
 
     default boolean contains(Object element){
         return indexOf(element) > -1;
@@ -138,13 +143,13 @@ public interface Array<E> extends Iterable<E> {
 
     @Override
     default Iterator<E> iterator(){
-        return new ArrayFactory.Iterators.Iterator<E>(this);
+        return new ArrayFactory.Iterators.Iterator<>(this);
     }
 
     List<E> toList();
 
     default int lastIndexOf(Object element){
-        for(int i = length() - 1 ; i > 0 ; i++)
+        for(int i = length() - 1 ; i > 0 ; i--)
             if(Objects.equals(element,get(i))) return i;
         return -1;
     }
@@ -174,6 +179,9 @@ public interface Array<E> extends Iterable<E> {
         default LongStream streamLong(){
             return stream().filter(Objects::nonNull).mapToLong(java.lang.Number::longValue);
         }
+
+        @Override
+        Array.Number<E> clone();
 
         int getInt(int index);
 
@@ -211,6 +219,9 @@ public interface Array<E> extends Iterable<E> {
         boolean getBoolean(int index);
 
         void setBoolean(int index, boolean value);
+
+        @Override
+        Array.Boolean clone();
 
         default boolean replace(int index, boolean value){
             var oldValue = getBoolean(index);
