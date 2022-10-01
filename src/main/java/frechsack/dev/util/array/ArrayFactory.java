@@ -2,6 +2,7 @@ package frechsack.dev.util.array;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
+import java.sql.Clob;
 import java.util.*;
 import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;
@@ -691,6 +692,11 @@ class ArrayFactory {
         @Override
         public int hashCode() {
             return Objects.hashCode(nativeArray());
+        }
+
+        @Override
+        public Array<E> clone() {
+            return Array.super.clone();
         }
     }
 
