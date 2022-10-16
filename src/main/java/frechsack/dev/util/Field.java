@@ -10,7 +10,7 @@ import java.util.function.Supplier;
  * @param <E> The value´s class-type.
  * @author frechsack
  */
-public abstract class Field<E> implements Supplier<E>
+public class Field<E> implements Supplier<E>
 {
     private final Supplier<E> generator;
     private Reference<E> computedReference;
