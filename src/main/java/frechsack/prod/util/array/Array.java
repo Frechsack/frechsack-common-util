@@ -1,4 +1,4 @@
-package frechsack.dev.util.array;
+package frechsack.prod.util.array;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

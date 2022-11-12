@@ -1,8 +1,7 @@
-package frechsack.dev.util.array;
+package frechsack.prod.util.array;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
-import java.sql.Clob;
 import java.util.*;
 import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;

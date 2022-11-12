@@ -1,4 +1,4 @@
-package frechsack.dev.util.filesystem;
+package frechsack.prod.util.filesystem;
 
 import java.nio.file.Path;
 

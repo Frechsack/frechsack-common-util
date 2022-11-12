@@ -1,6 +1,6 @@
-package frechsack.dev.util;
+package frechsack.prod.util;
 
-import frechsack.dev.util.collection.CollectionUtils;
+import frechsack.prod.util.collection.CollectionUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class MergedListFactoryTest {
         List<Integer> sourceC = new ArrayList<>(List.of(7,8,9));
         List<Integer> sourceD = new ArrayList<>(List.of(10,11,12));
 
-        List<Integer> destination = CollectionUtils.merge(sourceA,sourceB,sourceC, sourceD);
+        List<Integer> destination = CollectionUtils.merged(sourceA,sourceB,sourceC, sourceD);
         MatcherAssert.assertThat(destination, instanceOf(RandomAccess.class));
 
         Assert.assertArrayEquals(destination.toArray(),new Object[] { 1,2, 3,4,5,6,7,8,9,10,11,12 });
@@ -27,7 +27,7 @@ public class MergedListFactoryTest {
 
         sourceA = new LinkedList<>(List.of(1,2));
         sourceB = new LinkedList<>(List.of(3,4));
-        destination = CollectionUtils.merge(sourceA,sourceB);
+        destination = CollectionUtils.merged(sourceA,sourceB);
 
         MatcherAssert.assertThat(destination, not(instanceOf(RandomAccess.class)));
     }
@@ -37,7 +37,7 @@ public class MergedListFactoryTest {
         List<Integer> sourceA = new ArrayList<>(List.of(1,2,3));
         List<Integer> sourceB = new ArrayList<>(List.of(4,5,6));
         List<Integer> sourceC = new ArrayList<>(List.of(7,8,9));
-        List<Integer> destination = CollectionUtils.merge(sourceA,sourceB,sourceC);
+        List<Integer> destination = CollectionUtils.merged(sourceA,sourceB,sourceC);
 
         destination.add(10);
         Assert.assertArrayEquals(sourceC.toArray(),new Object[] { 7,8,9,10 });
@@ -55,7 +55,7 @@ public class MergedListFactoryTest {
         List<Integer> sourceB = new ArrayList<>(List.of(4,5,6));
         List<Integer> sourceC = new ArrayList<>(List.of(7,8,9));
 
-        List<Integer> destination = CollectionUtils.merge(sourceA,sourceB,sourceC);
+        List<Integer> destination = CollectionUtils.merged(sourceA,sourceB,sourceC);
 
         Iterator<Integer> iterator = destination.iterator();
         //noinspection ForLoopReplaceableByForEach

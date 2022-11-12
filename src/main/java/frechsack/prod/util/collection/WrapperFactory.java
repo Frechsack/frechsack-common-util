@@ -1,4 +1,4 @@
-package frechsack.dev.util.collection;
+package frechsack.prod.util.collection;
 
 import java.util.*;
 import java.util.function.Consumer;

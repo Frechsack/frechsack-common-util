@@ -1,4 +1,4 @@
-package frechsack.stage.util;
+package frechsack.prod.util;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,17 +12,71 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-class UndefinedFactory {
 
-    static final frechsack.stage.util.Undefined<?> UNDEFINED = new UndefinedFactory.Undefined();
-    static final frechsack.stage.util.Undefined<?> NULL = new UndefinedFactory.Null();
+/**
+ * Provides implementations and methods for {@link frechsack.prod.util.Undefined};
+ */
+public class UndefinedFactory {
 
-    static class Present<Type> implements frechsack.stage.util.Undefined<Type> {
+    /**
+     * An Undefined containing undefined.
+     */
+    static final frechsack.prod.util.Undefined<?> UNDEFINED = new UndefinedFactory.Undefined();
+
+    /**
+     * An Undefined containing {@code null}.
+     */
+    static final frechsack.prod.util.Undefined<?> NULL = new UndefinedFactory.Null();
+
+    private static boolean equals(frechsack.prod.util.Undefined<?> a, Object b){
+        if(a == b)
+            return true;
+        if(!(b instanceof frechsack.prod.util.Undefined<?> cb))
+            return false;
+
+        if(a.isUndefined() && cb.isUndefined())
+            return true;
+        if(a.isNull() && cb.isNull())
+            return true;
+        return Objects.equals(a.get(), cb.get());
+    }
+
+    private static String toString(frechsack.prod.util.Undefined<?> a){
+        if(a.isUndefined())
+            return "Undefined{undefined}";
+        if(a.isNull())
+            return "Undefined{null}";
+        return "Undefined{" + a.get() + "}";
+
+    }
+
+    /**
+     * Base implementation of {@link frechsack.prod.util.Undefined}.
+     * @param <Type> The instance type.
+     */
+    public static abstract class AbstractUndefined<Type> implements frechsack.prod.util.Undefined<Type> {
+
+        @Override
+        public boolean equals(Object obj) {
+            return UndefinedFactory.equals(this,obj);
+        }
+
+        @Override
+        public String toString() {
+            return UndefinedFactory.toString(this);
+        }
+    }
+
+    /**
+     * An Undefined, that contains a value. The value of this Undefined will never be null.
+     * @param <Type> The instance type.
+     */
+    static class Present<Type> extends AbstractUndefined<Type> implements frechsack.prod.util.Undefined<Type> {
 
         private final Type value;
 
         Present(Type value) {
-            this.value = value;
+            this.value = Objects.requireNonNull(value);
         }
 
         @Override
@@ -50,15 +104,15 @@ class UndefinedFactory {
         }
 
         @Override
-        public <Out> frechsack.stage.util.Undefined<Out> map(Function<Type, Out> mapper) {
+        public <Out> frechsack.prod.util.Undefined<Out> map(Function<Type, Out> mapper) {
             Out value = mapper.apply(this.value);
             return value == null
-                    ? frechsack.stage.util.Undefined.nullable()
+                    ? frechsack.prod.util.Undefined.nullable()
                     : new Present<>(value);
         }
 
         @Override
-        public <Out> frechsack.stage.util.Undefined<Out> flatMap(Function<Type, frechsack.stage.util.Undefined<Out>> mapper) {
+        public <Out> frechsack.prod.util.Undefined<Out> flatMap(Function<Type, frechsack.prod.util.Undefined<Out>> mapper) {
             return Objects.requireNonNull(mapper.apply(this.value));
         }
 
@@ -83,7 +137,7 @@ class UndefinedFactory {
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Type> or(Supplier<? extends frechsack.stage.util.Undefined<Type>> supplier) {
+        public frechsack.prod.util.Undefined<Type> or(Supplier<? extends frechsack.prod.util.Undefined<Type>> supplier) {
             return this;
         }
 
@@ -93,15 +147,15 @@ class UndefinedFactory {
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Type> filter(Predicate<? super Type> filter) {
+        public frechsack.prod.util.Undefined<Type> filter(Predicate<? super Type> filter) {
             return filter.test(get())
                     ? this
-                    : frechsack.stage.util.Undefined.undefined();
+                    : frechsack.prod.util.Undefined.undefined();
         }
 
         @Override
-        public Optional<Optional<Type>> toOptional() {
-            return Optional.of(Optional.of(value));
+        public Optional<Type> toOptional() {
+            return Optional.of(value);
         }
 
         @Override
@@ -124,22 +178,22 @@ class UndefinedFactory {
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Type> ifNullMap(Supplier<frechsack.stage.util.Undefined<Type>> supplier) {
+        public frechsack.prod.util.Undefined<Type> ifNullMap(Supplier<frechsack.prod.util.Undefined<Type>> supplier) {
             return this;
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Type> ifUndefinedMap(Supplier<frechsack.stage.util.Undefined<Type>> supplier) {
+        public frechsack.prod.util.Undefined<Type> ifUndefinedMap(Supplier<frechsack.prod.util.Undefined<Type>> supplier) {
             return this;
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Type> ifPresentMap(Function<Type, frechsack.stage.util.Undefined<Type>> mapper) {
+        public frechsack.prod.util.Undefined<Type> ifPresentMap(Function<Type, frechsack.prod.util.Undefined<Type>> mapper) {
             return Objects.requireNonNull(mapper.apply(value));
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Type> ifEmptyMap(Supplier<frechsack.stage.util.Undefined<Type>> supplier) {
+        public frechsack.prod.util.Undefined<Type> ifEmptyMap(Supplier<frechsack.prod.util.Undefined<Type>> supplier) {
             return this;
         }
 
@@ -184,9 +238,12 @@ class UndefinedFactory {
                 return DoubleStream.of(((Number) value).doubleValue());
             throw new IllegalStateException("Value is not a number");
         }
-    }
 
-    private static class Null implements frechsack.stage.util.Undefined<Object> {
+    }
+    /**
+     * An {@link frechsack.prod.util.Undefined} that contains{@code null}.
+     */
+    private static class Null extends AbstractUndefined<Object> implements frechsack.prod.util.Undefined<Object> {
 
         @Override
         public Object get() {
@@ -205,14 +262,14 @@ class UndefinedFactory {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <Out> frechsack.stage.util.Undefined<Out> map(Function<Object, Out> mapper) {
-            return (frechsack.stage.util.Undefined<Out>) this;
+        public <Out> frechsack.prod.util.Undefined<Out> map(Function<Object, Out> mapper) {
+            return (frechsack.prod.util.Undefined<Out>) this;
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public <Out> frechsack.stage.util.Undefined<Out> flatMap(Function<Object, frechsack.stage.util.Undefined<Out>> mapper) {
-            return (frechsack.stage.util.Undefined<Out>) this;
+        public <Out> frechsack.prod.util.Undefined<Out> flatMap(Function<Object, frechsack.prod.util.Undefined<Out>> mapper) {
+            return (frechsack.prod.util.Undefined<Out>) this;
         }
 
         @Override
@@ -236,8 +293,8 @@ class UndefinedFactory {
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> or(Supplier<? extends frechsack.stage.util.Undefined<Object>> supplier) {
-            return Objects.requireNonNull ((frechsack.stage.util.Undefined<Object>) supplier.get());
+        public frechsack.prod.util.Undefined<Object> or(Supplier<? extends frechsack.prod.util.Undefined<Object>> supplier) {
+            return Objects.requireNonNull ((frechsack.prod.util.Undefined<Object>) supplier.get());
         }
 
         @Override
@@ -246,12 +303,12 @@ class UndefinedFactory {
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> filter(Predicate<? super Object> filter) {
+        public frechsack.prod.util.Undefined<Object> filter(Predicate<? super Object> filter) {
             return this;
         }
 
         @Override
-        public Optional<Optional<Object>> toOptional() {
+        public Optional<Object> toOptional() {
             return Optional.of(Optional.empty());
         }
 
@@ -274,22 +331,22 @@ class UndefinedFactory {
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> ifNullMap(Supplier<frechsack.stage.util.Undefined<Object>> supplier) {
+        public frechsack.prod.util.Undefined<Object> ifNullMap(Supplier<frechsack.prod.util.Undefined<Object>> supplier) {
             return Objects.requireNonNull(supplier.get());
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> ifUndefinedMap(Supplier<frechsack.stage.util.Undefined<Object>> supplier) {
+        public frechsack.prod.util.Undefined<Object> ifUndefinedMap(Supplier<frechsack.prod.util.Undefined<Object>> supplier) {
             return this;
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> ifPresentMap(Function<Object, frechsack.stage.util.Undefined<Object>> mapper) {
+        public frechsack.prod.util.Undefined<Object> ifPresentMap(Function<Object, frechsack.prod.util.Undefined<Object>> mapper) {
             return this;
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> ifEmptyMap(Supplier<frechsack.stage.util.Undefined<Object>> supplier) {
+        public frechsack.prod.util.Undefined<Object> ifEmptyMap(Supplier<frechsack.prod.util.Undefined<Object>> supplier) {
             return Objects.requireNonNull(supplier.get());
         }
 
@@ -322,9 +379,13 @@ class UndefinedFactory {
         public boolean isUndefined() {
             return false;
         }
+
     }
 
-    private static class Undefined implements frechsack.stage.util.Undefined<Object> {
+    /**
+     * An {@link frechsack.prod.util.Undefined} that contains undefined.
+     */
+    private static class Undefined extends AbstractUndefined<Object> implements frechsack.prod.util.Undefined<Object> {
 
         @Override
         public Object get() {
@@ -353,14 +414,14 @@ class UndefinedFactory {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <Out> frechsack.stage.util.Undefined<Out> map(Function<Object, Out> mapper) {
-            return (frechsack.stage.util.Undefined<Out>) this;
+        public <Out> frechsack.prod.util.Undefined<Out> map(Function<Object, Out> mapper) {
+            return (frechsack.prod.util.Undefined<Out>) this;
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public <Out> frechsack.stage.util.Undefined<Out> flatMap(Function<Object, frechsack.stage.util.Undefined<Out>> mapper) {
-            return (frechsack.stage.util.Undefined<Out>) this;
+        public <Out> frechsack.prod.util.Undefined<Out> flatMap(Function<Object, frechsack.prod.util.Undefined<Out>> mapper) {
+            return (frechsack.prod.util.Undefined<Out>) this;
         }
 
         @Override
@@ -384,8 +445,8 @@ class UndefinedFactory {
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> or(Supplier<? extends frechsack.stage.util.Undefined<Object>> supplier) {
-            return Objects.requireNonNull((frechsack.stage.util.Undefined<Object>) supplier.get());
+        public frechsack.prod.util.Undefined<Object> or(Supplier<? extends frechsack.prod.util.Undefined<Object>> supplier) {
+            return Objects.requireNonNull((frechsack.prod.util.Undefined<Object>) supplier.get());
         }
 
         @Override
@@ -394,12 +455,12 @@ class UndefinedFactory {
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> filter(Predicate<? super Object> filter) {
+        public frechsack.prod.util.Undefined<Object> filter(Predicate<? super Object> filter) {
             return this;
         }
 
         @Override
-        public Optional<Optional<Object>> toOptional() {
+        public Optional<Object> toOptional() {
             return Optional.empty();
         }
 
@@ -422,22 +483,22 @@ class UndefinedFactory {
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> ifNullMap(Supplier<frechsack.stage.util.Undefined<Object>> supplier) {
+        public frechsack.prod.util.Undefined<Object> ifNullMap(Supplier<frechsack.prod.util.Undefined<Object>> supplier) {
             return this;
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> ifUndefinedMap(Supplier<frechsack.stage.util.Undefined<Object>> supplier) {
+        public frechsack.prod.util.Undefined<Object> ifUndefinedMap(Supplier<frechsack.prod.util.Undefined<Object>> supplier) {
             return Objects.requireNonNull(supplier.get());
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> ifPresentMap(Function<Object, frechsack.stage.util.Undefined<Object>> mapper) {
+        public frechsack.prod.util.Undefined<Object> ifPresentMap(Function<Object, frechsack.prod.util.Undefined<Object>> mapper) {
             return this;
         }
 
         @Override
-        public frechsack.stage.util.Undefined<Object> ifEmptyMap(Supplier<frechsack.stage.util.Undefined<Object>> supplier) {
+        public frechsack.prod.util.Undefined<Object> ifEmptyMap(Supplier<frechsack.prod.util.Undefined<Object>> supplier) {
             return Objects.requireNonNull(supplier.get());
         }
 
@@ -460,5 +521,6 @@ class UndefinedFactory {
         public LongStream longStream() {
             return LongStream.empty();
         }
+
     }
 }

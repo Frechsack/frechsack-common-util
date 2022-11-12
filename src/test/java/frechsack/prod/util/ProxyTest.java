@@ -1,4 +1,4 @@
-package frechsack.dev.util;
+package frechsack.prod.util;
 
 import org.junit.Test;
 import org.junit.Assert;

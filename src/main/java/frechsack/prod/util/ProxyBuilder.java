@@ -1,4 +1,4 @@
-package frechsack.dev.util;
+package frechsack.prod.util;
 
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
@@ -171,6 +171,10 @@ public class ProxyBuilder<E> {
             return index < arguments.length
                     ? Undefined.of(arguments[index])
                     : Undefined.of();
+        }
+
+        public Class<?> methodClass(){
+            return method.getDeclaringClass();
         }
 
         /**

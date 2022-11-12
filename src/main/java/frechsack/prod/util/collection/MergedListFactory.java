@@ -1,4 +1,6 @@
-package frechsack.dev.util.collection;
+package frechsack.prod.util.collection;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.*;
@@ -95,13 +97,13 @@ class MergedListFactory {
         }
 
         @Override
-        public boolean addAll(Collection<? extends E> c) {
+        public boolean addAll(@NotNull Collection<? extends E> c) {
             if(lists.length != 0) return lists[lists.length - 1].addAll(c);
             return false;
         }
 
         @Override
-        public boolean addAll(int index, Collection<? extends E> c) {
+        public boolean addAll(int index, @NotNull Collection<? extends E> c) {
             int listIndex = MergedListFactory.computeListIndex(lists,index);
             return lists[listIndex].addAll(index - MergedListFactory.computeListIndex(lists,listIndex),c);
         }
@@ -114,7 +116,7 @@ class MergedListFactory {
         }
 
         @Override
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(@NotNull Collection<?> c) {
             boolean isModified = false;
             for(List<E> list : lists) if(list.retainAll(c)) isModified = true;
             return isModified;
@@ -234,13 +236,13 @@ class MergedListFactory {
         }
 
         @Override
-        public boolean addAll(Collection<? extends E> c) {
+        public boolean addAll(@NotNull Collection<? extends E> c) {
             if(lists.length != 0) return lists[lists.length - 1].addAll(c);
             return false;
         }
 
         @Override
-        public boolean addAll(int index, Collection<? extends E> c) {
+        public boolean addAll(int index, @NotNull Collection<? extends E> c) {
             int listIndex = MergedListFactory.computeListIndex(lists,index);
             return lists[listIndex].addAll(index - MergedListFactory.computeListOffset(lists,listIndex),c);
         }
@@ -253,7 +255,7 @@ class MergedListFactory {
         }
 
         @Override
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(@NotNull Collection<?> c) {
             boolean isModified = false;
             for(List<E> list : lists) if(list.retainAll(c)) isModified = true;
             return isModified;
