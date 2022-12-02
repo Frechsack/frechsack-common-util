@@ -94,6 +94,26 @@ public class CollectionUtils {
     }
 
     /**
+     * Removes any duplicate elements from a Collection.
+     * @param collection The Collection.
+     * @return Returns the input Collection.
+     * @param <Type> The Collections elements type.
+     * @param <Clt> The Collection-type.
+     */
+    public static <Type, Clt extends Collection<Type>> Clt removeDuplicates(Clt collection){
+        Set<Type> duplicateHandle = new HashSet<>();
+        Type element;
+        for(Iterator<Type> iterator = collection.iterator(); iterator.hasNext(); ){
+            element = iterator.next();
+            if(duplicateHandle.contains(element))
+                iterator.remove();
+            else
+                duplicateHandle.add(element);
+        }
+        return collection;
+    }
+
+    /**
      * Creates a Stream over all elements contained in the specified Collection. The elements will be mapped to their index in the collection. The order of the elements depends on the implementation of {@link Collection#iterator()}.
      *
      * @param clt The Collection.
