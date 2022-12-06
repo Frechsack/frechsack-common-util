@@ -15,6 +15,29 @@ public class StreamUtilsTest {
     public record Person(String first, String last, int age){}
 
     @Test
+    public void concat(){
+        Object[] result = StreamUtils.concat(
+                IntStream.rangeClosed(0,3).boxed(),
+                IntStream.rangeClosed(4,6).boxed(),
+                IntStream.rangeClosed(7,8).boxed(),
+                IntStream.rangeClosed(9,12).boxed()
+        ).toArray();
+
+        Assert.assertArrayEquals(
+                IntStream.rangeClosed(0,12).boxed().toArray(),
+                result
+        );
+
+        result = StreamUtils.concat(IntStream.rangeClosed(0,5).boxed()).toArray();
+
+        Assert.assertArrayEquals(
+                IntStream.rangeClosed(0,5).boxed().toArray(),
+                result
+        );
+    }
+
+
+    @Test
     public void multiMapAdd(){
 
         Assert.assertArrayEquals(

@@ -1,18 +1,27 @@
 package frechsack.prod.util.stream;
 
-import frechsack.prod.util.concurrent.SingleRunnable;
-
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class StreamUtils {
 
     private StreamUtils() {}
+
+    @SuppressWarnings("unchecked")
+    @SafeVarargs
+    public static <Type> Stream<Type> concat(Stream<? extends Type>... streams){
+        if(streams.length == 0)
+            return Stream.empty();
+        if(streams.length == 1)
+            return (Stream<Type>) streams[0];
+
+        Stream<Type> concat = (Stream<Type>) streams[0];
+        for (int i = 1; i < streams.length; i++)
+            concat = Stream.concat(concat, streams[i]);
+        return concat;
+    }
 
     /**
      * Returns a function that adds the elements from the given Stream. This function should be used with {@link Stream#mapMulti(BiConsumer)} to add elements to a Stream.
