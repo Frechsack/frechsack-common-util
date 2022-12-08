@@ -4,40 +4,102 @@ import frechsack.prod.util.concurrent.ConcurrentFunction;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class ConcurrentFunctionTest {
 
-
     @Test
-    public void concurrent(){
-        final AtomicInteger operationsCounter = new AtomicInteger(0);
-        final Function<String, Integer> toInt = s -> {
-            operationsCounter.addAndGet(1);
+    public void concurrentException() throws ExecutionException, InterruptedException {
+        final int THREAD_COUNT = 60;
+        final AtomicInteger callCount = new AtomicInteger(0);
+        final ConcurrentFunction<String, Integer> function = new ConcurrentFunction<>(in -> {
+            callCount.incrementAndGet();
             try {
-                Thread.sleep(10);
+                Thread.sleep(100L);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            return Integer.parseInt(s);
-        };
+            throw new RuntimeException("TestException");
+        });
 
-        final ConcurrentFunction<String, Integer> toIntConcurrent = new ConcurrentFunction<>(toInt);
+        final ExecutorService exec = Executors.newFixedThreadPool(THREAD_COUNT);
+        final List<CompletableFuture<?>> tests = new ArrayList<>(THREAD_COUNT);
+        final int INPUT_MODULAR = 20;
+        for(int i = 0; i < THREAD_COUNT; i++){
+            final String input = Integer.toString(i % INPUT_MODULAR);
+            tests.add(
+                    CompletableFuture.runAsync(
+                            () -> Assert.assertThrows(ExecutionException.class, () -> CompletableFuture.runAsync(() -> function.apply(input)).get(1000L, TimeUnit.MILLISECONDS)), exec
+                    ));
+        }
 
-        Object[] result = Stream.concat(
-                IntStream.range(0, 19).boxed(),
-                IntStream.range(10, 19).boxed()
-            ).parallel().map(Object::toString).map(toIntConcurrent).distinct().sorted().toArray();
+        CompletableFuture.allOf(tests.toArray(CompletableFuture[]::new)).get();
+        exec.shutdown();
+        Assert.assertTrue(callCount.get() < THREAD_COUNT);
+    }
 
-        Assert.assertArrayEquals(
-                IntStream.range(0,19).boxed().toArray(),
-                result
-        );
+    @Test
+    public void concurrentDifferentArgs() throws ExecutionException, InterruptedException {
+        final int THREAD_COUNT = 60;
+        final AtomicInteger callCount = new AtomicInteger(0);
+        final ConcurrentFunction<String, Integer> function = new ConcurrentFunction<>(in -> {
+            callCount.incrementAndGet();
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return Integer.parseInt(in);
+        });
 
-        Assert.assertEquals(operationsCounter.get(), 19);
+        final List<CompletableFuture<?>> tests = new ArrayList<>(THREAD_COUNT);
+        final ExecutorService exec = Executors.newFixedThreadPool(THREAD_COUNT);
+        final int INPUT_MODULAR = 20;
+        for(int i = 0; i < THREAD_COUNT; i++){
+            final String input = Integer.toString(i % INPUT_MODULAR);
+            final int expected = i % INPUT_MODULAR;
+            tests.add(
+                    CompletableFuture.runAsync(
+                            () -> Assert.assertEquals(expected,(int) function.apply(input)),exec
+                    ));
+        }
+
+        CompletableFuture.allOf(tests.toArray(CompletableFuture[]::new)).get();
+        exec.shutdown();
+        Assert.assertTrue(callCount.get() <= THREAD_COUNT);
+
+    }
+    @Test
+    public void concurrentSameArgs() throws ExecutionException, InterruptedException {
+        final int THREAD_COUNT = 20;
+        final AtomicInteger callCount = new AtomicInteger(0);
+        final ConcurrentFunction<String, Integer> function = new ConcurrentFunction<>(in -> {
+            callCount.incrementAndGet();
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return Integer.parseInt(in);
+        });
+
+        final List<CompletableFuture<?>> tests = new ArrayList<>(THREAD_COUNT);
+        final ExecutorService exec = Executors.newFixedThreadPool(THREAD_COUNT);
+        for(int i = 0; i < THREAD_COUNT; i++){
+            final String input = Integer.toString(i);
+            final int expected = i;
+            tests.add(
+                    CompletableFuture.runAsync(
+                            () -> Assert.assertEquals(expected,(int) function.apply(input)), exec
+                    ));
+        }
+
+        CompletableFuture.allOf(tests.toArray(CompletableFuture[]::new)).get();
+        exec.shutdown();
+        Assert.assertEquals(THREAD_COUNT, callCount.get());
+
     }
 }

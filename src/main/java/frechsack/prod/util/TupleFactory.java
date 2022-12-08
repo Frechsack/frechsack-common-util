@@ -23,6 +23,11 @@ class TupleFactory {
             if(!Objects.equals(first(),bTuple.first())) return false;
             return Objects.equals(second(), bTuple.second());
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(first(), second());
+        }
     }
 
     static class SimpleTuple<First, Second> extends AbstractTuple<First, Second> {
