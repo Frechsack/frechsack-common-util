@@ -3,11 +3,8 @@ package frechsack.prod.util;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.concurrent.Callable;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class TryTest {
 
@@ -36,12 +33,12 @@ public class TryTest {
     @Test
     public void operators(){
         Try<Integer> t = Try.of(12);
-        Assert.assertEquals(12, (int) t.get());
-        Assert.assertEquals(10, (int) t.flatMap(it -> Try.of(10)).get());
+        Assert.assertEquals(12, (int) t.value());
+        Assert.assertEquals(10, (int) t.flatMap(it -> Try.of(10)).value());
         Assert.assertTrue(t.isPresent());
 
         Try<Integer> f = Try.error(new RuntimeException());
-        Assert.assertThrows(IllegalStateException.class, f::get);
+        Assert.assertThrows(IllegalStateException.class, f::value);
         Assert.assertThrows(RuntimeException.class, f::call);
         Assert.assertEquals(12, (int) f.or(12));
         Assert.assertTrue(f.isError());

@@ -5,9 +5,9 @@ import java.lang.ref.SoftReference;
 import java.util.Objects;
 import java.util.function.*;
 
-public class Suppliers {
+public class SupplierUtils {
 
-    private Suppliers(){}
+    private SupplierUtils(){}
 
     public static <Out> Supplier<Out> buffer(Supplier<Out> supplier){
         return Objects.requireNonNull(supplier) instanceof Buffer

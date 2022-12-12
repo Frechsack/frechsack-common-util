@@ -1,5 +1,7 @@
 package frechsack.prod.util;
 
+import org.jetbrains.annotations.NotNull;
+
 class TryFactory {
 
    static class Present<Type> implements Try<Type> {
@@ -11,12 +13,12 @@ class TryFactory {
         }
 
         @Override
-        public Type get(){
+        public Type value(){
             return value;
         }
 
         @Override
-        public Exception error() {
+        public @NotNull Exception error() {
             throw new IllegalStateException(); 
         }
 
@@ -29,7 +31,7 @@ class TryFactory {
     record Error(Exception error) implements Try<Object> {
 
         @Override
-        public Object get() {
+        public Object value() {
             throw new IllegalStateException();
         }
 
