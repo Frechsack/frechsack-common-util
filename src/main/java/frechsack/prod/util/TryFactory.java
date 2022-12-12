@@ -1,16 +1,12 @@
 package frechsack.prod.util;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Supplier;
-
 class TryFactory {
 
    static class Present<Type> implements Try<Type> {
 
         private final Type value;
 
-        public Present(Type type) {
+        public Present(Type value) {
             this.value = value;
         }
 
@@ -20,7 +16,7 @@ class TryFactory {
         }
 
         @Override
-        public Exception getError() {
+        public Exception error() {
             throw new IllegalStateException(); 
         }
 
@@ -30,28 +26,17 @@ class TryFactory {
         }
    }
 
-   static class Error implements Try<Type> {
-
-        private final Exception error;
-
-        public Error(Exception error) {
-            this.error = error;
-        }
+    record Error(Exception error) implements Try<Object> {
 
         @Override
-        public Type get(){
-            throw new IllegalStateException(); 
-        }
-
-        @Override
-        public Exception getError() {
-            return error;
+        public Object get() {
+            throw new IllegalStateException();
         }
 
         @Override
         public boolean isPresent() {
-            return false;
-        }
+                return false;
+            }
 
-   }
+    }
 }
