@@ -1,50 +1,64 @@
-// TODO: Extend Callable
-public interface Try<Type> {
+package frechsack.prod.util;
+
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
+
+public interface Try<Type> extends Callable<Type> {
   
   static Try<Type> error(Exception error) {
-    // TODO: Null-check
-    // TOOD: Impl.
-    return null;
+    return new TryFactory.Error(Objects.requireNonNull(error));
   }
   
-  static Try<Type> error() {
-    // TOOD: Impl.
-    return error(null);
-  }
-
   static Try<Type> of(Type value) {
-    // TOOD: Impl.
-    return null;
+    return new TryFactory.Present(value);
   }
   
   static Try<Type> of(Supplier<Type> supplier) {
-    // TODO: Null-check
-    // TODO: Impl.
-    return null;
+    try {
+      return of(supplier.get());
+    }
+    catch(Exception e) {
+      return error(e);
+    }
   }
   
   static Try<Type> of(Callable<Type> callable) {
-    // TODO: Null-check
-    // TODO: Impl.
-    return null;
+    try {
+      return of(callable.get());
+    }
+    catch(Exception e) {
+      return error(e);
+    }
   }
   
   Type get();
 
   Exception getError();
 
+  boolean isPresent();
+
+  @Override
+  default Type call() throws Exception {
+    if(isPresent()) get();
+    throw getError();
+  }
+
   default boolean isError(){
-    return getError() != null;
+    return !isPresent();
   }
-  
-  default boolean isPresent() {
-    return getError() == null;
+
+  default Try<Type> peek(Consumer<Type> consumer) {
+    if(isPresent()) consumer.consume(get());
   }
-  
+
   default <Outtype> Try<Outtype> map(Function<Type, Outtype> function) {
     return isPresent()
       ? Try.of(function.apply(get())
       : 
+  }
+
+  default <Outtype> Try<Outtype> flatMap(Function<Try<Type>, Try<Outtype>> function){
+    return function.apply(this);
   }
 
   default Try<Type> orTry(Callable<Type> callable){
