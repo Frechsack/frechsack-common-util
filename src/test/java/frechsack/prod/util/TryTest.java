@@ -4,8 +4,34 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class TryTest {
+
+    @Test
+    public void stream(){
+        Try<Integer> t = Try.of(12);
+        Try<Integer> f = Try.error(new RuntimeException());
+        Assert.assertEquals(1, t.stream().count());
+        Assert.assertEquals(0, t.errorStream().count());
+        Assert.assertEquals(0, f.stream().count());
+        Assert.assertEquals(1, f.errorStream().count());
+
+        Function<Integer, Integer> fun = integer -> {
+            if(integer % 3 == 0) throw new IllegalArgumentException();
+            return integer;
+        };
+
+        Assert.assertEquals(13,IntStream.range(0, 20)
+                .boxed()
+                .map(Try::of)
+                .map(it -> it.map(fun))
+                .filter(Try::isPresent)
+                .count());
+    }
 
     @Test
     public void operators(){
