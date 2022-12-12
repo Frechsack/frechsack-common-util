@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public interface Try<Type> extends Callable<Type> {
   
@@ -49,24 +50,55 @@ public interface Try<Type> extends Callable<Type> {
       throw error();
     }
 
+    default Stream<Type> stream() {
+      return isPresent()
+              ? Stream.of(get())
+              : Stream.empty();
+    }
+
+  default Stream<Exception> errorStream() {
+    return isPresent()
+            ? Stream.empty()
+            : Stream.of(error());
+  }
+
     default boolean isError(){
       return !isPresent();
     }
 
     default Try<Type> peek(@NotNull Consumer<Type> consumer) {
-      if(isPresent()) consumer.accept(get());
+      Objects.requireNonNull(consumer);
+      if(isPresent()) {
+        try {
+          consumer.accept(get());
+        }
+        catch (Exception e){
+          return error(e);
+        }
+      }
       return this;
     }
 
     @SuppressWarnings("unchecked")
     default <OutType> Try<OutType> map(@NotNull Function<Type, OutType> function) {
-      return isPresent()
-        ? Try.of(function.apply(get()))
-        : (Try<OutType>) this;
+      Objects.requireNonNull(function);
+      if(isError()) return (Try<OutType>) this;
+      try {
+        return of(function.apply(get()));
+      }
+      catch (Exception e){
+        return error(e);
+      }
     }
 
     default <OutType> Try<OutType> flatMap(@NotNull Function<Try<Type>, Try<OutType>> function){
-      return function.apply(this);
+      Objects.requireNonNull(function);
+      try {
+        return function.apply(this);
+      }
+      catch (Exception e){
+        return error(e);
+      }
     }
 
     default Try<Type> orTry(@NotNull Callable<Type> callable){
