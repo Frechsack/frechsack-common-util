@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 public interface Try<Type> extends Callable<Type> {
   
-  static Try<Type> error(Exception error) {
+  static Try<Type> error(@NotNull Exception error) {
     return new TryFactory.Error(Objects.requireNonNull(error));
   }
   
@@ -13,7 +13,7 @@ public interface Try<Type> extends Callable<Type> {
     return new TryFactory.Present(value);
   }
   
-  static Try<Type> of(Supplier<Type> supplier) {
+  static Try<Type> of(@NotNull Supplier<Type> supplier) {
     try {
       return of(supplier.get());
     }
@@ -22,7 +22,7 @@ public interface Try<Type> extends Callable<Type> {
     }
   }
   
-  static Try<Type> of(Callable<Type> callable) {
+  static Try<Type> of(@NotNull Callable<Type> callable) {
     try {
       return of(callable.get());
     }
@@ -47,27 +47,27 @@ public interface Try<Type> extends Callable<Type> {
     return !isPresent();
   }
 
-  default Try<Type> peek(Consumer<Type> consumer) {
+  default Try<Type> peek(@NotNull Consumer<Type> consumer) {
     if(isPresent()) consumer.consume(get());
   }
 
-  default <Outtype> Try<Outtype> map(Function<Type, Outtype> function) {
+  default <Outtype> Try<Outtype> map(@NotNull Function<Type, Outtype> function) {
     return isPresent()
       ? Try.of(function.apply(get())
       : 
   }
 
-  default <Outtype> Try<Outtype> flatMap(Function<Try<Type>, Try<Outtype>> function){
+  default <Outtype> Try<Outtype> flatMap(@NotNull Function<Try<Type>, Try<Outtype>> function){
     return function.apply(this);
   }
 
-  default Try<Type> orTry(Callable<Type> callable){
+  default Try<Type> orTry(@NotNull Callable<Type> callable){
     return isPresent()
       ? this
       : Try.of(callable);
   }
                
- default Type orGet(Supplier<Type> supplier) {
+ default Type orGet(@NotNull Supplier<Type> supplier) {
     return isPresent()
       ? get()
       : supplier.get();
