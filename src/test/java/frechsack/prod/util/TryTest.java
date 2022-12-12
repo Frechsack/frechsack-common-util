@@ -3,6 +3,7 @@ package frechsack.prod.util;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -32,10 +33,13 @@ public class TryTest {
 
     @Test
     public void operators(){
+        AtomicInteger tCallCount = new AtomicInteger(0);
         Try<Integer> t = Try.of(12);
         Assert.assertEquals(12, (int) t.value());
         Assert.assertEquals(10, (int) t.flatMap(it -> Try.of(10)).value());
         Assert.assertTrue(t.isPresent());
+        t.peek(it -> tCallCount.incrementAndGet());
+        Assert.assertEquals(1, tCallCount.get());
 
         Try<Integer> f = Try.error(new RuntimeException());
         Assert.assertThrows(IllegalStateException.class, f::value);
@@ -47,5 +51,11 @@ public class TryTest {
         Assert.assertEquals(IndexOutOfBoundsException.class, f.orTry(() -> {
             throw new IndexOutOfBoundsException();
         }).error().getClass());
+
+        AtomicInteger fCallCount = new AtomicInteger(0);
+        f.peek(it -> fCallCount.incrementAndGet());
+        Assert.assertEquals(0, fCallCount.get());
+
+
     }
 }
