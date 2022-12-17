@@ -1,5 +1,7 @@
 package frechsack.prod.util.array;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 import java.util.*;
@@ -713,7 +715,7 @@ class ArrayFactory {
 
         @Override
         public boolean isEmpty() {
-            return false;
+            return array.length() == 0;
         }
 
         @Override
@@ -722,7 +724,7 @@ class ArrayFactory {
         }
 
         @Override
-        public Iterator<E> iterator() {
+        public @NotNull Iterator<E> iterator() {
             return array.iterator();
         }
 
