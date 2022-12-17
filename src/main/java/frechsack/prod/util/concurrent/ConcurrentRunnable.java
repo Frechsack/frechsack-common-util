@@ -18,6 +18,7 @@ public class ConcurrentRunnable implements Runnable {
     private synchronized void startAction() {
         if(isActionRunning()) {
             awaitActionFinished();
+            return;
         }
         sync = new CountDownLatch(1);
         try {
