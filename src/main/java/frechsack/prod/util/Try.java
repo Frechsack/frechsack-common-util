@@ -166,6 +166,42 @@ public interface Try<Type> extends Callable<Type> {
       }
     }
 
+    default Try<Type> mapError(Function<Exception, Exception> function){
+        Objects.requireNonNull(function);
+        if(isPresent()) return this;
+        try {
+            return error(function.apply(error()));
+        }catch (Exception e){
+            return error(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Exception> Try<Type> mapErrorType(Class<? extends ErrorType> errorType, Function<ErrorType, Exception> function){
+        Objects.requireNonNull(errorType);
+        Objects.requireNonNull(function);
+        if(isPresent() || error().getClass() != errorType) return this;
+        try {
+           return error(function.apply((ErrorType) error()));
+        }
+        catch (Exception e){
+            return error(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    default <ErrorType extends Exception> Try<Type> mapErrorInstance(Class<? extends ErrorType> errorType, Function<ErrorType, Exception> function){
+        Objects.requireNonNull(errorType);
+        Objects.requireNonNull(function);
+        if(isPresent() || !errorType.isAssignableFrom(error().getClass())) return this;
+        try {
+            return error(function.apply((ErrorType) error()));
+        }
+        catch (Exception e){
+            return error(e);
+        }
+    }
+
     /**
      * Performs a transformation of this object.
      * If an Exception is thrown during the execution of the given Function, an instance of Try with the thrown RuntimeException is returned.
