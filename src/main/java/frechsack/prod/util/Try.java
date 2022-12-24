@@ -166,6 +166,12 @@ public interface Try<Type> extends Callable<Type> {
       }
     }
 
+    /**
+     * Performs a transformation of the exception in this Try, if it contains one.
+     * If the transformation itself throws an exception, an instance containing the raised exception will be returned.
+     * @param function The mapping function.
+     * @return Returns a new Try with the transformed exception, or this instance if it contains a value.
+     */
     default Try<Type> mapError(Function<Exception, Exception> function){
         Objects.requireNonNull(function);
         if(isPresent()) return this;
@@ -176,8 +182,16 @@ public interface Try<Type> extends Callable<Type> {
         }
     }
 
+    /**
+     * Performs a transformation of the exception in this Try, if it contains one.
+     * The transformation will only be done, if this Try contains an exception and if the exception has a specific class-type.
+     * If the transformation itself throws an exception, an instance containing the raised exception will be returned.
+     * @param errorType The exception class-type.
+     * @param function The mapping function.
+     * @return Returns a new Try with the transformed exception, or this instance if it contains a value.
+     */
     @SuppressWarnings("unchecked")
-    default <ErrorType extends Exception> Try<Type> mapErrorType(Class<? extends ErrorType> errorType, Function<ErrorType, Exception> function){
+    default <ErrorType extends Exception> Try<Type> mapErrorExact(Class<? extends ErrorType> errorType, Function<ErrorType, Exception> function){
         Objects.requireNonNull(errorType);
         Objects.requireNonNull(function);
         if(isPresent() || error().getClass() != errorType) return this;
@@ -189,6 +203,14 @@ public interface Try<Type> extends Callable<Type> {
         }
     }
 
+    /**
+     * Performs a transformation of the exception in this Try, if it contains one.
+     * The transformation will only be done, if this Try contains an exception and if the exception class-type is accessible (extends) the specified class-type.
+     * If the transformation itself throws an exception, an instance containing the raised exception will be returned.
+     * @param errorType The exception class-type.
+     * @param function The mapping function.
+     * @return Returns a new Try with the transformed exception, or this instance if it contains a value.
+     */
     @SuppressWarnings("unchecked")
     default <ErrorType extends Exception> Try<Type> mapErrorInstance(Class<? extends ErrorType> errorType, Function<ErrorType, Exception> function){
         Objects.requireNonNull(errorType);

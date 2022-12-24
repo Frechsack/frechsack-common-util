@@ -19,10 +19,10 @@ public class TryTest {
 
         Assert.assertSame(t.error().getClass(), IllegalArgumentException.class);
 
-        t = t.mapErrorType(RuntimeException.class, in -> new NoSuchElementException(""));
+        t = t.mapErrorExact(RuntimeException.class, in -> new NoSuchElementException(""));
         Assert.assertSame(t.error().getClass(), IllegalArgumentException.class);
 
-        t = t.mapErrorType(IllegalArgumentException.class, in -> new IllegalStateException(""));
+        t = t.mapErrorExact(IllegalArgumentException.class, in -> new IllegalStateException(""));
         Assert.assertSame(t.error().getClass(), IllegalStateException.class);
 
         t = t.mapErrorInstance(RuntimeException.class, in -> new NoSuchElementException());
