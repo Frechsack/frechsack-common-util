@@ -148,6 +148,23 @@ public interface Try<Type> extends Callable<Type> {
     }
 
     /**
+     * Performs an operation on the exception inside of this instance, if it is present.
+     * If it is present and an Exception is thrown during the execution of the given Consumer, an instance of Try with the thrown RuntimeException is returned.
+     * @param consumer The operation to be performed, if an exception is present.
+     * @return Returns a reference to this object, or an instance of Try with a thrown Exception during execution of the Consumer.
+     */
+    default Try<Type> peekError(@NotNull Consumer<Exception> consumer){
+        try {
+            if(isPresent()) return this;
+            Objects.requireNonNull(consumer).accept(error());
+        }
+        catch (Exception e){
+            return error(e);
+        }
+        return this;
+    }
+
+    /**
      * Performs a transformation of the value inside of this Try, if it is present.
      * If it is present and an Exception is thrown during the execution of the given Function, an instance of Try with the thrown RuntimeException is returned.
      * @param function The transform function.
