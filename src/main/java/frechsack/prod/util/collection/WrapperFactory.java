@@ -1,5 +1,7 @@
 package frechsack.prod.util.collection;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
@@ -27,7 +29,7 @@ class WrapperFactory {
         }
 
         @Override
-        public Iterator<E> iterator() {
+        public @NotNull Iterator<E> iterator() {
             return collection.iterator();
         }
 
@@ -37,17 +39,15 @@ class WrapperFactory {
         }
 
         @Override
-        public Object[] toArray() {
+        public Object @NotNull [] toArray() {
             return collection.toArray();
         }
 
-        @SuppressWarnings("SuspiciousToArrayCall")
         @Override
         public <T> T[] toArray(T[] a) {
             return collection.toArray(a);
         }
 
-        @SuppressWarnings("SuspiciousToArrayCall")
         @Override
         public <T> T[] toArray(IntFunction<T[]> generator) {
             return collection.toArray(generator);
