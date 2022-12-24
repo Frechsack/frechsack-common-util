@@ -95,7 +95,7 @@ public interface Try<Type> extends Callable<Type> {
      */
     @Override
     default Type call() throws Exception {
-      if(isPresent()) value();
+      if(isPresent()) return value();
       throw error();
     }
 
