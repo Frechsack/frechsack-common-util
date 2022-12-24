@@ -3,11 +3,31 @@ package frechsack.prod.util;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
 public class TryTest {
+
+    @Test
+    public void mapError(){
+
+
+        Try<Integer> t = Try.error(new RuntimeException("HelloWorld"));
+        t = t.mapError(error -> new IllegalArgumentException("Arg"));
+
+        Assert.assertSame(t.error().getClass(), IllegalArgumentException.class);
+
+        t = t.mapErrorType(RuntimeException.class, in -> new NoSuchElementException(""));
+        Assert.assertSame(t.error().getClass(), IllegalArgumentException.class);
+
+        t = t.mapErrorType(IllegalArgumentException.class, in -> new IllegalStateException(""));
+        Assert.assertSame(t.error().getClass(), IllegalStateException.class);
+
+        t = t.mapErrorInstance(RuntimeException.class, in -> new NoSuchElementException());
+        Assert.assertSame(t.error().getClass(), NoSuchElementException.class);
+    }
 
     @Test
     public void stream(){
