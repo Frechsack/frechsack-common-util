@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * Merges two or more lists together.
  */
-class MergedListFactory {
+final class MergedListFactory {
 
     private MergedListFactory() {}
 
@@ -29,7 +29,7 @@ class MergedListFactory {
         return offset;
     }
 
-    static class MergedLinkedList<E> extends AbstractList<E> implements List<E> {
+    final static class MergedLinkedList<E> extends AbstractList<E> implements List<E> {
         private final List<E>[] lists;
 
         public MergedLinkedList(List<E>[] lists) {
@@ -56,7 +56,7 @@ class MergedListFactory {
         }
 
         @Override
-        public Object[] toArray() {
+        public Object @NotNull [] toArray() {
             Object[] array = new Object[size()];
             Iterator<E> iterator = iterator();
             for(int i = 0; i < array.length; i++) array[i] = iterator.next();
@@ -65,7 +65,7 @@ class MergedListFactory {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T> T[] toArray(T[] a) {
+        public <T> T @NotNull [] toArray(T[] a) {
             final int size = size();
             if(a.length < size) {
                 a = (a.getClass() == Object[].class)
@@ -169,7 +169,7 @@ class MergedListFactory {
     }
 
 
-    static class MergedRandomAccessList<E> extends AbstractList<E>  implements List<E>, RandomAccess {
+    final static class MergedRandomAccessList<E> extends AbstractList<E>  implements List<E>, RandomAccess {
 
         private final List<E>[] lists;
 
@@ -197,7 +197,7 @@ class MergedListFactory {
         }
 
         @Override
-        public Object[] toArray() {
+        public Object @NotNull [] toArray() {
             Object[] array = new Object[size()];
             for(int i = 0; i < array.length; i++) array[i] = get(i);
             return array;
@@ -205,7 +205,7 @@ class MergedListFactory {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T> T[] toArray(T[] a) {
+        public <T> T @NotNull [] toArray(T[] a) {
             final int size = size();
             if(a.length < size) {
                 a = (a.getClass() == Object[].class)

@@ -9,7 +9,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class WrapperFactory {
+final class WrapperFactory {
+
+    private WrapperFactory(){}
 
     record SetWrapper<E>(Collection<E> collection) implements Set<E> {
 
@@ -44,7 +46,7 @@ class WrapperFactory {
         }
 
         @Override
-        public <T> T[] toArray(T[] a) {
+        public <T> T[] toArray(T @NotNull [] a) {
             return collection.toArray(a);
         }
 
@@ -65,7 +67,7 @@ class WrapperFactory {
         }
 
         @Override
-        public boolean containsAll(Collection<?> c) {
+        public boolean containsAll(@NotNull Collection<?> c) {
             return collection.containsAll(c);
         }
 
@@ -76,12 +78,12 @@ class WrapperFactory {
         }
 
         @Override
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(@NotNull Collection<?> c) {
             return collection.retainAll(c);
         }
 
         @Override
-        public boolean removeAll(Collection<?> c) {
+        public boolean removeAll(@NotNull Collection<?> c) {
             return collection.removeAll(c);
         }
 
@@ -123,7 +125,7 @@ class WrapperFactory {
         }
     }
 
-    static class SynchronizedDequeWrapper<E> extends SynchronizedQueueWrapper<E> implements Deque<E> {
+    static final class SynchronizedDequeWrapper<E> extends SynchronizedQueueWrapper<E> implements Deque<E> {
 
         private final Deque<E> deque;
 
@@ -245,7 +247,7 @@ class WrapperFactory {
         }
 
         @Override
-        public Iterator<E> descendingIterator() {
+        public @NotNull Iterator<E> descendingIterator() {
             synchronized (mutex) {
                 return deque.descendingIterator();
             }
@@ -272,7 +274,7 @@ class WrapperFactory {
         }
     }
 
-    static class SynchronizedQueueWrapper<E> implements Queue<E> {
+    static sealed class SynchronizedQueueWrapper<E> implements Queue<E> permits SynchronizedDequeWrapper {
         protected final Object mutex;
         protected final Queue<E> queue;
 
@@ -323,15 +325,13 @@ class WrapperFactory {
             }
         }
 
-        @SuppressWarnings("SuspiciousToArrayCall")
         @Override
-        public <T> T[] toArray(T[] a) {
+        public <T> T[] toArray(T @NotNull [] a) {
             synchronized (mutex) {
                 return queue.toArray(a);
             }
         }
 
-        @SuppressWarnings("SuspiciousToArrayCall")
         @Override
         public <T> T[] toArray(IntFunction<T[]> generator) {
             synchronized (mutex) {
@@ -354,21 +354,21 @@ class WrapperFactory {
         }
 
         @Override
-        public boolean containsAll(Collection<?> c) {
+        public boolean containsAll(@NotNull Collection<?> c) {
             synchronized (mutex) {
                 return queue.containsAll(c);
             }
         }
 
         @Override
-        public boolean addAll(Collection<? extends E> c) {
+        public boolean addAll(@NotNull Collection<? extends E> c) {
             synchronized (mutex) {
                 return queue.addAll(c);
             }
         }
 
         @Override
-        public boolean removeAll(Collection<?> c) {
+        public boolean removeAll(@NotNull Collection<?> c) {
             synchronized (mutex) {
                 return queue.removeAll(c);
             }
@@ -382,7 +382,7 @@ class WrapperFactory {
         }
 
         @Override
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(@NotNull Collection<?> c) {
             synchronized (mutex) {
                 return queue.retainAll(c);
             }

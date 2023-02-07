@@ -1,374 +1,276 @@
 package frechsack.prod.util;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
+import java.util.function.*;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-/**
- * An Undefined behaves like an {@link Optional}, that supports undefined, null and a present state.
- *
- * @param <Type>
- */
-public interface Undefined<Type> extends Iterable<Type> {
+public interface Undefined <Type> {
 
-    /**
-     * Returns an Undefined, that contains a {@link null} value.
-     * @return Returns an Undefined, that contains a {@link null} value.
-     * @param <Out> The typed instance type.
-     */
     @SuppressWarnings("unchecked")
-    static <Out> Undefined<Out> nullable(){
-     return (Undefined<Out>) UndefinedFactory.NULL;
-    }
-
-    /**
-     * Returns an Undefined, that contains an undefined value.
-     * @return Returns an Undefined, that contains an undefined value.
-     * @param <Out> The typed instance type.
-     */
-    @SuppressWarnings("unchecked")
-    static <Out> Undefined<Out> undefined(){
-        return (Undefined<Out>) UndefinedFactory.UNDEFINED;
-    }
-
-    /**
-     * Returns an Undefined, that contains an undefined value.
-     * This function is analog to {@link #undefined()}.
-     * This function exists convenience wise, to supply a non argument variation of {@link #of(Object)}.
-     * @return Returns an Undefined, that contains an undefined value.
-     * @param <Out> The typed instance type.
-     */
-    static <Out> Undefined<Out> of(){
-        return undefined();
-    }
-
-    /**
-     * Returns an Undefined, that may contain a {@link null} or non-null value.
-     * If a null argument is supplied, then an Undefined with a null is returned, otherwise an Undefined with the supplier non-null value.
-     * @param value The value inside the returned Undefined.
-     * @return Returns an Undefined depending on the argument.
-     * @param <Out> The typed instance type.
-     */
-    static <Out> Undefined<Out> of(Out value){
+    static <Type> Undefined<Type> of(@Nullable Type value){
         return value == null
-                ? Undefined.nullable()
-                : new UndefinedFactory.Present<>(value);
+                ? (Undefined<Type>) UndefinedFactory.Null.GENERIC
+                : new UndefinedFactory.Present.Generic<>(value);
+    }
+    @SuppressWarnings("unchecked")
+    static <Type> Undefined<Type> of(){
+        return (Undefined<Type>) UndefinedFactory.Undefined.GENERIC;
     }
 
-    /**
-     * Returns the value inside this Undefined. This function will throw an error, if {@link #isPresent()} returns {@code false}.
-     * @return Returns this Undefined value.
-     */
-    Type get();
+    static Undefined.@NotNull Boolean ofBoolean(@Nullable java.lang.Boolean value){
+        return value == null
+                ? UndefinedFactory.Null.BOOLEAN
+                : new UndefinedFactory.Present.Boolean(value);
+    }
 
-    /**
-     * Checks if this Undefined contains a value. In that case calling {@link  #get()} is safe and will return a non-null value.
-     * @return Returns {@code true} if this Undefined contains an undefined or null value.
-     */
-    boolean isEmpty();
+    static Undefined.@NotNull Boolean ofBoolean(boolean value){
+        return new UndefinedFactory.Present.Boolean(value);
+    }
 
-    /**
-     * Checks if this Undefined contains a null value.
-     * @return Returns {@code true} if this Undefined contains null value.
-     */
-    boolean isNull();
+    static Undefined.@NotNull Boolean ofBoolean(){
+        return UndefinedFactory.Undefined.BOOLEAN;
+    }
+    @SuppressWarnings("unchecked")
+    static Undefined.@NotNull Number<Integer> ofInteger(@Nullable Integer value){
+        return value == null
+                ? (Number<Integer>) UndefinedFactory.Null.NUMBER
+                : new UndefinedFactory.Present.Integer(value);
+    }
 
-    /**
-     * Checks if this Undefined contains an undefined value.
-     * @return Returns {@code true} if this Undefined contains an undefined value.
-     */
+    static Undefined.@NotNull Number<Integer> ofInteger(int value) {
+        return new UndefinedFactory.Present.Integer(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    static Undefined.@NotNull Number<Integer> ofInteger(){
+        return (Number<Integer>) UndefinedFactory.Undefined.NUMBER;
+    }
+
+    @SuppressWarnings("unchecked")
+    static Undefined.@NotNull Number<Float> ofFloat(@Nullable Float value){
+        return value == null
+                ? (Number<Float>) UndefinedFactory.Null.NUMBER
+                : new UndefinedFactory.Present.Float(value);
+    }
+
+    static Undefined.@NotNull Number<Float> ofFloat(float value) {
+        return new UndefinedFactory.Present.Float(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    static Undefined.@NotNull Number<Float> ofFloat(){
+        return (Number<Float>) UndefinedFactory.Undefined.NUMBER;
+    }
+
+    @SuppressWarnings("unchecked")
+    static Undefined.@NotNull Number<Long> ofLong(@Nullable Long value){
+        return value == null
+                ? (Number<Long>) UndefinedFactory.Null.NUMBER
+                : new UndefinedFactory.Present.Long(value);
+    }
+
+    static Undefined.@NotNull Number<Long> ofLong(long value) {
+        return new UndefinedFactory.Present.Long(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    static Undefined.@NotNull Number<Long> ofLong(){
+        return (Number<Long>) UndefinedFactory.Undefined.NUMBER;
+    }
+
+    @SuppressWarnings("unchecked")
+    static Undefined.@NotNull Number<Double> ofDouble(@Nullable Double value){
+        return value == null
+                ? (Number<Double>) UndefinedFactory.Null.NUMBER
+                : new UndefinedFactory.Present.Double(value);
+    }
+
+    static Undefined.@NotNull Number<Double> ofDouble(double value) {
+        return new UndefinedFactory.Present.Double(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    static Undefined.@NotNull Number<Double> ofDouble(){
+        return (Number<Double>) UndefinedFactory.Undefined.NUMBER;
+    }
+    @SuppressWarnings("unchecked")
+    static <Type extends java.lang.Number> Undefined.@NotNull Number<Type> ofNumber(@Nullable Type value){
+        return value == null
+                ? (Number<Type>) UndefinedFactory.Null.NUMBER
+                : new UndefinedFactory.Present.Number<>(value);
+    }
+    @SuppressWarnings("unchecked")
+    static <Type extends java.lang.Number> Undefined.@NotNull Number<Type> ofNumber(){
+        return (Number<Type>) UndefinedFactory.Undefined.NUMBER;
+    }
+
+    interface Number<Type extends java.lang.Number> extends Undefined<Type> {
+
+        long getAsLong();
+
+        double getAsDouble();
+
+        default int getAsInt(){
+            return (int) getAsLong();
+        }
+        default byte getAsByte(){
+            return (byte) getAsInt();
+        }
+
+        default short getAsShort(){
+            return (byte) getAsInt();
+        }
+
+        default float getAsFloat(){
+            return (float) getAsDouble();
+        }
+
+        default IntStream intStream(){
+            return isPresent()
+                    ? IntStream.of(getAsInt())
+                    : IntStream.empty();
+        }
+
+        default int orElse(int value) {
+            return isPresent()
+                    ? getAsInt()
+                    : value;
+        }
+
+        default DoubleStream doubleStream(){
+            return isPresent()
+                    ? DoubleStream.of(getAsDouble())
+                    : DoubleStream.empty();
+        }
+
+        default double orElse(double value) {
+            return isPresent()
+                    ? getAsDouble()
+                    : value;
+        }
+
+        default LongStream longStream(){
+            return isPresent()
+                    ? LongStream.of(getAsLong())
+                    : LongStream.empty();
+        }
+
+        default long orElse(long value) {
+            return isPresent()
+                    ? getAsLong()
+                    : value;
+        }
+
+        default void ifPresent(IntConsumer consumer){
+            if(isPresent())
+                consumer.accept(getAsInt());
+        }
+
+        default void ifPresent(DoubleConsumer consumer){
+            if(isPresent())
+                consumer.accept(getAsDouble());
+        }
+
+        default void ifPresent(LongConsumer consumer){
+            if (isPresent())
+                consumer.accept(getAsLong());
+        }
+
+        default OptionalInt toOptionalInt(){
+            return isPresent()
+                    ? OptionalInt.of(getAsInt())
+                    : OptionalInt.empty();
+        }
+
+        default OptionalDouble toOptionalDouble(){
+            return isPresent()
+                    ? OptionalDouble.of(getAsDouble())
+                    : OptionalDouble.empty();
+        }
+
+        default OptionalLong toOptionalLong(){
+            return isPresent()
+                    ? OptionalLong.of(getAsLong())
+                    : OptionalLong.empty();
+        }
+
+    }
+
+    interface Boolean extends Undefined<java.lang.Boolean> {
+
+        boolean getAsBoolean();
+
+        default Stream<java.lang.Boolean> orElse(boolean value){
+            return isPresent()
+                    ? Stream.of(get())
+                    : Stream.of(value);
+        }
+    }
+
     boolean isUndefined();
 
-    /**
-     * Checks if this Undefined contains a value. Calling {@link #get()} is safe, when this function returns {@link true}.
-     * @return Returns {@link true} if this Undefined contains a not undefined and non-null value.
-     */
+    boolean isNull();
+
+    Type get();
+
     default boolean isPresent(){
-        return !isEmpty();
+        return !isNull() && !isUndefined();
     }
 
-    /**
-     * Converts the value inside this Undefined into a different value.
-     * The mapping is only performed, if this Undefined contains a present value. If this Undefined contains undefined or null, then this function has no effect.
-     * @return Returns a new Undefined with the mapped value. The function may return {@link null}.
-     * If this Undefined is empty, a null or undefined containing Undefined will be returned.
-     * @param <Out> The typed instance type.
-     */
-    default <Out> Undefined<Out> map(Function<Type, Out> mapper){
-        if (isUndefined()) return Undefined.undefined();
-        if (isNull()) return Undefined.nullable();
-        return Undefined.of(mapper.apply(get()));
+    default boolean isEmpty(){
+        return isNull() || isUndefined();
     }
 
-    /**
-     * Converts the value inside this Undefined into a different value.
-     * The mapping is only performed, if this Undefined contains a present value. If this Undefined contains undefined or null, then this function has no effect.
-     * @param mapper The mapping function. The function is not allowed to return a null value.
-     * @return Returns a new Undefined with the mapped value.  If this Undefined is empty, a null or undefined containing Undefined will be returned.
-     * @param <Out> The typed instance type.
-     */
-    default <Out> Undefined<Out> flatMap(Function<Type, Undefined<Out>> mapper){
-        if (isUndefined()) return Undefined.undefined();
-        if (isNull()) return Undefined.nullable();
-        return Objects.requireNonNull(mapper.apply(get()));
-    }
-
-    /**
-     * Returns the current value of this Undefined, if this Undefined is empty, the argument is returned.
-     * @param value The alternative value, if this Undefined is empty.
-     * @return Returns this Undefined value or the argument.
-     */
-    default Type orElse(Type value){
-        return isPresent()
-                ? get()
-                : value;
-    }
-
-    /**
-     * Returns the current value of this Undefined, if this Undefined is empty, the value supplied by the argument is returned.
-     * @param supplier The alternative value, if this Undefined is empty.
-     * @return Returns this Undefined value or the value supplied by the argument.
-     */
-    default Type orElseGet(Supplier<Type> supplier) {
-        return isPresent()
-                ? get()
-                : supplier.get();
-    }
-
-    /**
-     * Returns this Undefined value or throws an exception if it is empty.
-     * This function behaves like {@link #get()}.
-     * @return Returns the value.
-     */
-    default Type orElseThrow(){
-        if(isPresent()) return get();
-        throw new NoSuchElementException("No value present");
-    }
-
-    /**
-     * Returns this Undefined value or throws the exception, supplied by the argument, if it is empty.
-     * This function behaves like {@link #get()}.
-     * @return Returns the value.
-     */
-    default <ExceptionType extends Throwable> Type orElseThrow(Supplier<? extends ExceptionType> exceptionSupplier) throws ExceptionType {
-        if(isPresent()) return get();
-        throw exceptionSupplier.get();
-    }
-
-    /**
-     * Returns this Undefined, if it is not empty, otherwise the Undefined supplier by the argument.
-     * @param supplier Supplies an alternative Undefined, if this Undefined is empty.
-     * @return Returns this or the supplied Undefined.
-     */
-    default Undefined<Type> or(Supplier<? extends Undefined<Type>> supplier){
-        return isPresent()
-                ? this
-                : supplier.get();
-    }
-
-    /**
-     * Streams one or zero elements, depending on if this Undefined is empty or not.
-     * @return Returns a {@link Stream}.
-     */
     default Stream<Type> stream(){
         return isPresent()
                 ? Stream.of(get())
                 : Stream.empty();
     }
 
-    /**
-     * Streams one or zero numbers, depending on if this Undefined is empty or not.
-     * if this Undefined contains a value, that is not of type {@link Number}, an exception is thrown.
-     * @return Returns an {@link IntStream}.
-     */
-    default IntStream intStream(){
-        if (isEmpty())
-            return IntStream.empty();
-        Object value = get();
-        if(value instanceof Number)
-            return IntStream.of(((Number) value).intValue());
-
-        throw new IllegalStateException("Value is not a number");
+    default Type orElse(Type value) {
+        return isPresent()
+                ? get()
+                : value;
     }
 
-    /**
-     * Streams one or zero numbers, depending on if this Undefined is empty or not.
-     * if this Undefined contains a value, that is not of type {@link Number}, an exception is thrown.
-     * @return Returns a {@link DoubleStream}.
-     */
-    default DoubleStream doubleStream(){
-        if (isEmpty())
-            return DoubleStream.empty();
-        Object value = get();
-        if(value instanceof Number)
-            return DoubleStream.of(((Number) value).doubleValue());
-
-        throw new IllegalStateException("Value is not a number");
+    default Type orElseThrow(Supplier<? extends RuntimeException> exception){
+        if(isEmpty()) throw exception.get();
+        return get();
     }
 
-    /**
-     * Streams one or zero numbers, depending on if this Undefined is empty or not.
-     * if this Undefined contains a value, that is not of type {@link Number}, an exception is thrown.
-     * @return Returns a {@link LongStream}.
-     */
-    default LongStream longStream(){
-        if (isEmpty())
-            return LongStream.empty();
-        Object value = get();
-        if(value instanceof Number)
-            return LongStream.of(((Number) value).longValue());
-
-        throw new IllegalStateException("Value is not a number");
-    }
-
-    /**
-     * Filters this Undefined value. If this Undefined is empty, this operation has no effect.
-     * @param filter The filter function.
-     * @return Returns an Undefined.
-     */
-    default Undefined<Type> filter(Predicate<? super Type> filter){
-        if (isEmpty()) return this;
-        return filter.test(get())
-                ? this
-                : Undefined.undefined();
-    }
-
-    /**
-     * Converts this Undefined into an {@link Optional}.
-     * @return If this Undefined is empty, an empty Optional is returned. Otherwise, a non-empty Optional.
-     */
-    default Optional<Type> toOptional(){
-        if(isEmpty()) return Optional.empty();
-        return Optional.of(get());
-    }
-
-    /**
-     * Performs an action, if this Undefined contains a value.
-     * @param consumer The action to be performed.
-     */
     default void ifPresent(Consumer<? super Type> consumer){
         if(isPresent())
             consumer.accept(get());
     }
 
-    /**
-     * Performs an action, if this Undefined contains a value. Otherwise, an empty function is executed.
-     * @param consumer The action to be performed, if this Undefined contains a value.
-     * @param empty The action to be performed, if this Undefined is empty.
-     */
-    default void ifPresentOrElse(Consumer<? super Type> consumer, Runnable empty){
-        if(isPresent())
-            consumer.accept(get());
-        else
-            empty.run();
+    default void ifEmpty(Runnable runnable){
+        if(isEmpty())
+            runnable.run();
     }
 
-    /**
-     * Performs an action, if this Undefined is undefined.
-     * @param action The action to be performed.
-     */
-    default void ifUndefined(Runnable action){
-        if (isUndefined())
-            action.run();
-    }
-
-    /**
-     * Performs an action, if this Undefined contains null.
-     * @param action The action to be performed.
-     */
-    default void ifNull(Runnable action){
+    default void ifNull(Runnable runnable){
         if(isNull())
-            action.run();
+            runnable.run();
     }
 
-    /**
-     * Performs a value mapping, if this Undefined contains null.
-     * @param supplier The supplier function, that returns an Undefined, if this Undefined contains null.
-     * @return Returns this or the supplied Undefined.
-     */
-    default Undefined<Type> ifNullMap(Supplier<Undefined<Type>> supplier){
-        return isNull()
-                ? Objects.requireNonNull(supplier.get())
-                : this;
+    default void ifUndefined(Runnable runnable){
+        if(isUndefined())
+            runnable.run();
     }
 
-    /**
-     * Performs a value mapping, if this Undefined is undefined.
-     * @param supplier The supplier function, that returns an Undefined, if this Undefined is undefined.
-     * @return Returns this or the supplied Undefined.
-     */
-    default Undefined<Type> ifUndefinedMap(Supplier<Undefined<Type>> supplier){
-        return isUndefined()
-                ? Objects.requireNonNull(supplier.get())
-                : this;
-    }
-
-    /**
-     * Performs a value mapping, if this Undefined contains a value.
-     * @param mapper The mapper function, that returns an Undefined, if this Undefined contains a value.
-     * @return Returns this or the supplied Undefined.
-     */
-    default Undefined<Type> ifPresentMap(Function<Type,Undefined<Type>> mapper){
+    default Optional<Type> toOptional(){
         return isPresent()
-                ? Objects.requireNonNull(mapper.apply(get()))
-                : this;
+                ? Optional.of(get())
+                : Optional.empty();
     }
-
-    /**
-     * Performs a value mapping, if this Undefined is empty.
-     * @param supplier The supplier function, that returns an Undefined, if this Undefined is empty.
-     * @return Returns this or the supplied Undefined.
-     */
-    default Undefined<Type> ifEmptyMap(Supplier<Undefined<Type>> supplier){
-        return isEmpty()
-                ? Objects.requireNonNull(supplier.get())
-                : this;
-    }
-
-    /**
-     * Performs a transformation of an Undefined.
-     * @param mapper The mapping function. This function is not allowed to return null.
-     * @return Returns an Undefined.
-     * @param <Out> The typed instance type.
-     */
-    default <Out> Undefined<Out> transform(Function<Undefined<Type>,Undefined<Out>> mapper){
-        return Objects.requireNonNull(mapper.apply(this));
-    }
-
-    /**
-     * Returns an iterator, that returns one or zero elements.
-     * @return Returns an iterator.
-     */
-    @NotNull
-    @Override
-    default Iterator<Type> iterator(){
-        if(isPresent())
-            return new Iterator<>() {
-
-                private boolean hasNext = true;
-
-                @Override
-                public boolean hasNext() {
-                    return hasNext;
-                }
-
-                @Override
-                public Type next() {
-                    hasNext = false;
-                    return get();
-                }
-            };
-        else
-            return Spliterators.iterator(Spliterators.emptySpliterator());
-    }
-
 
 }

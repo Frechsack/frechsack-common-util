@@ -5,7 +5,7 @@ import java.lang.ref.SoftReference;
 import java.util.Objects;
 import java.util.function.*;
 
-public class SupplierUtils {
+public final class SupplierUtils {
 
     private SupplierUtils(){}
 

@@ -16,7 +16,7 @@ import java.util.stream.StreamSupport;
  *
  * @author frechsack
  */
-public class CollectionUtils {
+public final class CollectionUtils {
     private CollectionUtils() {
     }
 
