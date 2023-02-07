@@ -1,12 +1,9 @@
 package frechsack.prod.util.collection;
 
 import frechsack.prod.util.Tuple;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.SynchronousQueue;
-import java.util.function.IntFunction;
-import java.util.function.IntSupplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;

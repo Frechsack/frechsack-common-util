@@ -744,27 +744,27 @@ class ArrayFactory {
         }
 
         @Override
-        public boolean containsAll(Collection<?> c) {
+        public boolean containsAll(@NotNull Collection<?> c) {
             return array.containsAll(c);
         }
 
         @Override
-        public boolean addAll(Collection<? extends E> c) {
+        public boolean addAll(@NotNull Collection<? extends E> c) {
             throw new UnsupportedOperationException("addAll");
         }
 
         @Override
-        public boolean addAll(int index, Collection<? extends E> c) {
+        public boolean addAll(int index, @NotNull Collection<? extends E> c) {
             throw new UnsupportedOperationException("addAll");
         }
 
         @Override
-        public boolean removeAll(Collection<?> c) {
+        public boolean removeAll(@NotNull Collection<?> c) {
             throw new UnsupportedOperationException("removeAll");
         }
 
         @Override
-        public boolean retainAll(Collection<?> c) {
+        public boolean retainAll(@NotNull Collection<?> c) {
             throw new UnsupportedOperationException("retainAll");
         }
 
