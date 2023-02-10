@@ -1,6 +1,7 @@
 package frechsack.prod.util.stream;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.*;
 import java.util.stream.Stream;
@@ -74,13 +75,13 @@ public class StreamUtils {
      * @param <Type> The Streams element type.
      */
     public static <Type> Predicate<Type> filterDistinct(BiPredicate<Type, Type> comparator){
-        final Set<Type> passedElements = Collections.synchronizedSet(new HashSet<>());
+        final ConcurrentHashMap<Type, Object> passedElements = new ConcurrentHashMap<>();
+        final Object dummy = new Object();
         return element -> {
-            for (Type passedElement : passedElements)
+            for (Type passedElement : passedElements.keySet())
                 if(comparator.test(passedElement, element))
                     return false;
-            passedElements.add(element);
-            return true;
+            return passedElements.put(element, dummy) == null;
         };
     }
 
