@@ -1,45 +1,35 @@
 package frechsack.prod.util.concurrent;
 
+import frechsack.prod.util.concurrent.execute.SingleExecutedSupplier;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
-public class ConcurrentFunction<Input, Output> implements Function<Input, Output> {
+public class ConcurrentFunction<In, Out> implements Function<In, Out> {
 
-    private final Function<Input, Output> function;
+    private final Function<In, Out> function;
 
-    private final WeakHashMap<Input, Holder> handler =  new WeakHashMap<>();
+    private final Map<In, SingleExecutedSupplier<Out>> values = new WeakHashMap<>();
 
-    public ConcurrentFunction(@NotNull Function<Input, Output> function) {
-        this.function = Objects.requireNonNull(function);
+    private final ReentrantLock lock = new ReentrantLock();
+
+    public ConcurrentFunction(@NotNull Function<In, Out> function) {
+        this.function = function;
     }
 
     @Override
-    public Output apply(Input input) {
-        Holder holder = handler.get(input);
-        if(holder == null)
-            synchronized (handler) {
-                if((holder = handler.get(input)) == null){
-                    holder = new Holder(input);
-                    handler.put(input, holder);
-                }
-            }
-        return holder.get();
-    }
-
-    private class Holder {
-        private final ConcurrentRunnable runnable;
-        private Output value;
-
-        private Holder(Input input) {
-            runnable = new ConcurrentRunnable(() -> value = ConcurrentFunction.this.function.apply(input));
+    public Out apply(final In in) {
+        lock.lock();
+        SingleExecutedSupplier<Out> supplier = values.get(in);
+        if(supplier == null || supplier.isFinished()) {
+            supplier = new SingleExecutedSupplier<>(() -> function.apply(in));
+            values.put(in, supplier);
         }
-
-        public Output get(){
-            runnable.run();
-            return value;
-        }
+        lock.unlock();
+        return supplier.get();
     }
 }

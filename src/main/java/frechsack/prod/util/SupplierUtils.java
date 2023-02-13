@@ -9,12 +9,6 @@ public final class SupplierUtils {
 
     private SupplierUtils(){}
 
-    public static <Out> Supplier<Out> buffer(Supplier<Out> supplier){
-        return Objects.requireNonNull(supplier) instanceof Buffer
-                ? supplier
-                : new Buffer<>(supplier);
-    }
-
     public static BooleanSupplier toBoolean(Predicate<?> predicate){
         Objects.requireNonNull(predicate);
         return () -> predicate.test(null);
@@ -47,35 +41,5 @@ public final class SupplierUtils {
             Number n = supplier.get();
             return n == null ? 0 : n.doubleValue();
         };
-    }
-
-    private static class Buffer<Type> implements Supplier<Type> {
-        private record Holder<Type>(Type value){}
-        private Reference<Holder<Type>> reference;
-        private final Supplier<Type> generator;
-
-        private Buffer(Supplier<Type> generator) {
-            this.generator = generator;
-        }
-
-        @Override
-        public Type get() {
-            Holder<Type> holder = this.reference == null
-                    ? null
-                    : this.reference.get();
-
-            if(holder == null)
-                synchronized (this){
-                    holder = this.reference == null
-                            ? null
-                            : this.reference.get();
-                    if(holder == null){
-                        holder = new Holder<>(generator.get());
-                        reference = new SoftReference<>(holder);
-                    }
-                }
-
-            return holder.value;
-        }
     }
 }

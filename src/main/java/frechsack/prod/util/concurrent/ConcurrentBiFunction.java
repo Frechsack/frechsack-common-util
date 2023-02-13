@@ -1,21 +1,38 @@
 package frechsack.prod.util.concurrent;
 
-import frechsack.prod.util.Tuple;
+import frechsack.prod.util.concurrent.execute.SingleExecutedSupplier;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 
-public class ConcurrentBiFunction<InputA, InputB, Output> implements BiFunction<InputA, InputB, Output> {
+public class ConcurrentBiFunction<U, R, T> implements BiFunction<U, R, T> {
 
-    private final ConcurrentFunction<Tuple<InputA, InputB>, Output> impl;
+    private final BiFunction<U, R, T> function;
 
-    public ConcurrentBiFunction(BiFunction<InputA, InputB, Output> function) {
-        Objects.requireNonNull(function);
-        this.impl = new ConcurrentFunction<>(args -> function.apply(args.first(), args.second()));
+    private final Map<Arguments<U, R>, SingleExecutedSupplier<T>> values = new WeakHashMap<>();
+
+    private final ReentrantLock lock = new ReentrantLock();
+
+    public ConcurrentBiFunction(@NotNull BiFunction<U, R, T> function) {
+        this.function = function;
     }
 
     @Override
-    public Output apply(InputA inputA, InputB inputB) {
-        return impl.apply(Tuple.of(inputA, inputB));
+    public T apply(U u, R r) {
+        lock.lock();
+        final Arguments<U, R> arguments = new Arguments<>(u, r);
+        SingleExecutedSupplier<T> supplier = values.get(arguments);
+        if(supplier == null || supplier.isFinished()) {
+            supplier = new SingleExecutedSupplier<>(() -> function.apply(u, r));
+            values.put(arguments, supplier);
+        }
+        lock.unlock();
+        return supplier.get();
     }
+
+    private record Arguments<U, R>(U u, R r) {}
+
 }
