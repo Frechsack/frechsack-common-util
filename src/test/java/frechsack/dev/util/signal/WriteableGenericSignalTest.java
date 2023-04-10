@@ -1,6 +1,6 @@
 package frechsack.dev.util.signal;
 
-import frechsack.prod.util.concurrent.flow.OnNextSubscriber;
+import frechsack.prod.util.concurrent.flow.CompactSubscriber;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ public class WriteableGenericSignalTest {
     public void set() throws InterruptedException {
         WriteableObjectSignal<Integer> root = new WriteableObjectSignal<>();
         WriteableObjectSignal<Boolean> isSet = new WriteableObjectSignal<>(false);
-        root.subscribeOnChange(new OnNextSubscriber<>(Long.MAX_VALUE) {
+        root.subscribeOnChange(new CompactSubscriber<>(Long.MAX_VALUE) {
             @Override
             public void onNext(Integer item) {
                 isSet.set(true);

@@ -24,7 +24,8 @@ public class SyncPublisher<Type> implements Flow.Publisher<Type>, AutoCloseable 
 
     @Override
     public void subscribe(Flow.Subscriber<? super Type> subscriber) {
-        if(subscriptions.stream().noneMatch(it -> Objects.equals(it.subscriber, subscriber)))
+        if(subscriptions.stream().anyMatch(it -> Objects.equals(it.subscriber, subscriber)))
+            return;
             subscriptions.add(new Subscription(subscriber));
     }
 
@@ -57,6 +58,7 @@ public class SyncPublisher<Type> implements Flow.Publisher<Type>, AutoCloseable 
 
         private Subscription(Flow.@NotNull Subscriber<? super Type> subscriber) {
             this.subscriber = subscriber;
+            consume();
             // TODO: Custom Queue
         }
 

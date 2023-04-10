@@ -1,13 +1,15 @@
 package frechsack.dev.util.signal;
 
+import frechsack.prod.util.concurrent.flow.AsyncSubscriber;
 import frechsack.prod.util.concurrent.flow.SyncPublisher;
 
-import java.io.IOException;
 import java.util.concurrent.Flow;
+import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 sealed abstract class ObservableSignal<Type> implements Signal<Type> permits DependingSignal, WriteableBooleanSignal, WriteableDoubleSignal, WriteableIntSignal, WriteableLongSignal, WriteableObjectSignal {
 
+    // TODO: SubmissionPublisher does not allow null elements.
     private SyncPublisher<Type> changePublisher;
 
     private SyncPublisher<Signal<?>> invalidationPublisher;
@@ -30,7 +32,7 @@ sealed abstract class ObservableSignal<Type> implements Signal<Type> permits Dep
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         publisherLock.writeLock().lock();
         if (changePublisher != null)
             changePublisher.close();
@@ -60,8 +62,8 @@ sealed abstract class ObservableSignal<Type> implements Signal<Type> permits Dep
         publisherLock.writeLock().lock();
         if (changePublisher == null)
             changePublisher = new SyncPublisher<>();
+        changePublisher.subscribe(new AsyncSubscriber<>(subscriber));
         publisherLock.writeLock().unlock();
-        changePublisher.subscribe(subscriber);
     }
 
     @Override
@@ -69,8 +71,9 @@ sealed abstract class ObservableSignal<Type> implements Signal<Type> permits Dep
         publisherLock.writeLock().lock();
         if (invalidationPublisher == null)
             invalidationPublisher = new SyncPublisher<>();
+        invalidationPublisher.subscribe(new AsyncSubscriber<>(subscriber));
         publisherLock.writeLock().unlock();
-        invalidationPublisher.subscribe(subscriber);
+
     }
 
 }

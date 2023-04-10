@@ -1,10 +1,8 @@
 package frechsack.dev.util.signal;
 
-import frechsack.prod.util.concurrent.flow.OnNextSubscriber;
+import frechsack.prod.util.concurrent.flow.CompactSubscriber;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class DependingIntSignalTest {
 
@@ -14,7 +12,7 @@ public class DependingIntSignalTest {
         Signal.Number<Integer> dep = root.pipeInt().build();
         WriteableSignal.Number<Integer> listenerCall = Signal.ofInt(0);
 
-        dep.subscribeOnChange(new OnNextSubscriber<>(Long.MAX_VALUE) {
+        dep.subscribeOnChange(new CompactSubscriber<>(Long.MAX_VALUE) {
             @Override
             public void onNext(Integer newValue) {
                 listenerCall.setInt(listenerCall.getAsInt() + 1);
@@ -39,7 +37,7 @@ public class DependingIntSignalTest {
         Signal.Number<Integer> dep = root.pipeInt().build();
         WriteableSignal.Number<Integer> listenerCall = Signal.ofInt(0);
 
-        dep.subscribeOnInvalidate(new OnNextSubscriber<>(Long.MAX_VALUE) {
+        dep.subscribeOnInvalidate(new CompactSubscriber<>(Long.MAX_VALUE) {
             @Override
             public void onNext(Signal<?> item) {
                 listenerCall.setLong(listenerCall.getAsLong() + 1);

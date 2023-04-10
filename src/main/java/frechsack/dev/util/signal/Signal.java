@@ -1,7 +1,8 @@
 package frechsack.dev.util.signal;
 
+import frechsack.prod.util.concurrent.flow.AsyncSubscriber;
 import frechsack.prod.util.concurrent.flow.AutoUnsubscribeSubscriber;
-import frechsack.prod.util.concurrent.flow.OnNextSubscriber;
+import frechsack.prod.util.concurrent.flow.CompactSubscriber;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +52,7 @@ public interface Signal<Type> extends Supplier<Type>, Flow.Publisher<Type>, Clos
 
     default Queue<Type> elements(int capacity){
         ArrayBlockingQueue<Type> queue = new ArrayBlockingQueue<>(capacity);
-        subscribeOnChange(new AutoUnsubscribeSubscriber<>(new WeakReference<>(queue), new OnNextSubscriber<>(Long.MAX_VALUE) {
+        subscribeOnChange(new AutoUnsubscribeSubscriber<>(new WeakReference<>(queue), new CompactSubscriber<>(Long.MAX_VALUE) {
             @Override
             public void onNext(Type item) {
                 queue.offer(item);

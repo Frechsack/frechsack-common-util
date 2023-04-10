@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class AsyncSubscriber<Type> implements Flow.Subscriber<Type> {
-    private final @NotNull Flow.Subscriber<Type> implementation;
+    private final @NotNull Flow.Subscriber<Type> handle;
     private final @NotNull Executor executor;
     private final @NotNull Queue<Event> events = new LinkedList<>();
 
@@ -18,19 +18,21 @@ public class AsyncSubscriber<Type> implements Flow.Subscriber<Type> {
 
     private @Nullable EventConsumerTask eventConsumerTask;
 
-    private @Nullable Flow.Subscription subscription;
-
     private boolean isEventConsumerRunning = false;
 
     private boolean isClosed = false;
 
-    public AsyncSubscriber(@NotNull Flow.Subscriber<Type> implementation, @Nullable Executor executor) {
-        this.implementation = implementation;
+    public AsyncSubscriber(@NotNull Flow.Subscriber<Type> handle, @Nullable Executor executor) {
+        this.handle = handle;
         this.executor = executor == null ? ForkJoinPool.commonPool() : executor;
     }
 
-    public AsyncSubscriber(@NotNull Flow.Subscriber<Type> implementation) {
-        this(implementation, null);
+    public AsyncSubscriber(@NotNull Flow.Subscriber<Type> handle) {
+        this(handle, null);
+    }
+
+    public Flow.@NotNull Subscriber<Type> getHandle() {
+        return handle;
     }
 
     private void tryStartEventConsumer(){
@@ -53,8 +55,9 @@ public class AsyncSubscriber<Type> implements Flow.Subscriber<Type> {
                 this.isEventConsumerRunning = true;
                 executor.execute(eventConsumerTask);
             }
-            catch (Exception ignored){
+            catch (Exception e){
                 this.isEventConsumerRunning = false;
+                onError(e);
             }
 
         }
@@ -101,7 +104,6 @@ public class AsyncSubscriber<Type> implements Flow.Subscriber<Type> {
         try {
             lock.writeLock().lock();
             this.isClosed = false;
-            this.subscription = subscription;
         }
         finally {
             lock.writeLock().unlock();
@@ -193,7 +195,7 @@ public class AsyncSubscriber<Type> implements Flow.Subscriber<Type> {
 
         @Override
         void act() {
-            implementation.onSubscribe(subscription);
+            handle.onSubscribe(subscription);
         }
 
         @Override
@@ -212,7 +214,7 @@ public class AsyncSubscriber<Type> implements Flow.Subscriber<Type> {
 
         @Override
         void act() {
-            implementation.onError(error);
+            handle.onError(error);
         }
 
         @Override
@@ -231,7 +233,7 @@ public class AsyncSubscriber<Type> implements Flow.Subscriber<Type> {
 
         @Override
         void act() {
-            implementation.onNext(element);
+            handle.onNext(element);
         }
 
         @Override
@@ -244,7 +246,7 @@ public class AsyncSubscriber<Type> implements Flow.Subscriber<Type> {
 
         @Override
         void act() {
-            implementation.onComplete();
+            handle.onComplete();
         }
 
         @Override

@@ -8,19 +8,23 @@ import java.util.function.BooleanSupplier;
 
 public class AsyncOnDemandSubscriber<Type> implements Flow.Subscriber<Type> {
 
-    private final @NotNull Flow.Subscriber<Type> syncImplementation;
+    private final @NotNull Flow.Subscriber<Type> handle;
     private final @NotNull BooleanSupplier isHandleAsync;
 
     private @Nullable AsyncSubscriber<Type> asyncImplementation;
 
-    public AsyncOnDemandSubscriber(@NotNull Flow.Subscriber<Type> implementation, @NotNull BooleanSupplier isHandleAsync) {
-        this.syncImplementation = implementation;
+    public AsyncOnDemandSubscriber(@NotNull Flow.Subscriber<Type> handle, @NotNull BooleanSupplier isHandleAsync) {
+        this.handle = handle;
         this.isHandleAsync = isHandleAsync;
+    }
+
+    public Flow.@NotNull Subscriber<Type> getHandle() {
+        return handle;
     }
 
     private synchronized AsyncSubscriber<Type> requireAsyncImplementation(){
         if (asyncImplementation == null)
-            asyncImplementation = new AsyncSubscriber<>(syncImplementation);
+            asyncImplementation = new AsyncSubscriber<>(handle);
         return asyncImplementation;
     }
 
@@ -29,7 +33,7 @@ public class AsyncOnDemandSubscriber<Type> implements Flow.Subscriber<Type> {
         if (isHandleAsync.getAsBoolean())
             requireAsyncImplementation().onSubscribe(subscription);
         else
-            syncImplementation.onSubscribe(subscription);
+            handle.onSubscribe(subscription);
     }
 
     @Override
@@ -37,7 +41,7 @@ public class AsyncOnDemandSubscriber<Type> implements Flow.Subscriber<Type> {
         if (isHandleAsync.getAsBoolean())
             requireAsyncImplementation().onNext(item);
         else
-            syncImplementation.onNext(item);
+            handle.onNext(item);
     }
 
     @Override
@@ -45,7 +49,7 @@ public class AsyncOnDemandSubscriber<Type> implements Flow.Subscriber<Type> {
         if (isHandleAsync.getAsBoolean())
             requireAsyncImplementation().onError(throwable);
         else
-            syncImplementation.onError(throwable);
+            handle.onError(throwable);
     }
 
     @Override
@@ -53,6 +57,6 @@ public class AsyncOnDemandSubscriber<Type> implements Flow.Subscriber<Type> {
         if (isHandleAsync.getAsBoolean())
             requireAsyncImplementation().onComplete();
         else
-            syncImplementation.onComplete();
+            handle.onComplete();
     }
 }
