@@ -1,6 +1,7 @@
 package frechsack.prod.util;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 class UndefinedFactory {
 
@@ -53,6 +54,11 @@ class UndefinedFactory {
             public Type get() {
                 return value;
             }
+
+            @Override
+            public String toString() {
+                return "Undefined.Number{" + get() + "}";
+            }
         }
 
         static class Double extends Present<java.lang.Double> implements frechsack.prod.util.Undefined.Number<java.lang.Double> {
@@ -81,6 +87,11 @@ class UndefinedFactory {
             @Override
             public java.lang.Double get() {
                 return value;
+            }
+
+            @Override
+            public String toString() {
+                return "Undefined.Double{" + get() + "}";
             }
         }
 
@@ -116,6 +127,11 @@ class UndefinedFactory {
             public java.lang.Float get() {
                 return value;
             }
+
+            @Override
+            public String toString() {
+                return "Undefined.Float{" + get() + "}";
+            }
         }
 
         static class Long extends Present<java.lang.Long> implements frechsack.prod.util.Undefined.Number<java.lang.Long> {
@@ -144,6 +160,11 @@ class UndefinedFactory {
             @Override
             public java.lang.Long get() {
                 return value;
+            }
+
+            @Override
+            public String toString() {
+                return "Undefined.Long{" + get() + "}";
             }
         }
 
@@ -174,6 +195,11 @@ class UndefinedFactory {
             public java.lang.Integer get() {
                 return value;
             }
+
+            @Override
+            public String toString() {
+                return "Undefined.Integer{" + get() + "}";
+            }
         }
 
         static class Boolean extends Present<java.lang.Boolean> implements frechsack.prod.util.Undefined.Boolean {
@@ -193,7 +219,14 @@ class UndefinedFactory {
             public java.lang.Boolean get() {
                 return value;
             }
+
+            @Override
+            public String toString() {
+                return "Undefined.Boolean{" + get() + "}";
+            }
         }
+
+        private Present(){}
 
         @Override
         public boolean isUndefined() {
@@ -208,6 +241,25 @@ class UndefinedFactory {
         @Override
         public boolean isPresent() {
             return true;
+        }
+
+        @Override
+        public String toString() {
+            return "Undefined{" + get() + "}";
+        }
+
+        @Override
+        public int hashCode() {
+            return get().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj == this)
+                return true;
+            if(obj instanceof frechsack.prod.util.Undefined<?> undefined)
+                return Objects.equals(undefined.get(), get());
+            return super.equals(obj);
         }
     }
 
@@ -224,6 +276,11 @@ class UndefinedFactory {
             public boolean getAsBoolean() {
                 throw noSuchElementException();
             }
+
+            @Override
+            public String toString() {
+                return "Undefined.Boolean{undefined}";
+            }
         }
 
         private static class Number extends Undefined<Integer> implements frechsack.prod.util.Undefined.Number<Integer> {
@@ -236,6 +293,11 @@ class UndefinedFactory {
             @Override
             public double getAsDouble() {
                 throw noSuchElementException();
+            }
+
+            @Override
+            public String toString() {
+                return "Undefined.Number{undefined}";
             }
         }
 
@@ -252,6 +314,25 @@ class UndefinedFactory {
         @Override
         public boolean isPresent() {
             return false;
+        }
+
+        @Override
+        public String toString() {
+            return "Undefined{undefined}";
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(this == obj)
+                return true;
+            if(obj instanceof frechsack.prod.util.Undefined<?> undefined)
+                return undefined.isUndefined();
+            return super.equals(obj);
+        }
+
+        @Override
+        public int hashCode() {
+            return 1;
         }
 
         @Override
@@ -274,6 +355,11 @@ class UndefinedFactory {
            public boolean getAsBoolean() {
                throw noSuchElementException();
            }
+
+            @Override
+            public String toString() {
+                return "Undefined.Boolean{null}";
+            }
        }
 
         private static class Number extends Null<Integer> implements frechsack.prod.util.Undefined.Number<Integer> {
@@ -287,8 +373,14 @@ class UndefinedFactory {
            public double getAsDouble() {
                throw noSuchElementException();
            }
+
+            @Override
+            public String toString() {
+                return "Undefined.Number{null}";
+            }
        }
 
+       private Null(){}
         @Override
         public boolean isNull() {
            return true;
@@ -307,6 +399,25 @@ class UndefinedFactory {
         @Override
         public boolean isPresent() {
             return false;
+        }
+
+        @Override
+        public String toString() {
+            return "Undefined{null}";
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj == this)
+                return true;
+            if (obj instanceof frechsack.prod.util.Undefined<?> undefined)
+                return undefined.isNull();
+            return super.equals(obj);
         }
     }
 }

@@ -6,6 +6,11 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class ArrayTest {
 
