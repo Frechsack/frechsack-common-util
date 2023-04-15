@@ -8,25 +8,24 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class SyncPublisher<Type> implements Flow.Publisher<Type>, AutoCloseable {
 
-    private static final int DEFAULT_BUFFER_SIZE = 10;
-
     private final ArrayList<Subscription> subscriptions = new ArrayList<>(0);
 
-    private final int bufferSize;
-
-    public SyncPublisher(int bufferSize) {
-        this.bufferSize = bufferSize;
-    }
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public SyncPublisher() {
-        this(DEFAULT_BUFFER_SIZE);
     }
 
     @Override
     public void subscribe(Flow.Subscriber<? super Type> subscriber) {
-        if(subscriptions.stream().anyMatch(it -> Objects.equals(it.subscriber, subscriber)))
-            return;
+        try {
+            lock.writeLock().lock();
+            if(subscriptions.stream().anyMatch(it -> Objects.equals(it.subscriber, subscriber)))
+                return;
             subscriptions.add(new Subscription(subscriber));
+        }
+        finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
@@ -40,6 +39,16 @@ public class SyncPublisher<Type> implements Flow.Publisher<Type>, AutoCloseable 
 
     public boolean hasSubscribers(){
         return !subscriptions.isEmpty();
+    }
+
+    private void removeSubscription(Subscription subscription){
+        try {
+            lock.writeLock().lock();
+            subscriptions.remove(subscription);
+        }
+        finally {
+            lock.writeLock().unlock();
+        }
     }
 
     private class Subscription implements Flow.Subscription {
@@ -59,7 +68,6 @@ public class SyncPublisher<Type> implements Flow.Publisher<Type>, AutoCloseable 
         private Subscription(Flow.@NotNull Subscriber<? super Type> subscriber) {
             this.subscriber = subscriber;
             consume();
-            // TODO: Custom Queue
         }
 
         private boolean isDemand(){
@@ -163,7 +171,7 @@ public class SyncPublisher<Type> implements Flow.Publisher<Type>, AutoCloseable 
         public void cancel() {
             try {
                 lock.writeLock().lock();
-                if (state == State.ERROR)
+                if (state == State.ERROR || state == State.COMPLETED)
                     return;
 
                 state = State.COMPLETING;
@@ -173,6 +181,7 @@ public class SyncPublisher<Type> implements Flow.Publisher<Type>, AutoCloseable 
             }
             finally {
                 lock.writeLock().unlock();
+                removeSubscription(this);
             }
         }
 
