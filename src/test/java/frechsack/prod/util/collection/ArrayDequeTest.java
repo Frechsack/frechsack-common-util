@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Iterator;
 
 public class ArrayDequeTest {
@@ -241,5 +242,25 @@ public class ArrayDequeTest {
     public void maximumCapacity() {
         ArrayDeque<Integer> deque = new ArrayDeque<>(10);
         Assert.assertEquals(10, deque.maximumCapacity());
+    }
+
+    @Test
+    public void offerFirstMany() {
+        ArrayDeque<Integer> deque = new ArrayDeque<>(12, 2f);
+        deque.offerFirstMany(Arrays.asList(1,2,3,4,5,6));
+        Assert.assertArrayEquals(new Object[]{1,2,3,4,5,6}, deque.toArray());
+
+        deque.offerFirstMany(Arrays.asList(1,2,3,4,5,6));
+        Assert.assertArrayEquals(new Object[]{1,2,3,4,5,6,1,2,3,4,5,6}, deque.toArray());
+    }
+
+    @Test
+    public void offerLastMany() {
+        ArrayDeque<Integer> deque = new ArrayDeque<>(12, 2f);
+        deque.offerLastMany(Arrays.asList(1,2,3,4,5,6));
+        Assert.assertArrayEquals(new Object[]{1,2,3,4,5,6}, deque.toArray());
+
+        deque.offerLastMany(Arrays.asList(6,5,4,3,2,1));
+        Assert.assertArrayEquals(new Object[]{1,2,3,4,5,6,6,5,4,3,2,1}, deque.toArray());
     }
 }

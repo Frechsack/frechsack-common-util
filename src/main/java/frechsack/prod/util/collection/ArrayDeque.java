@@ -6,13 +6,29 @@ import java.util.*;
 
 public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type> {
 
+    /**
+     * The index of the first available element. Equals to -1 if no element is present.
+     */
     private int firstIndex = -1;
+
+    /**
+     * The index of the last available element. Equals to -1 if no element is present.
+     */
     private int lastIndex = -1;
 
+    /**
+     * The grow-factor for the internal array.
+     */
     private final float growFactor;
 
+    /**
+     * The internal array.
+     */
     private Object[] array;
 
+    /**
+     * The maximum capacity of this ArrayDeque.
+     */
     private final int maximumCapacity;
 
     public ArrayDeque(int maximumCapacity, Collection<Type> collection, float growFactor){
@@ -48,14 +64,26 @@ public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type>
         this(Integer.MAX_VALUE);
     }
 
+    /**
+     * Checks, if this ArrayDeque can contain the amount of elements.
+     * @param minCapacity The amount of elements to be checked.
+     */
     private boolean isMaximumCapacityNotSufficient(int minCapacity){
         return maximumCapacity < minCapacity;
     }
 
+    /**
+     * Throws an Exception.
+     */
     private RuntimeException capacityExceededException(){
         throw new IllegalStateException();
     }
 
+    /**
+     * Increases this ArrayDeque capacity. The new capacity will at least be equal to the given value.
+     * This function will not check, if the new size would exceed the maximum capacity.
+     * @param minCapacity The minimum capacity.
+     */
     private void requireCapacity(int minCapacity){
         if (minCapacity <= capacity())
             return;
@@ -65,7 +93,7 @@ public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type>
         }
         else {
             int size = size();
-            Object[] newArray = new Object[Math.max((int)((float)size * growFactor), minCapacity)];
+            Object[] newArray = new Object[Math.min(maximumCapacity, Math.max((int)((float)size * growFactor), minCapacity))];
             // does left-shift
             System.arraycopy(array,firstIndex, newArray, 0, array.length);
             firstIndex = 0;
@@ -74,6 +102,13 @@ public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type>
         }
     }
 
+    /**
+     * Shifts elements in the internal array in a specific range by a given amount.
+     * This function assumes the shift is possible.
+     * @param startIndex The first element that will be shifted.
+     * @param endIndex The last element that will be shifted.
+     * @param shiftBy The amount of shift.
+     */
     private void shiftElementsInRangeBy(int startIndex, int endIndex, int shiftBy){
         if (shiftBy > 0) {
             for (int i = endIndex + shiftBy; i >= startIndex + shiftBy; i-- )
@@ -98,6 +133,9 @@ public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type>
             array[i] = null;
     }
 
+    /**
+     * The internal array will be resized to the actual amount of elements.
+     */
     public void trimToSize(){
         int size = size();
         if (size == 0 || array.length == size)
@@ -110,10 +148,18 @@ public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type>
         lastIndex = size -1;
     }
 
+    /**
+     * Returns the current capacity of this ArrayDeque.
+     * @return The capacity.
+     */
     public int capacity(){
         return array.length;
     }
 
+    /**
+     * Returns the maximum capacity of this ArrayDeque.
+     * @return The capacity.
+     */
     public int maximumCapacity(){
         return maximumCapacity;
     }
@@ -136,10 +182,96 @@ public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type>
             throw capacityExceededException();
     }
 
+    /**
+     * Inserts multiple elements in the front of this ArrayDeque. Behaves like {@link #addFirst(Object)}
+     * @param values The values to be added.
+     */
+    public void addFirstMany(@NotNull Collection<Type> values) {
+        if (!offerFirstMany(values))
+            throw capacityExceededException();
+    }
+
     @Override
     public void addLast(Type value) {
         if (!offerLast(value))
             throw capacityExceededException();
+    }
+
+    /**
+     * Inserts multiple elements in the end of this ArrayDeque. Behaves like {@link #addLast(Object)}
+     * @param values The values to be added.
+     */
+    public void addLastMany(@NotNull Collection<Type> values) {
+        if (!offerLastMany(values))
+            throw capacityExceededException();
+    }
+
+    /**
+     * Inserts multiple elements in the end of this ArrayDeque. Behaves like {@link #offerLast(Object)}
+     * @param values The values to be added.
+     * @return Returns true if the elements were added.
+     */
+    public boolean offerLastMany(@NotNull Collection<Type> values) {
+        if (values.isEmpty())
+            return false;
+        int capacity = size() + values.size();
+        if (isMaximumCapacityNotSufficient(capacity))
+            return false;
+
+        requireCapacity(capacity);
+
+        if (isEmpty()){
+            lastIndex = values.size() -1;
+            firstIndex = 0;
+            java.util.Iterator<Type> iterator = values.iterator();
+            for (int i = firstIndex; iterator.hasNext(); i++)
+                array[i] = iterator.next();
+        }
+        else {
+            if (lastIndex == array.length - 1) {
+                int shiftBy = -firstIndex;
+                shiftElementsInRangeBy(firstIndex, lastIndex, shiftBy);
+            }
+            java.util.Iterator<Type> iterator = values.iterator();
+            for (int i = lastIndex + 1; iterator.hasNext(); i++)
+                array[i] = iterator.next();
+            lastIndex += values.size();
+        }
+        return true;
+    }
+
+    /**
+     * Inserts multiple elements in the front of this ArrayDeque. Behaves like {@link #offerFirst(Object)}
+     * @param values The values to be added.
+     * @return Returns true if the elements were added.
+     */
+    public boolean offerFirstMany(@NotNull Collection<Type> values) {
+        if (values.isEmpty())
+            return false;
+        int capacity = size() + values.size();
+        if (isMaximumCapacityNotSufficient(capacity))
+            return false;
+
+        requireCapacity(capacity);
+
+        if (isEmpty()){
+            lastIndex = array.length - 1;
+            firstIndex = array.length - values.size();
+            java.util.Iterator<Type> iterator = values.iterator();
+            for (int i = firstIndex; iterator.hasNext(); i++)
+                array[i] = iterator.next();
+        }
+        else {
+            if (firstIndex == 0) {
+                int shiftBy = array.length - lastIndex - 1;
+                shiftElementsInRangeBy(firstIndex,lastIndex, shiftBy);
+            }
+            firstIndex -= values.size();
+            java.util.Iterator<Type> iterator = values.iterator();
+            for (int i = firstIndex; iterator.hasNext(); i++)
+                array[i] = iterator.next();
+        }
+        return true;
     }
 
     @Override
@@ -262,6 +394,10 @@ public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type>
         return  (Type) array[lastIndex];
     }
 
+    /**
+     * Removes a single element from this ArrayDeque.
+     * @param index The elements index to be removed.
+     */
     private void removeAt(int index){
         int size = size();
         if (size == 0)
