@@ -3,6 +3,7 @@ package frechsack.prod.util.collection;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type> {
 
@@ -556,7 +557,26 @@ public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type>
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ArrayDeque<?> that = (ArrayDeque<?>) o;
+        return firstIndex == that.firstIndex && lastIndex == that.lastIndex && Float.compare(that.growFactor, growFactor) == 0 && maximumCapacity == that.maximumCapacity && Arrays.equals(array, that.array);
+    }
+
+
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(firstIndex, lastIndex, growFactor, maximumCapacity);
+        result = 31 * result + Arrays.hashCode(array);
+        return result;
+    }
+
+    @Override
     public String toString() {
-        return Arrays.toString(array);
+        return "ArrayDeque{" +
+                "elements=[" + stream().map(Objects::toString).collect(Collectors.joining(",")) +
+                "]}";
     }
 }
