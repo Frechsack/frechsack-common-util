@@ -1,7 +1,6 @@
 package frechsack.prod.util.concurrent.flow;
 
 import frechsack.prod.util.collection.ArrayDeque;
-import org.jetbrains.annotations.Async;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
