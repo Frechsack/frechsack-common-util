@@ -559,9 +559,15 @@ public class ArrayDeque<Type> extends AbstractQueue<Type> implements Deque<Type>
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ArrayDeque<?> that = (ArrayDeque<?>) o;
-        return firstIndex == that.firstIndex && lastIndex == that.lastIndex && Float.compare(that.growFactor, growFactor) == 0 && maximumCapacity == that.maximumCapacity && Arrays.equals(array, that.array);
+        if (!(o instanceof Deque<?>)) return false;
+        boolean isEqual = true;
+        for (java.util.Iterator<?> iterA = iterator(), iterB = ((Deque<?>) o).iterator(); iterA.hasNext() && iterB.hasNext();){
+            if(!Objects.equals(iterA.next(), iterB.next())) {
+                isEqual = false;
+                break;
+            }
+        }
+        return isEqual;
     }
 
 

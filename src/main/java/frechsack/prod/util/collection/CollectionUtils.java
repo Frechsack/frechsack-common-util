@@ -1,6 +1,7 @@
 package frechsack.prod.util.collection;
 
 import frechsack.prod.util.Tuple;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.SynchronousQueue;
@@ -17,6 +18,76 @@ public final class CollectionUtils {
     private CollectionUtils() {
     }
 
+
+    /**
+     * Compares elements returned by two iterators.
+     * If the iterators return the same amount of elements and if those elements are equal in the same order, the iterators are considered equal.
+     * @param iteratorA The first iterator.
+     * @param iteratorB The second iterator.
+     * @return Returns true if the passed iterators return equal elements, otherwise false.
+     */
+    public static boolean equalsByIterator(Iterator<?> iteratorA, Iterator<?> iteratorB){
+        if (iteratorA == iteratorB)
+            return true;
+        if (iteratorA == null)
+            return false;
+        if (iteratorB == null)
+            return false;
+
+        while (iteratorA.hasNext() && iteratorB.hasNext())
+            if (!Objects.equals(iteratorA.next(), iteratorB.next()))
+                return false;
+        return iteratorA.hasNext() == iteratorB.hasNext();
+    }
+
+    /**
+     * Compares two elements of two collections.
+     * Two collections are considered equal, if they have the same size and their elements - accessed in the same order - are equal.
+     * @param a The first list.
+     * @param b The second list.
+     * @return Returns true if the passed collections are equal, otherwise false.
+     */
+    public static boolean equals(Collection<?> a, Collection<?> b){
+        if (a == b)
+            return true;
+        if (a == null || b == null)
+            return false;
+        if (a.size() != b.size())
+            return false;
+
+        if (a.getClass().equals(b.getClass()))
+            return a.equals(b);
+
+        // Compare List
+        if (a instanceof List<?> listA && b instanceof List<?> listB) {
+            if (a instanceof RandomAccess && b instanceof RandomAccess) {
+                var size = a.size();
+                for (int i = 0; i < size; i++ )
+                    if (!Objects.equals(listA.get(i), listB.get(i)))
+                        return false;
+                return true;
+            }
+        }
+        // Deque
+        else if (a instanceof Deque<?> dequeA && b instanceof Deque<?> dequeB) {
+            if (!Objects.equals(dequeA.peekFirst(), dequeB.peekFirst()))
+                return false;
+            if (!Objects.equals(dequeA.peekLast(), dequeB.peekLast()))
+                return false;
+
+        }
+        // Queue
+        else if (a instanceof Queue<?> queueA && b instanceof Queue<?> queueB) {
+            if (!Objects.equals(queueA.peek(), queueB.peek()))
+                return false;
+        }
+        // Compare by range
+        Iterator<?> iteratorA = a.iterator(), iteratorB = b.iterator();
+        while (iteratorA.hasNext() && iteratorB.hasNext())
+            if (!Objects.equals(iteratorA.next(), iteratorB.next()))
+                return false;
+        return true;
+    }
 
     /**
      * Merges some lists together into one. Changes in the returned list will be reflected in the others.
