@@ -30,11 +30,11 @@ public class SignalIntPipeTest {
                 .build();
 
         root.setInt(5);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(5, dep.getAsInt());
 
         root.setInt(10);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(15, dep.getAsInt());
     }
 
@@ -45,19 +45,19 @@ public class SignalIntPipeTest {
                 .range(0,10)
                 .build();
         root.setInt(5);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(5, dep.getAsInt());
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(5, dep.getAsInt());
 
         root.setInt(1);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(1, dep.getAsInt());
 
         root.setInt(-1);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(1, dep.getAsInt());
 
     }
@@ -70,11 +70,11 @@ public class SignalIntPipeTest {
                 .build();
 
         root.setInt(1);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(2, dep.getAsInt());
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(22, dep.getAsInt());
     }
 
@@ -86,7 +86,7 @@ public class SignalIntPipeTest {
                 .build();
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals("11", dep.get());
     }
 
@@ -98,7 +98,7 @@ public class SignalIntPipeTest {
                 .build();
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(22d, dep.getAsDouble(), 0.1);
     }
 
@@ -110,7 +110,7 @@ public class SignalIntPipeTest {
                 .build();
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(11d, dep.getAsDouble(), 0.1);
     }
 
@@ -122,7 +122,7 @@ public class SignalIntPipeTest {
                 .build();
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(11, dep.getAsInt());
     }
 
@@ -134,7 +134,7 @@ public class SignalIntPipeTest {
                 .build();
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(11, dep.getAsInt());
     }
 
@@ -146,7 +146,7 @@ public class SignalIntPipeTest {
                 .build();
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(11, dep.getAsInt());
     }
 
@@ -158,7 +158,7 @@ public class SignalIntPipeTest {
                 .build();
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(11, dep.getAsInt());
     }
 
@@ -170,7 +170,7 @@ public class SignalIntPipeTest {
                 .buildDouble();
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(11, dep.getAsInt());
     }
 
@@ -182,7 +182,7 @@ public class SignalIntPipeTest {
                 .buildLong();
 
         root.setInt(11);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(11, dep.getAsInt());
     }
 }

@@ -2,6 +2,8 @@ package frechsack.dev.util.signal;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public sealed class WriteableObjectSignal<Type> extends ObservableSignal<Type> implements WriteableSignal<Type> permits WriteableNumberSignal {
 
     protected @Nullable Type value;
@@ -16,7 +18,7 @@ public sealed class WriteableObjectSignal<Type> extends ObservableSignal<Type> i
     @Override
     public synchronized boolean set(Type newValue) {
         Type lastValue = this.value;
-        boolean isChanged = lastValue != newValue;
+        boolean isChanged = !Objects.equals(lastValue, newValue);
         this.value = newValue;
         if(isChanged){
             fireInvalidation();

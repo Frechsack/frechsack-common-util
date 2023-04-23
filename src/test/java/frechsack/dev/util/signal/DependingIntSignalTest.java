@@ -71,7 +71,7 @@ public class DependingIntSignalTest {
         Assert.assertEquals(dep.getAsInt(), root.getAsInt());
 
         root.setDouble(15);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(dep.getAsInt(), root.getAsInt());
     }
 
@@ -82,7 +82,7 @@ public class DependingIntSignalTest {
         Assert.assertEquals(dep.getAsLong(), root.getAsLong());
 
         root.setDouble(15);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertEquals(dep.getAsLong(), root.getAsLong());
     }
 

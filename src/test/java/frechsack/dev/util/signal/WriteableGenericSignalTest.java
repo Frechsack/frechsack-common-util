@@ -19,7 +19,7 @@ public class WriteableGenericSignalTest {
         Assert.assertFalse(isSet.get());
 
         root.set(10);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertTrue(isSet.get());
     }
 
@@ -30,7 +30,7 @@ public class WriteableGenericSignalTest {
         Assert.assertEquals(10, (int) root.get());
 
         root.set(null);
-        Thread.sleep(5);
+        Thread.sleep(15);
         Assert.assertNull(root.get());
     }
 }

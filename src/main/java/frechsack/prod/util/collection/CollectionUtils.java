@@ -2,6 +2,7 @@ package frechsack.prod.util.collection;
 
 import frechsack.prod.util.Tuple;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.SynchronousQueue;
@@ -47,7 +48,7 @@ public final class CollectionUtils {
      * @param b The second list.
      * @return Returns true if the passed collections are equal, otherwise false.
      */
-    public static boolean equals(Collection<?> a, Collection<?> b){
+    public static boolean equals(@Nullable Collection<?> a, @Nullable Collection<?> b){
         if (a == b)
             return true;
         if (a == null || b == null)
