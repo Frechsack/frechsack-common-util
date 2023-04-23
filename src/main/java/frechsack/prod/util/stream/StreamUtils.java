@@ -1,5 +1,7 @@
 package frechsack.prod.util.stream;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -12,7 +14,7 @@ public class StreamUtils {
 
     @SuppressWarnings("unchecked")
     @SafeVarargs
-    public static <Type> Stream<Type> concat(Stream<? extends Type>... streams){
+    public static <Type> @NotNull Stream<Type> concat(@NotNull Stream<? extends Type>... streams){
         if(streams.length == 0)
             return Stream.empty();
         if(streams.length == 1)
@@ -30,7 +32,7 @@ public class StreamUtils {
      * @return Returns a function.
      * @param <Type> The elements type.
      */
-    public static <Type> BiConsumer<Type,Consumer<Type>>  mapMultiAdd(Stream<Type> stream){
+    public static <Type> @NotNull BiConsumer<Type,Consumer<Type>> mapMultiAdd(@NotNull Stream<Type> stream){
         final AtomicBoolean isDone = new AtomicBoolean(false);
         return (element, consumer) -> {
             consumer.accept(element);
@@ -42,7 +44,7 @@ public class StreamUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <Input, Output> Comparator<Input> sortedBy(Function<Input,Output> extractor){
+    public static <Input, Output> @NotNull Comparator<Input> sortedBy(@NotNull Function<Input,Output> extractor){
         Objects.requireNonNull(extractor);
         return (lhs, rhs) -> {
             if(lhs == null && rhs == null) return 0;
@@ -74,7 +76,7 @@ public class StreamUtils {
      * @return Returns a Predicate, that can be used in {@link java.util.stream.Stream#filter(Predicate)} to return a Stream with distinct elements.
      * @param <Type> The Streams element type.
      */
-    public static <Type> Predicate<Type> filterDistinct(BiPredicate<Type, Type> comparator){
+    public static <Type> @NotNull Predicate<Type> filterDistinct(@NotNull BiPredicate<Type, Type> comparator){
         final ConcurrentHashMap<Type, Object> passedElements = new ConcurrentHashMap<>();
         final Object dummy = new Object();
         return element -> {
@@ -93,7 +95,7 @@ public class StreamUtils {
      * @return Returns a Predicate, that can be used in {@link java.util.stream.Stream#filter(Predicate)} to return a Stream with distinct elements.
      * @param <Type> The Streams element type.
      */
-    public static <Type> Predicate<Type> filterDistinctBy(Function<Type, ?> extractor){
+    public static <Type> @NotNull Predicate<Type> filterDistinctBy(@NotNull Function<Type, ?> extractor){
         final Set<Object> passedElements = Collections.synchronizedSet(new HashSet<>());
         return element -> passedElements.add(extractor.apply(element));
     }

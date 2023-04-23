@@ -1,6 +1,5 @@
 package frechsack.dev.util.signal;
 
-import frechsack.prod.util.concurrent.flow.AsyncOnDemandSubscriber;
 import frechsack.prod.util.concurrent.flow.AutoUnsubscribeSubscriber;
 import frechsack.prod.util.concurrent.flow.CompactSubscriber;
 import org.jetbrains.annotations.NotNull;
