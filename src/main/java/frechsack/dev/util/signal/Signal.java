@@ -36,12 +36,24 @@ public interface Signal<Type> extends Supplier<Type>, Flow.Publisher<Type>, Clos
         return new WriteableLongSignal(initial);
     }
 
+    /**
+     * Creates a pipe to build new signals, that depend on this signal.
+     * @return Returns a new pipe.
+     */
     default SignalPipe<Type> pipe(){
         return new SignalPipe<>(this, List.of(this), SignalPipe.DEFAULT_SHARED);
     }
 
+    /**
+     * Subscribes to this signal and receives events when this signal becomes invalid.
+     * @param subscriber The subscriber to be notified.
+     */
     void subscribeOnInvalidate(Flow.Subscriber<Signal<?>> subscriber);
 
+    /**
+     * Subscribes to this signal and receives the current value of this signal.
+     * @param subscriber The subscriber to be notified.
+     */
     void subscribeOnChange(Flow.Subscriber<? super Type> subscriber);
 
     @Override
@@ -50,6 +62,11 @@ public interface Signal<Type> extends Supplier<Type>, Flow.Publisher<Type>, Clos
         subscribeOnChange(subscriber);
     }
 
+    /**
+     * Returns a queue that contains the elements submitted by this signal.
+     * @param capacity The capacity of the underlying queue.
+     * @return Returns a queue with the elements.
+     */
     default Queue<Type> elements(int capacity){
         ArrayBlockingQueue<Type> queue = new ArrayBlockingQueue<>(capacity);
         subscribeOnChange(new AutoUnsubscribeSubscriber<>(new WeakReference<>(queue), new CompactSubscriber<>(Long.MAX_VALUE) {
