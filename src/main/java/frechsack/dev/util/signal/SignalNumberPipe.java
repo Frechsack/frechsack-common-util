@@ -40,8 +40,9 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
         lock.lock();
         final Supplier<Type> parentGenerator = this.generator;
         Objects.requireNonNull(predicate);
-        Supplier<Type> generator = new Supplier<Type>() {
+        Supplier<Type> generator = new Supplier<>() {
             Type lastValidValue = null;
+
             @Override
             public Type get() {
                 Type newValue = parentGenerator.get();
@@ -218,7 +219,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
     @Override
     public Signal.@NotNull Number<Type> build() {
         lock.lock();
-        Signal.Number<Type> result = new DependingNumberSignal<>(generator, parents.stream());
+        Signal.Number<Type> result = new DependingNumberSignal<>(generator, parents);
         lock.unlock();
         return result;
     }
@@ -232,7 +233,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
             return value == null ? 0 : value.intValue();
         };
 
-        Signal.Number<Integer> result = new DependingIntSignal(generator, parents.stream());
+        Signal.Number<Integer> result = new DependingIntSignal(generator, parents);
         lock.unlock();
         return result;
     }
@@ -245,7 +246,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
             Number value = parentGenerator.get();
             return value == null ? 0 : value.doubleValue();
         };
-        Signal.Number<Double> result = new DependingDoubleSignal(generator, parents.stream());
+        Signal.Number<Double> result = new DependingDoubleSignal(generator, parents);
         lock.unlock();
         return result;
     }
@@ -258,7 +259,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
             Number value = parentGenerator.get();
             return value == null ? 0 : value.longValue();
         };
-        Signal.Number<Long> result = new DependingLongSignal(generator, parents.stream());
+        Signal.Number<Long> result = new DependingLongSignal(generator, parents);
         lock.unlock();
         return result;
     }

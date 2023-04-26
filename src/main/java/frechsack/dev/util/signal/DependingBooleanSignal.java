@@ -1,7 +1,9 @@
 package frechsack.dev.util.signal;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.Collection;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
@@ -10,7 +12,7 @@ public final class DependingBooleanSignal extends DependingSignal<Boolean> imple
     private boolean value;
     private final @NotNull BooleanSupplier generator;
 
-    public DependingBooleanSignal(@NotNull BooleanSupplier generator, @NotNull Stream<Signal<?>> parents) {
+    public DependingBooleanSignal(@NotNull BooleanSupplier generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents) {
         super(parents);
         this.generator = generator;
     }

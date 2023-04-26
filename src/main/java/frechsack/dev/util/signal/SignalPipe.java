@@ -48,8 +48,9 @@ public sealed class SignalPipe<Type> permits SignalNumberPipe {
         lock.lock();
         final Supplier<Type> parentGenerator = this.generator;
         Objects.requireNonNull(predicate);
-        Supplier<Type> generator = new Supplier<Type>() {
+        Supplier<Type> generator = new Supplier<>() {
             Type lastValidValue = null;
+
             @Override
             public Type get() {
                 Type newValue = parentGenerator.get();
@@ -90,12 +91,13 @@ public sealed class SignalPipe<Type> permits SignalNumberPipe {
         lock.lock();
         final Supplier<Type> parentGenerator = this.generator;
         Objects.requireNonNull(operator);
-        Supplier<Type> generator = new Supplier<Type>() {
+        Supplier<Type> generator = new Supplier<>() {
             Type lastValue = null;
             boolean isFirstIteration = true;
+
             @Override
             public Type get() {
-                if (isFirstIteration){
+                if (isFirstIteration) {
                     lastValue = identity.get();
                     isFirstIteration = false;
                 }
@@ -170,7 +172,7 @@ public sealed class SignalPipe<Type> permits SignalNumberPipe {
 
     public Signal<Type> build() {
         lock.lock();
-        Signal<Type> result = new DependingObjectSignal<>(generator, parents.stream());
+        Signal<Type> result = new DependingObjectSignal<>(generator, parents);
         lock.unlock();
         return result;
     }

@@ -1,7 +1,9 @@
 package frechsack.dev.util.signal;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.Collection;
 import java.util.function.DoubleSupplier;
 import java.util.stream.Stream;
 
@@ -10,7 +12,7 @@ final class DependingDoubleSignal extends DependingSignal<Double> implements Sig
     private double value;
     private final @NotNull DoubleSupplier generator;
 
-    public DependingDoubleSignal(@NotNull DoubleSupplier generator, @NotNull Stream<Signal<?>> parents) {
+    public DependingDoubleSignal(@NotNull DoubleSupplier generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents) {
         super(parents);
         this.generator = generator;
     }

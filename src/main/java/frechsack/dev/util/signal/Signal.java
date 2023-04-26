@@ -1,6 +1,5 @@
 package frechsack.dev.util.signal;
 
-import frechsack.prod.util.concurrent.flow.AsyncSubscriber;
 import frechsack.prod.util.concurrent.flow.AutoUnsubscribeSubscriber;
 import frechsack.prod.util.concurrent.flow.CompactSubscriber;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +47,7 @@ public interface Signal<Type> extends Supplier<Type>, Flow.Publisher<Type>, Clos
      * Subscribes to this signal and receives events when this signal becomes invalid.
      * @param subscriber The subscriber to be notified.
      */
-    void subscribeOnInvalidate(Flow.Subscriber<Signal<?>> subscriber);
+    void subscribeOnInvalidate(Flow.Subscriber<? super Signal<?>> subscriber);
 
     /**
      * Subscribes to this signal and receives the current value of this signal.

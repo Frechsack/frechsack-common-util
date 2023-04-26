@@ -158,7 +158,7 @@ public class SignalLongPipe {
 
     public Signal.Number<Long> build(){
         lock.lock();
-        var result = new DependingLongSignal(generator, parents.stream());
+        var result = new DependingLongSignal(generator, parents);
         lock.unlock();
         return result;
     }
@@ -167,7 +167,7 @@ public class SignalLongPipe {
         lock.lock();
         final LongSupplier parentGenerator = this.generator;
         IntSupplier generator = () -> (int) parentGenerator.getAsLong();
-        var result = new DependingIntSignal(generator, parents.stream());
+        var result = new DependingIntSignal(generator, parents);
         lock.unlock();
         return result;
     }
@@ -176,7 +176,7 @@ public class SignalLongPipe {
         lock.lock();
         final LongSupplier parentGenerator = this.generator;
         DoubleSupplier generator = () -> (double) parentGenerator.getAsLong();
-        var result = new DependingDoubleSignal(generator, parents.stream());
+        var result = new DependingDoubleSignal(generator, parents);
         lock.unlock();
         return result;
     }

@@ -1,7 +1,9 @@
 package frechsack.dev.util.signal;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.Collection;
 import java.util.function.LongSupplier;
 import java.util.stream.Stream;
 
@@ -9,7 +11,7 @@ final class DependingLongSignal extends DependingSignal<Long> implements Signal.
 
     private long value;
     private final @NotNull LongSupplier generator;
-    public DependingLongSignal(@NotNull LongSupplier generator, @NotNull Stream<Signal<?>> parents) {
+    public DependingLongSignal(@NotNull LongSupplier generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents) {
         super(parents);
         this.generator = generator;
     }

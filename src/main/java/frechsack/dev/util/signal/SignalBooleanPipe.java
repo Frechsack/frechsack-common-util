@@ -108,7 +108,7 @@ public class SignalBooleanPipe {
 
     public DependingBooleanSignal build(){
         lock.lock();
-        var result = new DependingBooleanSignal(generator, parents.stream());
+        var result = new DependingBooleanSignal(generator, parents);
         lock.unlock();
         return result;
     }

@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.*;
-import java.util.stream.Stream;
 
 public final class SignalIntPipe {
 
@@ -166,7 +165,7 @@ public final class SignalIntPipe {
     @Contract(" -> new")
     public Signal.@NotNull Number<Integer> build(){
         lock.lock();
-        var result = new DependingIntSignal(generator, parents.stream());
+        var result = new DependingIntSignal(generator, parents);
         lock.unlock();
         return result;
     }
@@ -176,7 +175,7 @@ public final class SignalIntPipe {
         lock.lock();
         final IntSupplier parentGenerator = this.generator;
         DoubleSupplier generator = () -> (double) parentGenerator.getAsInt();
-        var result = new DependingDoubleSignal(generator, parents.stream());
+        var result = new DependingDoubleSignal(generator, parents);
         lock.unlock();
         return result;
     }
@@ -186,7 +185,7 @@ public final class SignalIntPipe {
         lock.lock();
         final IntSupplier parentGenerator = this.generator;
         LongSupplier generator = () -> (long) parentGenerator.getAsInt();
-        var result = new DependingLongSignal(generator, parents.stream());
+        var result = new DependingLongSignal(generator, parents);
         lock.unlock();
         return result;
     }
