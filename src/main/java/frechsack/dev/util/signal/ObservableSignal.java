@@ -60,7 +60,7 @@ sealed abstract class ObservableSignal<Type> implements Signal<Type> permits Dep
     }
 
     @Override
-    public void subscribeOnInvalidate(Flow.Subscriber<Signal<?>> subscriber) {
+    public void subscribeOnInvalidate(Flow.Subscriber<? super Signal<?>> subscriber) {
         publisherLock.writeLock().lock();
         if (invalidationPublisher == null)
             invalidationPublisher = new AsyncPublisher<>();
