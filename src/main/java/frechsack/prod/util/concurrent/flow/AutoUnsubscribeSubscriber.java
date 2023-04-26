@@ -41,9 +41,7 @@ public final class AutoUnsubscribeSubscriber<Type> implements Flow.Subscriber<Ty
 
     @Override
     public void onError(Throwable throwable) {
-        if (referent.refersTo(null))
-            cancel();
-        else
+        if (!referent.refersTo(null))
             subscriber.onError(throwable);
     }
 
