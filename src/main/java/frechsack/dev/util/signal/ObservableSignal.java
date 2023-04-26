@@ -14,17 +14,24 @@ sealed abstract class ObservableSignal<Type> implements Signal<Type> permits Dep
     private final ReentrantReadWriteLock publisherLock = new ReentrantReadWriteLock();
 
     protected boolean isEagerRequired(){
-        return changePublisher != null && changePublisher.hasSubscribers();
+        try {
+            publisherLock.readLock().lock();
+            return changePublisher != null && changePublisher.hasSubscribers();
+        }
+        finally {
+            publisherLock.readLock().unlock();
+        }
+
     }
 
     @Override
     public void close() {
-        publisherLock.writeLock().lock();
+        publisherLock.readLock().lock();
         if (changePublisher != null)
             changePublisher.close();
         if (invalidationPublisher != null)
             invalidationPublisher.close();
-        publisherLock.writeLock().unlock();
+        publisherLock.readLock().unlock();
     }
 
     protected void fireInvalidation(){
