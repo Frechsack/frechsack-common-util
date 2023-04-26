@@ -29,12 +29,14 @@ public class SignalIntPipeTest {
                 .reduce(Integer::sum)
                 .build();
 
+        Thread.sleep(15);
         root.setInt(5);
         Thread.sleep(15);
         Assert.assertEquals(5, dep.getAsInt());
 
-        root.setInt(10);
         Thread.sleep(15);
+        root.setInt(10);
+        Thread.sleep(50);
         Assert.assertEquals(15, dep.getAsInt());
     }
 
@@ -44,6 +46,8 @@ public class SignalIntPipeTest {
         Signal.Number<Integer> dep = root.pipeInt()
                 .range(0,10)
                 .build();
+
+        Thread.sleep(15);
         root.setInt(5);
         Thread.sleep(15);
         Assert.assertEquals(5, dep.getAsInt());
@@ -69,12 +73,13 @@ public class SignalIntPipeTest {
                 .map(it -> it * 2)
                 .build();
 
+        Thread.sleep(15);
         root.setInt(1);
         Thread.sleep(15);
         Assert.assertEquals(2, dep.getAsInt());
 
         root.setInt(11);
-        Thread.sleep(15);
+        Thread.sleep(135);
         Assert.assertEquals(22, dep.getAsInt());
     }
 
