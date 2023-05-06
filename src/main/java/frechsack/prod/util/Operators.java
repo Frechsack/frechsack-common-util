@@ -87,8 +87,9 @@ public class Operators {
                 return;
             }
             catch (RuntimeException e){
-                if (retry-- == 0)
+                if (retry == 0)
                     throw e;
+                retry--;
             }
 
         } while (true);
