@@ -32,14 +32,17 @@ public class StreamUtils {
      * @return Returns a function.
      * @param <Type> The elements type.
      */
-    public static <Type> @NotNull BiConsumer<Type,Consumer<Type>> mapMultiAdd(@NotNull Stream<Type> stream){
+    public static <Type> @NotNull BiConsumer<Type,Consumer<Type>> mapMultiAdd(@NotNull Stream<? extends Type> stream){
         final AtomicBoolean isDone = new AtomicBoolean(false);
         return (element, consumer) -> {
-            consumer.accept(element);
             if (isDone.getAndSet(true))
-                return;
-            stream.forEachOrdered(consumer);
-            stream.close();
+                consumer.accept(element);
+            else {
+                stream.forEachOrdered(consumer);
+                stream.close();
+                consumer.accept(element);
+            }
+
         };
     }
 
@@ -78,10 +81,11 @@ public class StreamUtils {
      */
     public static <Type> @NotNull Predicate<Type> filterDistinct(@NotNull BiPredicate<Type, Type> comparator){
         final ConcurrentHashMap<Type, Object> passedElements = new ConcurrentHashMap<>();
+        final var keySet = passedElements.keySet();
         final Object dummy = new Object();
         return element -> {
-            for (Type passedElement : passedElements.keySet())
-                if(comparator.test(passedElement, element))
+            for (Type passedElement : keySet)
+                if(!comparator.test(passedElement, element))
                     return false;
             return passedElements.put(element, dummy) == null;
         };
