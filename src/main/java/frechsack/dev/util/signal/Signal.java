@@ -1,5 +1,7 @@
 package frechsack.dev.util.signal;
 
+import frechsack.prod.util.collection.ArrayDeque;
+import frechsack.prod.util.collection.CollectionUtils;
 import frechsack.prod.util.concurrent.flow.AutoUnsubscribeSubscriber;
 import frechsack.prod.util.concurrent.flow.CompactSubscriber;
 import org.jetbrains.annotations.NotNull;
@@ -7,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -67,11 +70,12 @@ public interface Signal<Type> extends Supplier<Type>, Flow.Publisher<Type>, Clos
      * @return Returns a queue with the elements.
      */
     default Queue<Type> elements(int capacity){
-        ArrayBlockingQueue<Type> queue = new ArrayBlockingQueue<>(capacity);
+        Queue<Type> queue = CollectionUtils.synchronizedQueue(new ArrayDeque<>(capacity));
         subscribeOnChange(new AutoUnsubscribeSubscriber<>(new WeakReference<>(queue), new CompactSubscriber<>(Long.MAX_VALUE) {
             @Override
             public void onNext(Type item) {
-                queue.offer(item);
+                if(!queue.offer(item))
+                    queue.poll();
             }
         }));
         return queue;
@@ -89,7 +93,6 @@ public interface Signal<Type> extends Supplier<Type>, Flow.Publisher<Type>, Clos
             return new SignalBooleanPipe(this, List.of(this), SignalBooleanPipe.DEFAULT_SHARED);
         }
     }
-
 
     interface Number<Type extends java.lang.Number> extends Signal<Type>, IntSupplier, DoubleSupplier, LongSupplier {
 
