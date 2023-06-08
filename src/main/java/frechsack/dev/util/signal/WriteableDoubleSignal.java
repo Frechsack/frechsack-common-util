@@ -1,14 +1,16 @@
 package frechsack.dev.util.signal;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.Executor;
+
 public final class WriteableDoubleSignal extends ObservableSignal<Double> implements WriteableSignal.Number<Double> {
 
     private double value;
 
-    public WriteableDoubleSignal(double initial) {
+    public WriteableDoubleSignal(double initial, @Nullable Executor executor) {
+        super(executor);
         this.value = initial;
-    }
-
-    public WriteableDoubleSignal() {
     }
 
     @Override

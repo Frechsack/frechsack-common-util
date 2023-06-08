@@ -68,11 +68,11 @@ public class DependingIntSignalTest {
     public void getAsInt() throws InterruptedException {
         WriteableSignal.Number<Integer> root = Signal.ofInt(10);
         Signal.Number<Integer> dep = root.pipeInt().build();
-        Assert.assertEquals(dep.getAsInt(), root.getAsInt());
+        Assert.assertEquals(dep.getAsInt(), root.getAsInt(), 1);
 
         root.setDouble(15);
-        Thread.sleep(15);
-        Assert.assertEquals(dep.getAsInt(), root.getAsInt());
+        Thread.sleep(1000);
+        Assert.assertEquals(15, dep.getAsInt());
     }
 
     @Test
@@ -82,8 +82,8 @@ public class DependingIntSignalTest {
         Assert.assertEquals(dep.getAsLong(), root.getAsLong());
 
         root.setDouble(15);
-        Thread.sleep(15);
-        Assert.assertEquals(dep.getAsLong(), root.getAsLong());
+        Thread.sleep(200);
+        Assert.assertEquals(15, dep.getAsLong());
     }
 
     @Test

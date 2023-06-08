@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.function.DoubleFunction;
 import java.util.function.IntFunction;
 import java.util.function.LongFunction;
@@ -16,16 +17,13 @@ public final class WriteableNumberSignal<Type extends Number> extends WriteableO
 
     private final @NotNull LongFunction<Type> longFunction;
 
-    public WriteableNumberSignal(@NotNull DoubleFunction<Type> doubleFunction, @NotNull IntFunction<Type> intFunction, @NotNull LongFunction<Type> longFunction, @Nullable Type initial) {
+    public WriteableNumberSignal(@NotNull DoubleFunction<Type> doubleFunction, @NotNull IntFunction<Type> intFunction, @NotNull LongFunction<Type> longFunction, @Nullable Type initial,  @Nullable Executor executor) {
+        super(initial, executor);
         this.doubleFunction = Objects.requireNonNull(doubleFunction);
         this.intFunction = Objects.requireNonNull(intFunction);
         this.longFunction = Objects.requireNonNull(longFunction);
-        this.value = initial;
     }
 
-    public WriteableNumberSignal(@NotNull DoubleFunction<Type> doubleFunction, @NotNull IntFunction<Type> intFunction, @NotNull LongFunction<Type> longFunction) {
-        this(doubleFunction, intFunction, longFunction, null);
-    }
 
     @Override
     public boolean setInt(int value) {

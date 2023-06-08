@@ -1,10 +1,12 @@
 package frechsack.dev.util.signal;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.*;
 
@@ -16,17 +18,19 @@ public sealed class SignalPipe<Type> permits SignalNumberPipe {
     protected final @NotNull @UnmodifiableView Collection<Signal<?>> parents;
     protected final boolean isShared;
 
+    protected final @Nullable Executor executor;
     protected final ReentrantLock lock = new ReentrantLock();
 
-    public SignalPipe(@NotNull Supplier<Type> generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents, boolean isShared) {
+    public SignalPipe(@NotNull Supplier<Type> generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents, boolean isShared, @Nullable Executor executor) {
         this.generator = generator;
         this.parents = parents;
         this.isShared = isShared;
+        this.executor = executor;
     }
 
     private SignalPipe<Type> pipe(@NotNull Supplier<Type> supplier){
         if (isShared)
-            return new SignalPipe<>(supplier, parents, true);
+            return new SignalPipe<>(supplier, parents, true, executor);
         this.generator = supplier;
         return this;
     }
@@ -115,7 +119,7 @@ public sealed class SignalPipe<Type> permits SignalNumberPipe {
         Objects.requireNonNull(function);
         final Supplier<Type> parentGenerator = this.generator;
         Supplier<Out> generator = () -> function.apply(parentGenerator.get());
-        SignalPipe<Out> result = new SignalPipe<>(generator, parents, isShared);
+        SignalPipe<Out> result = new SignalPipe<>(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -125,7 +129,7 @@ public sealed class SignalPipe<Type> permits SignalNumberPipe {
         Objects.requireNonNull(function);
         final Supplier<Type> parentGenerator = this.generator;
         Supplier<Out> generator = () -> function.apply(parentGenerator.get());
-        SignalNumberPipe<Out> result = new SignalNumberPipe<>(generator, parents, isShared);
+        SignalNumberPipe<Out> result = new SignalNumberPipe<>(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -135,7 +139,7 @@ public sealed class SignalPipe<Type> permits SignalNumberPipe {
         Objects.requireNonNull(function);
         final Supplier<Type> parentGenerator = this.generator;
         IntSupplier generator = () -> function.applyAsInt(parentGenerator.get());
-        SignalIntPipe result = new SignalIntPipe(generator, parents, isShared);
+        SignalIntPipe result = new SignalIntPipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -145,7 +149,7 @@ public sealed class SignalPipe<Type> permits SignalNumberPipe {
         Objects.requireNonNull(function);
         final Supplier<Type> parentGenerator = this.generator;
         DoubleSupplier generator = () -> function.applyAsDouble(parentGenerator.get());
-        SignalDoublePipe result =  new SignalDoublePipe(generator, parents, isShared);
+        SignalDoublePipe result =  new SignalDoublePipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -155,7 +159,7 @@ public sealed class SignalPipe<Type> permits SignalNumberPipe {
         Objects.requireNonNull(function);
         final Supplier<Type> parentGenerator = this.generator;
         LongSupplier generator = () -> function.applyAsLong(parentGenerator.get());
-        SignalLongPipe result = new SignalLongPipe(generator, parents, isShared);
+        SignalLongPipe result = new SignalLongPipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -172,21 +176,21 @@ public sealed class SignalPipe<Type> permits SignalNumberPipe {
 
     public Signal<Type> build() {
         lock.lock();
-        Signal<Type> result = new DependingObjectSignal<>(generator, parents);
+        Signal<Type> result = new DependingObjectSignal<>(generator, parents, executor);
         lock.unlock();
         return result;
     }
 
     public SignalPipe<Type> shared() {
         lock.lock();
-        SignalPipe<Type> result = isShared ? this : new SignalPipe<>(generator, parents, true);
+        SignalPipe<Type> result = isShared ? this : new SignalPipe<>(generator, parents, true, executor);
         lock.unlock();
         return result;
     }
 
     public SignalPipe<Type> exclusive() {
         lock.lock();
-        SignalPipe<Type> result = isShared ? new SignalPipe<>(generator, parents, false) : this;
+        SignalPipe<Type> result = isShared ? new SignalPipe<>(generator, parents, false, executor) : this;
         lock.unlock();
         return result;
     }

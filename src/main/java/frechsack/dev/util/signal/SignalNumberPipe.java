@@ -2,21 +2,23 @@ package frechsack.dev.util.signal;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.function.*;
 
 public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type> {
 
-    public SignalNumberPipe(@NotNull Supplier<Type> generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents, boolean isShared) {
-        super(generator, parents, isShared);
+    public SignalNumberPipe(@NotNull Supplier<Type> generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents, boolean isShared, @Nullable Executor executor) {
+        super(generator, parents, isShared, executor);
     }
 
     private SignalNumberPipe<Type> pipe(@NotNull Supplier<Type> supplier){
         if (isShared)
-            return new SignalNumberPipe<>(supplier, parents, true);
+            return new SignalNumberPipe<>(supplier, parents, true, executor);
         this.generator = supplier;
         return this;
     }
@@ -112,7 +114,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
           Number value = parentGenerator.get();
           return value == null ? 0 : value.doubleValue();
         };
-        SignalDoublePipe result = new SignalDoublePipe(generator, parents, isShared);
+        SignalDoublePipe result = new SignalDoublePipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -126,7 +128,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
             return value == null ? 0 : value.intValue();
         };
 
-        SignalIntPipe result = new SignalIntPipe(generator, parents, isShared);
+        SignalIntPipe result = new SignalIntPipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -139,7 +141,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
             Number value = parentGenerator.get();
             return value == null ? 0 : value.longValue();
         };
-        SignalLongPipe result = new SignalLongPipe(generator, parents, isShared);
+        SignalLongPipe result = new SignalLongPipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -151,7 +153,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
         Objects.requireNonNull(function);
         final Supplier<Type> parentGenerator = this.generator;
         Supplier<Out> generator = () -> function.apply(parentGenerator.get());
-        SignalPipe<Out> result = new SignalPipe<>(generator, parents, isShared);
+        SignalPipe<Out> result = new SignalPipe<>(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -163,7 +165,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
         Objects.requireNonNull(function);
         final Supplier<Type> parentGenerator = this.generator;
         Supplier<Out> generator = () -> function.apply(parentGenerator.get());
-        SignalNumberPipe<Out> result = new SignalNumberPipe<>(generator, parents, isShared);
+        SignalNumberPipe<Out> result = new SignalNumberPipe<>(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -175,7 +177,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
         Objects.requireNonNull(function);
         final Supplier<Type> parentGenerator = this.generator;
         IntSupplier generator = () -> function.applyAsInt(parentGenerator.get());
-        SignalIntPipe result = new SignalIntPipe(generator, parents, isShared);
+        SignalIntPipe result = new SignalIntPipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -187,7 +189,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
         Objects.requireNonNull(function);
         final Supplier<Type> parentGenerator = this.generator;
         DoubleSupplier generator = () -> function.applyAsDouble(parentGenerator.get());
-        SignalDoublePipe result = new SignalDoublePipe(generator, parents, isShared);
+        SignalDoublePipe result = new SignalDoublePipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -199,7 +201,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
         Objects.requireNonNull(function);
         final Supplier<Type> parentGenerator = this.generator;
         LongSupplier generator = () -> function.applyAsLong(parentGenerator.get());
-        SignalLongPipe result = new SignalLongPipe(generator, parents, isShared);
+        SignalLongPipe result = new SignalLongPipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -219,7 +221,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
     @Override
     public Signal.@NotNull Number<Type> build() {
         lock.lock();
-        Signal.Number<Type> result = new DependingNumberSignal<>(generator, parents);
+        Signal.Number<Type> result = new DependingNumberSignal<>(generator, parents, executor);
         lock.unlock();
         return result;
     }
@@ -233,7 +235,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
             return value == null ? 0 : value.intValue();
         };
 
-        Signal.Number<Integer> result = new DependingIntSignal(generator, parents);
+        Signal.Number<Integer> result = new DependingIntSignal(generator, parents, executor);
         lock.unlock();
         return result;
     }
@@ -246,7 +248,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
             Number value = parentGenerator.get();
             return value == null ? 0 : value.doubleValue();
         };
-        Signal.Number<Double> result = new DependingDoubleSignal(generator, parents);
+        Signal.Number<Double> result = new DependingDoubleSignal(generator, parents, executor);
         lock.unlock();
         return result;
     }
@@ -259,7 +261,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
             Number value = parentGenerator.get();
             return value == null ? 0 : value.longValue();
         };
-        Signal.Number<Long> result = new DependingLongSignal(generator, parents);
+        Signal.Number<Long> result = new DependingLongSignal(generator, parents, executor);
         lock.unlock();
         return result;
     }
@@ -267,7 +269,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
     @Override
     public SignalNumberPipe<Type> shared() {
         lock.lock();
-        SignalNumberPipe<Type> result = isShared ? this : new SignalNumberPipe<>(generator, parents, true);
+        SignalNumberPipe<Type> result = isShared ? this : new SignalNumberPipe<>(generator, parents, true, executor);
         lock.unlock();
         return result;
     }
@@ -275,7 +277,7 @@ public final class SignalNumberPipe<Type extends Number> extends SignalPipe<Type
     @Override
     public SignalNumberPipe<Type> exclusive() {
         lock.lock();
-        SignalNumberPipe<Type> result = isShared ? new SignalNumberPipe<>(generator, parents, false) : this;
+        SignalNumberPipe<Type> result = isShared ? new SignalNumberPipe<>(generator, parents, false, executor) : this;
         lock.unlock();
         return result;
     }

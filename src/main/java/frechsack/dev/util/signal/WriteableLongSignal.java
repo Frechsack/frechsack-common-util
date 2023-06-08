@@ -1,14 +1,16 @@
 package frechsack.dev.util.signal;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.Executor;
+
 public final class WriteableLongSignal extends ObservableSignal<Long> implements WriteableSignal.Number<Long> {
 
     private long value;
 
-    public WriteableLongSignal(long value) {
+    public WriteableLongSignal(long value,  @Nullable Executor executor) {
+        super(executor);
         this.value = value;
-    }
-
-    public WriteableLongSignal() {
     }
 
     @Override

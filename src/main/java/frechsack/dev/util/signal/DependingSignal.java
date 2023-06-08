@@ -3,11 +3,13 @@ package frechsack.dev.util.signal;
 import frechsack.prod.util.concurrent.flow.AutoUnsubscribeSubscriber;
 import frechsack.prod.util.concurrent.flow.CompactSubscriber;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Flow;
 
 abstract sealed class DependingSignal<Type> extends ObservableSignal<Type> implements Signal<Type> permits DependingBooleanSignal, DependingDoubleSignal, DependingIntSignal, DependingLongSignal, DependingObjectSignal {
@@ -16,7 +18,8 @@ abstract sealed class DependingSignal<Type> extends ObservableSignal<Type> imple
 
     private final WeakReference<Flow.Subscription>[] parentSubscriptionReferences;
 
-    public DependingSignal(@NotNull @UnmodifiableView Collection<Signal<?>> parents){
+    public DependingSignal(@NotNull @UnmodifiableView Collection<Signal<?>> parents, @Nullable Executor executor){
+        super(executor);
         //noinspection unchecked
         this.parentSubscriptionReferences = new WeakReference[parents.size()];
         final var parentInvalidationSubscriber = new AutoUnsubscribeSubscriber<>(new WeakReference<>(this), new CompactSubscriber<>(Long.MAX_VALUE) {

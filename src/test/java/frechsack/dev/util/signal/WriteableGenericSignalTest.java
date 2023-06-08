@@ -8,8 +8,8 @@ public class WriteableGenericSignalTest {
 
     @Test
     public void set() throws InterruptedException {
-        WriteableObjectSignal<Integer> root = new WriteableObjectSignal<>();
-        WriteableObjectSignal<Boolean> isSet = new WriteableObjectSignal<>(false);
+        WriteableObjectSignal<Integer> root = new WriteableObjectSignal<>(null, null);
+        WriteableObjectSignal<Boolean> isSet = new WriteableObjectSignal<>(false, null);
         root.subscribeOnChange(new CompactSubscriber<>(Long.MAX_VALUE) {
             @Override
             public void onNext(Integer item) {
@@ -25,7 +25,7 @@ public class WriteableGenericSignalTest {
 
     @Test
     public void get() throws InterruptedException {
-        WriteableObjectSignal<Integer> root = new WriteableObjectSignal<>();
+        WriteableObjectSignal<Integer> root = new WriteableObjectSignal<>(null, null);
         root.set(10);
         Assert.assertEquals(10, (int) root.get());
 

@@ -1,9 +1,11 @@
 package frechsack.dev.util.signal;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.*;
 
@@ -15,17 +17,19 @@ public class SignalBooleanPipe {
     private final @NotNull Collection<Signal<?>> parents;
     private final boolean isShared;
 
+    private final @Nullable Executor executor;
     private final ReentrantLock lock = new ReentrantLock();
 
-    public SignalBooleanPipe(@NotNull BooleanSupplier generator, @NotNull Collection<Signal<?>> parents, boolean isShared) {
+    public SignalBooleanPipe(@NotNull BooleanSupplier generator, @NotNull Collection<Signal<?>> parents, boolean isShared, @Nullable Executor executor) {
         this.generator = generator;
         this.parents = parents;
         this.isShared = isShared;
+        this.executor = executor;
     }
 
     private SignalBooleanPipe pipe(@NotNull BooleanSupplier supplier){
         if (isShared)
-            return new SignalBooleanPipe(supplier, parents, true);
+            return new SignalBooleanPipe(supplier, parents, true, executor);
         this.generator = supplier;
         return this;
     }
@@ -61,7 +65,7 @@ public class SignalBooleanPipe {
         Objects.requireNonNull(function);
         final BooleanSupplier parentGenerator = this.generator;
         Supplier<Type> generator = () -> function.apply(parentGenerator.getAsBoolean());
-        var result = new SignalPipe<>(generator, parents, isShared);
+        var result = new SignalPipe<>(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -71,7 +75,7 @@ public class SignalBooleanPipe {
         Objects.requireNonNull(function);
         final BooleanSupplier parentGenerator = this.generator;
         Supplier<Type> generator = () -> function.apply(parentGenerator.getAsBoolean());
-        var result = new SignalNumberPipe<>(generator, parents, isShared);
+        var result = new SignalNumberPipe<>(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -81,7 +85,7 @@ public class SignalBooleanPipe {
         Objects.requireNonNull(function);
         final BooleanSupplier parentGenerator = this.generator;
         IntSupplier generator = () -> function.applyAsInt(parentGenerator.getAsBoolean());
-        var result = new SignalIntPipe(generator, parents, isShared);
+        var result = new SignalIntPipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -91,7 +95,7 @@ public class SignalBooleanPipe {
         Objects.requireNonNull(function);
         final BooleanSupplier parentGenerator = this.generator;
         DoubleSupplier generator = () -> function.applyAsDouble(parentGenerator.getAsBoolean());
-        var result = new SignalDoublePipe(generator, parents, isShared);
+        var result = new SignalDoublePipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -101,28 +105,28 @@ public class SignalBooleanPipe {
         Objects.requireNonNull(function);
         final BooleanSupplier parentGenerator = this.generator;
         LongSupplier generator = () -> function.applyAsLong(parentGenerator.getAsBoolean());
-        var result = new SignalLongPipe(generator, parents, isShared);
+        var result = new SignalLongPipe(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
 
     public DependingBooleanSignal build(){
         lock.lock();
-        var result = new DependingBooleanSignal(generator, parents);
+        var result = new DependingBooleanSignal(generator, parents, executor);
         lock.unlock();
         return result;
     }
 
     public SignalBooleanPipe shared() {
         lock.lock();
-        var result = isShared ? this : new SignalBooleanPipe(generator, parents, true);
+        var result = isShared ? this : new SignalBooleanPipe(generator, parents, true, executor);
         lock.unlock();
         return result;
     }
 
     public SignalBooleanPipe exclusive() {
         lock.lock();
-        var result = isShared ? new SignalBooleanPipe(generator, parents, false) : this;
+        var result = isShared ? new SignalBooleanPipe(generator, parents, false, executor) : this;
         lock.unlock();
         return result;
     }

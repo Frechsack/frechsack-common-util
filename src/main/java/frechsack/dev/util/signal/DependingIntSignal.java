@@ -1,9 +1,11 @@
 package frechsack.dev.util.signal;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
+import java.util.concurrent.Executor;
 import java.util.function.IntSupplier;
 import java.util.stream.Stream;
 
@@ -11,8 +13,8 @@ final class DependingIntSignal extends DependingSignal<Integer> implements Signa
 
     private int value;
     private final @NotNull IntSupplier generator;
-    public DependingIntSignal(@NotNull IntSupplier generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents) {
-        super(parents);
+    public DependingIntSignal(@NotNull IntSupplier generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents, @Nullable Executor executor) {
+        super(parents, executor);
         this.generator = generator;
     }
 

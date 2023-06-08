@@ -1,14 +1,21 @@
 package frechsack.dev.util.signal;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.Executor;
+
 public final class WriteableBooleanSignal extends ObservableSignal<Boolean> implements WriteableSignal.Boolean {
 
     private boolean value;
 
-    public WriteableBooleanSignal(boolean initial) {
+    public WriteableBooleanSignal(boolean initial, @Nullable Executor executor) {
+        super(executor);
         this.value = initial;
     }
 
-    public WriteableBooleanSignal() {
+    public WriteableBooleanSignal(@Nullable Executor executor) {
+        super(executor);
     }
 
     @Override

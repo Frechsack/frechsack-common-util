@@ -1,10 +1,12 @@
 package frechsack.dev.util.signal;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -14,8 +16,8 @@ sealed class DependingObjectSignal<Type> extends DependingSignal<Type> permits D
 
     private final @NotNull Supplier<Type> generator;
 
-    public DependingObjectSignal(@NotNull Supplier<Type> generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents) {
-        super(parents);
+    public DependingObjectSignal(@NotNull Supplier<Type> generator, @NotNull @UnmodifiableView Collection<Signal<?>> parents, @Nullable Executor executor) {
+        super(parents, executor);
         this.generator = generator;
     }
 

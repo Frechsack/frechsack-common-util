@@ -1,7 +1,10 @@
 package frechsack.dev.util.signal;
 
 import frechsack.prod.util.concurrent.flow.AsyncPublisher;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.Flow;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -12,6 +15,12 @@ sealed abstract class ObservableSignal<Type> implements Signal<Type> permits Dep
     private AsyncPublisher<Signal<?>> invalidationPublisher;
 
     private final ReentrantReadWriteLock publisherLock = new ReentrantReadWriteLock();
+
+    protected final @Nullable Executor executor;
+
+    ObservableSignal(@Nullable Executor executor) {
+        this.executor = executor;
+    }
 
     protected boolean isEagerRequired(){
         try {
@@ -54,7 +63,7 @@ sealed abstract class ObservableSignal<Type> implements Signal<Type> permits Dep
     public void subscribeOnChange(Flow.Subscriber<? super Type> subscriber) {
         publisherLock.writeLock().lock();
         if (changePublisher == null)
-            changePublisher = new AsyncPublisher<>();
+            changePublisher = new AsyncPublisher<>(executor == null ? AsyncPublisher.defaultExecutor() : executor);
         changePublisher.subscribe(subscriber);
         publisherLock.writeLock().unlock();
     }
@@ -63,7 +72,7 @@ sealed abstract class ObservableSignal<Type> implements Signal<Type> permits Dep
     public void subscribeOnInvalidate(Flow.Subscriber<? super Signal<?>> subscriber) {
         publisherLock.writeLock().lock();
         if (invalidationPublisher == null)
-            invalidationPublisher = new AsyncPublisher<>();
+            invalidationPublisher = new AsyncPublisher<>(executor == null ? AsyncPublisher.defaultExecutor() : executor);
         invalidationPublisher.subscribe(subscriber);
         publisherLock.writeLock().unlock();
 

@@ -2,9 +2,11 @@ package frechsack.dev.util.signal;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.*;
 
@@ -15,18 +17,19 @@ public final class SignalIntPipe {
     private @NotNull IntSupplier generator;
     private final @NotNull Collection<Signal<?>> parents;
     private final boolean isShared;
-
+    private final @Nullable Executor executor;
     private final ReentrantLock lock = new ReentrantLock();
 
-    public SignalIntPipe(@NotNull IntSupplier generator, @NotNull Collection<Signal<?>> parents, boolean isShared) {
+    public SignalIntPipe(@NotNull IntSupplier generator, @NotNull Collection<Signal<?>> parents, boolean isShared, @Nullable Executor executor) {
         this.generator = generator;
         this.parents = parents;
         this.isShared = isShared;
+        this.executor = executor;
     }
 
     private SignalIntPipe pipe(@NotNull IntSupplier supplier){
         if (isShared)
-            return new SignalIntPipe(supplier, parents, true);
+            return new SignalIntPipe(supplier, parents, true, executor);
         this.generator = supplier;
         return this;
     }
@@ -116,7 +119,7 @@ public final class SignalIntPipe {
         Objects.requireNonNull(function);
         final IntSupplier parentGenerator = this.generator;
         Supplier<Type> generator = () -> function.apply(parentGenerator.getAsInt());
-        var result = new SignalPipe<>(generator, parents, isShared);
+        var result = new SignalPipe<>(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -127,7 +130,7 @@ public final class SignalIntPipe {
         Objects.requireNonNull(function);
         final IntSupplier parentGenerator = this.generator;
         Supplier<Type> generator = () -> function.apply(parentGenerator.getAsInt());
-        var result = new SignalNumberPipe<>(generator, parents, isShared);
+        var result = new SignalNumberPipe<>(generator, parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -136,7 +139,7 @@ public final class SignalIntPipe {
     public @NotNull SignalDoublePipe mapToDouble(){
         lock.lock();
         final IntSupplier parentGenerator = this.generator;
-        var result = new SignalDoublePipe(() -> (double) parentGenerator.getAsInt(), parents, isShared);
+        var result = new SignalDoublePipe(() -> (double) parentGenerator.getAsInt(), parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -149,7 +152,7 @@ public final class SignalIntPipe {
     public @NotNull SignalLongPipe mapToLong(){
         lock.lock();
         final IntSupplier parentGenerator = this.generator;
-        var result = new SignalLongPipe(() -> (long) parentGenerator.getAsInt(), parents, isShared);
+        var result = new SignalLongPipe(() -> (long) parentGenerator.getAsInt(), parents, isShared, executor);
         lock.unlock();
         return result;
     }
@@ -165,7 +168,7 @@ public final class SignalIntPipe {
     @Contract(" -> new")
     public Signal.@NotNull Number<Integer> build(){
         lock.lock();
-        var result = new DependingIntSignal(generator, parents);
+        var result = new DependingIntSignal(generator, parents, executor);
         lock.unlock();
         return result;
     }
@@ -175,7 +178,7 @@ public final class SignalIntPipe {
         lock.lock();
         final IntSupplier parentGenerator = this.generator;
         DoubleSupplier generator = () -> (double) parentGenerator.getAsInt();
-        var result = new DependingDoubleSignal(generator, parents);
+        var result = new DependingDoubleSignal(generator, parents, executor);
         lock.unlock();
         return result;
     }
@@ -185,21 +188,21 @@ public final class SignalIntPipe {
         lock.lock();
         final IntSupplier parentGenerator = this.generator;
         LongSupplier generator = () -> (long) parentGenerator.getAsInt();
-        var result = new DependingLongSignal(generator, parents);
+        var result = new DependingLongSignal(generator, parents, executor);
         lock.unlock();
         return result;
     }
 
     public SignalIntPipe shared() {
         lock.lock();
-        var result = isShared ? this : new SignalIntPipe(generator, parents, true);
+        var result = isShared ? this : new SignalIntPipe(generator, parents, true, executor);
         lock.unlock();
         return result;
     }
 
     public SignalIntPipe exclusive() {
         lock.lock();
-        var result = isShared ? new SignalIntPipe(generator, parents, false) : this;
+        var result = isShared ? new SignalIntPipe(generator, parents, false, executor) : this;
         lock.unlock();
         return result;
     }

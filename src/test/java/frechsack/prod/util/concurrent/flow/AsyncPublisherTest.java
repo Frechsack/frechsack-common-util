@@ -11,7 +11,7 @@ public class AsyncPublisherTest {
 
     @Test
     public void subscribeWithDemandAtArrivalBlocking() throws InterruptedException {
-        AsyncPublisher<Integer> publisher = new AsyncPublisher<>(15);
+        AsyncPublisher<Integer> publisher = new AsyncPublisher<>(null, 15);
         AtomicInteger onSubscribeCall = new AtomicInteger();
         AtomicInteger onNextCall = new AtomicInteger();
         AtomicInteger onErrorCall = new AtomicInteger();
@@ -59,7 +59,7 @@ public class AsyncPublisherTest {
 
     @Test
     public void subscribeWithException() throws InterruptedException {
-        AsyncPublisher<Integer> publisher = new AsyncPublisher<>(15);
+        AsyncPublisher<Integer> publisher = new AsyncPublisher<>(null,15);
         AtomicInteger onSubscribeCall = new AtomicInteger();
         AtomicInteger onNextCall = new AtomicInteger();
         AtomicInteger onErrorCall = new AtomicInteger();
@@ -106,7 +106,7 @@ public class AsyncPublisherTest {
 
     @Test
     public void subscribeWithDemandAtArrival() throws InterruptedException {
-        AsyncPublisher<Integer> publisher = new AsyncPublisher<>(15);
+        AsyncPublisher<Integer> publisher = new AsyncPublisher<>(null, 15);
         AtomicInteger onSubscribeCall = new AtomicInteger();
         AtomicInteger onNextCall = new AtomicInteger();
         AtomicInteger onErrorCall = new AtomicInteger();
@@ -150,7 +150,7 @@ public class AsyncPublisherTest {
 
     @Test
     public void subscribeWithDemandAtOnce() throws InterruptedException {
-        AsyncPublisher<Integer> publisher = new AsyncPublisher<>(15);
+        AsyncPublisher<Integer> publisher = new AsyncPublisher<>(null, 15);
         AtomicInteger onSubscribeCall = new AtomicInteger();
         AtomicInteger onNextCall = new AtomicInteger();
         AtomicInteger onErrorCall = new AtomicInteger();
@@ -191,7 +191,7 @@ public class AsyncPublisherTest {
 
     @Test
     public void subscribeWithoutDemand() throws InterruptedException {
-        AsyncPublisher<Integer> publisher = new AsyncPublisher<>(15);
+        AsyncPublisher<Integer> publisher = new AsyncPublisher<>(null, 15);
         AtomicInteger onSubscribeCall = new AtomicInteger();
         AtomicInteger onNextCall = new AtomicInteger();
         AtomicInteger onErrorCall = new AtomicInteger();

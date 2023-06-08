@@ -1,16 +1,17 @@
 package frechsack.dev.util.signal;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.Executor;
+
 public final class WriteableIntSignal extends ObservableSignal<Integer> implements WriteableSignal.Number<Integer> {
 
     private int value;
 
-    public WriteableIntSignal(int value) {
+    public WriteableIntSignal(int value, @Nullable Executor executor) {
+        super(executor);
         this.value = value;
     }
-
-    public WriteableIntSignal() {
-    }
-
     @Override
     public boolean set(Integer value) {
         return setInt(value == null ? 0 : value);

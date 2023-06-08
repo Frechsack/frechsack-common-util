@@ -59,18 +59,23 @@ public class AsyncPublisher<Type> implements Flow.Publisher<Type> {
     }
 
     /**
-     * Creates a new Object with a custom buffer size. For execution the default {@link ForkJoinPool#commonPool()} is used.
-     * @param bufferSize The buffer size.
+     * Creates a new Object with a custom executor.
+     * @param executor The custom executor. If this executor is null, the default one is used
      */
-    public AsyncPublisher(int bufferSize) {
-        this(ForkJoinPool.commonPool(), bufferSize);
+    public AsyncPublisher(@NotNull Executor executor) {
+        this(executor, DEFAULT_BUFFER_SIZE);
     }
+
 
     /**
      * Creates a new Object with a {@link ForkJoinPool#commonPool()} executor and the default {@link #DEFAULT_BUFFER_SIZE} buffer size.
      */
     public AsyncPublisher() {
-        this(ForkJoinPool.commonPool(), DEFAULT_BUFFER_SIZE);
+        this(defaultExecutor(), DEFAULT_BUFFER_SIZE);
+    }
+
+    public static Executor defaultExecutor(){
+        return ForkJoinPool.commonPool();
     }
 
     /**

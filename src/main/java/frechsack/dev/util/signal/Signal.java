@@ -9,33 +9,85 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 import java.lang.ref.WeakReference;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Flow;
 import java.util.function.*;
 
 public interface Signal<Type> extends Supplier<Type>, Flow.Publisher<Type>, Closeable, AutoCloseable {
 
-    static <Type extends java.lang.Number> WriteableNumberSignal<Type> ofNumber(@NotNull DoubleFunction<Type> doubleFunction, @NotNull IntFunction<Type> intFunction, @NotNull LongFunction<Type> longFunction,@Nullable Type initial){
-        return new WriteableNumberSignal<>(doubleFunction, intFunction, longFunction, initial);
+    static <Type extends java.lang.Number> WriteableNumberSignal<Type> ofNumber(@NotNull DoubleFunction<Type> doubleFunction, @NotNull IntFunction<Type> intFunction, @NotNull LongFunction<Type> longFunction, @Nullable Type initial, @Nullable Executor executor){
+        return new WriteableNumberSignal<>(doubleFunction, intFunction, longFunction, initial, executor);
     }
 
-    static <Type> WriteableObjectSignal<Type> of(Type initial){
-        return new WriteableObjectSignal<>(initial);
+    static <Type extends java.lang.Number> WriteableNumberSignal<Type> ofNumber(@NotNull DoubleFunction<Type> doubleFunction, @NotNull IntFunction<Type> intFunction, @NotNull LongFunction<Type> longFunction, @Nullable Type initial){
+        return new WriteableNumberSignal<>(doubleFunction, intFunction, longFunction, initial, null);
+    }
+
+    static <Type> SignalPipe<Type> pipeOf(@NotNull Supplier<Type> generator, @Nullable Executor executor, Signal<?>... parents){
+        return new SignalPipe<>(generator, Arrays.asList(parents), SignalPipe.DEFAULT_SHARED, executor);
+    }
+
+    static <Type> SignalPipe<Type> pipeOf(@NotNull Supplier<Type> generator, Signal<?>... parents){
+        return new SignalPipe<>(generator, Arrays.asList(parents), SignalPipe.DEFAULT_SHARED, null);
+    }
+
+    static <Type> WriteableObjectSignal<Type> of(@Nullable Type initial, @Nullable Executor executor){
+        return new WriteableObjectSignal<>(initial, executor);
+    }
+
+    static <Type> WriteableObjectSignal<Type> of(@Nullable Type initial){
+        return new WriteableObjectSignal<>(initial, null);
+    }
+
+    static SignalIntPipe pipeOfInt(@NotNull IntSupplier generator, @Nullable Executor executor, @NotNull Signal<?>... parents){
+        return new SignalIntPipe(generator, Arrays.asList(parents), SignalPipe.DEFAULT_SHARED, executor);
+    }
+
+    static SignalIntPipe pipeOfInt(@NotNull IntSupplier generator, @NotNull Signal<?>... parents){
+        return new SignalIntPipe(generator, Arrays.asList(parents), SignalPipe.DEFAULT_SHARED, null);
+    }
+
+    static WriteableIntSignal ofInt(int initial, @Nullable Executor executor){
+        return new WriteableIntSignal(initial, executor);
     }
 
     static WriteableIntSignal ofInt(int initial){
-        return new WriteableIntSignal(initial);
+        return new WriteableIntSignal(initial, null);
+    }
+
+    static SignalDoublePipe pipeOfDouble(@NotNull DoubleSupplier generator, @Nullable Executor executor, @NotNull Signal<?>... parents){
+        return new SignalDoublePipe(generator, Arrays.asList(parents), SignalPipe.DEFAULT_SHARED, executor);
+    }
+
+    static SignalDoublePipe pipeOfDouble(@NotNull DoubleSupplier generator, @NotNull Signal<?>... parents){
+        return new SignalDoublePipe(generator, Arrays.asList(parents), SignalPipe.DEFAULT_SHARED, null);
+    }
+
+    static WriteableDoubleSignal ofDouble(double initial, @Nullable Executor executor){
+        return new WriteableDoubleSignal(initial, executor);
     }
 
     static WriteableDoubleSignal ofDouble(double initial){
-        return new WriteableDoubleSignal(initial);
+        return new WriteableDoubleSignal(initial, null);
+    }
+
+    static SignalLongPipe pipeOfLong(@NotNull LongSupplier generator, @Nullable Executor executor, @NotNull Signal<?>... parents){
+        return new SignalLongPipe(generator, Arrays.asList(parents), SignalPipe.DEFAULT_SHARED, executor);
+    }
+
+    static SignalLongPipe pipeOfLong(@NotNull LongSupplier generator, @NotNull Signal<?>... parents){
+        return new SignalLongPipe(generator, Arrays.asList(parents), SignalPipe.DEFAULT_SHARED, null);
+    }
+
+    static WriteableLongSignal ofLong(long initial, @Nullable Executor executor){
+        return new WriteableLongSignal(initial, executor);
     }
 
     static WriteableLongSignal ofLong(long initial){
-        return new WriteableLongSignal(initial);
+        return new WriteableLongSignal(initial, null);
     }
 
     /**
@@ -43,7 +95,8 @@ public interface Signal<Type> extends Supplier<Type>, Flow.Publisher<Type>, Clos
      * @return Returns a new pipe.
      */
     default SignalPipe<Type> pipe(){
-        return new SignalPipe<>(this, List.of(this), SignalPipe.DEFAULT_SHARED);
+        Executor executor = this instanceof ObservableSignal<Type> obs ? obs.executor : null;
+        return new SignalPipe<>(this, List.of(this), SignalPipe.DEFAULT_SHARED, executor);
     }
 
     /**
@@ -90,7 +143,8 @@ public interface Signal<Type> extends Supplier<Type>, Flow.Publisher<Type>, Clos
         }
 
         default SignalBooleanPipe pipeBoolean(){
-            return new SignalBooleanPipe(this, List.of(this), SignalBooleanPipe.DEFAULT_SHARED);
+            Executor executor = this instanceof ObservableSignal<?> obs ? obs.executor : null;
+            return new SignalBooleanPipe(this, List.of(this), SignalBooleanPipe.DEFAULT_SHARED, executor);
         }
     }
 
@@ -115,20 +169,24 @@ public interface Signal<Type> extends Supplier<Type>, Flow.Publisher<Type>, Clos
         }
 
         default SignalIntPipe pipeInt(){
-            return new SignalIntPipe(this, List.of(this), SignalIntPipe.DEFAULT_SHARED);
+            Executor executor = this instanceof ObservableSignal<?> obs ? obs.executor : null;
+            return new SignalIntPipe(this, List.of(this), SignalIntPipe.DEFAULT_SHARED, executor);
         }
 
         default SignalDoublePipe pipeDouble(){
-            return new SignalDoublePipe(this, List.of(this), SignalDoublePipe.DEFAULT_SHARED);
+            Executor executor = this instanceof ObservableSignal<?> obs ? obs.executor : null;
+            return new SignalDoublePipe(this, List.of(this), SignalDoublePipe.DEFAULT_SHARED, executor);
         }
 
         default SignalLongPipe pipeLong(){
-            return new SignalLongPipe(this, List.of(this), SignalLongPipe.DEFAULT_SHARED);
+            Executor executor = this instanceof ObservableSignal<?> obs ? obs.executor : null;
+            return new SignalLongPipe(this, List.of(this), SignalLongPipe.DEFAULT_SHARED, executor);
         }
 
         @Override
         default SignalNumberPipe<Type> pipe(){
-            return new SignalNumberPipe<>(this, List.of(this), SignalNumberPipe.DEFAULT_SHARED);
+            Executor executor = this instanceof ObservableSignal<?> obs ? obs.executor : null;
+            return new SignalNumberPipe<>(this, List.of(this), SignalNumberPipe.DEFAULT_SHARED, executor);
         }
     }
 }
