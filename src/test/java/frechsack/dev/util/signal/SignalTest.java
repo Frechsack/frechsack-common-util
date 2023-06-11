@@ -10,7 +10,8 @@ public class SignalTest {
 
     @Test
     public void expressionTest() throws InterruptedException {
-        var executor = Executors.newFixedThreadPool(1);
+
+        var executor = Executors.newSingleThreadExecutor();
         var width = Signal.ofInt(1920, executor);
         var height = Signal.ofInt(1080, executor);
         var pixelCount = Signal.pipeOfInt(() -> width.getAsInt() * height.getAsInt(), executor, width, height).build();
