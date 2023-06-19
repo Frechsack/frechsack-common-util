@@ -1,5 +1,6 @@
 package frechsack.dev.util.signal;
 
+import frechsack.prod.util.signal.Signal;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package frechsack.dev.util.signal;
+package frechsack.prod.util.signal;
 
 import frechsack.prod.util.concurrent.flow.AutoUnsubscribeSubscriber;
 import frechsack.prod.util.concurrent.flow.CompactSubscriber;

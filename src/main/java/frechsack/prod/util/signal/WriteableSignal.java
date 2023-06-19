@@ -1,4 +1,4 @@
-package frechsack.dev.util.signal;
+package frechsack.prod.util.signal;
 
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;

@@ -1,6 +1,7 @@
 package frechsack.dev.util.signal;
 
 import frechsack.prod.util.concurrent.flow.CompactSubscriber;
+import frechsack.prod.util.signal.WriteableObjectSignal;
 import org.junit.Assert;
 import org.junit.Test;
 

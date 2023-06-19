@@ -1,4 +1,4 @@
-package frechsack.dev.util.signal;
+package frechsack.prod.util.signal;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 sealed class DependingObjectSignal<Type> extends DependingSignal<Type> permits DependingNumberSignal{
 

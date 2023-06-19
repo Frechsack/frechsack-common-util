@@ -1,4 +1,4 @@
-package frechsack.dev.util.signal;
+package frechsack.prod.util.signal;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -7,7 +7,6 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.Collection;
 import java.util.concurrent.Executor;
 import java.util.function.DoubleSupplier;
-import java.util.stream.Stream;
 
 final class DependingDoubleSignal extends DependingSignal<Double> implements Signal.Number<Double>{
 

@@ -1,4 +1,4 @@
-package frechsack.dev.util.signal;
+package frechsack.prod.util.signal;
 
 import frechsack.prod.util.collection.ArrayDeque;
 import frechsack.prod.util.collection.CollectionUtils;

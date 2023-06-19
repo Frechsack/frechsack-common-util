@@ -1,6 +1,5 @@
-package frechsack.dev.util.signal;
+package frechsack.prod.util.signal;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Executor;

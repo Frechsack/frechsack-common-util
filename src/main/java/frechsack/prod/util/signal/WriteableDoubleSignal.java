@@ -1,26 +1,26 @@
-package frechsack.dev.util.signal;
+package frechsack.prod.util.signal;
 
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Executor;
 
-public final class WriteableLongSignal extends ObservableSignal<Long> implements WriteableSignal.Number<Long> {
+public final class WriteableDoubleSignal extends ObservableSignal<Double> implements WriteableSignal.Number<Double> {
 
-    private long value;
+    private double value;
 
-    public WriteableLongSignal(long value,  @Nullable Executor executor) {
+    public WriteableDoubleSignal(double initial, @Nullable Executor executor) {
         super(executor);
-        this.value = value;
+        this.value = initial;
     }
 
     @Override
-    public boolean set(Long value) {
-        return setLong(value == null ? 0 : value);
+    public boolean set(Double value) {
+        return setDouble(value == null ? 0 : value);
     }
 
     @Override
-    public synchronized boolean setLong(long newValue) {
-        long lastValue = this.value;
+    public synchronized boolean setDouble(double newValue) {
+        double lastValue = this.value;
         boolean isChanged = lastValue != newValue;
         this.value = newValue;
         if(isChanged){
@@ -31,13 +31,13 @@ public final class WriteableLongSignal extends ObservableSignal<Long> implements
     }
 
     @Override
-    public boolean setDouble(double value) {
-        return setLong((long) value);
+    public boolean setLong(long value) {
+        return setDouble(value);
     }
 
     @Override
     public boolean setInt(int value) {
-        return setLong(value);
+        return setDouble(value);
     }
 
     @Override
@@ -52,11 +52,11 @@ public final class WriteableLongSignal extends ObservableSignal<Long> implements
 
     @Override
     public long getAsLong() {
-        return value;
+        return (long) value;
     }
 
     @Override
-    public Long get() {
+    public Double get() {
         return value;
     }
 }
