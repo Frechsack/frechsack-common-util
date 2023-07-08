@@ -1,229 +1,494 @@
 package frechsack.prod.util.filesystem;
 
-import java.util.stream.Stream;
-
 public class JSONKeyValueFactory {
 
-
-    private record Token(int startInclusive, int endInclusive, boolean isArray, boolean isString, boolean isNull, boolean isObject, boolean isNumber, boolean isBoolean){}
-
-    public static KeyValue<String> parseObject(String text){
-        text = text.trim();
-        if (!text.startsWith("{") || !text.endsWith("}"))
-            throw new IllegalStateException();
-
-        JSONKeyValue rootNode = new JSONKeyValue();
-
-        for (int i = 1; i < text.length(); i++){
-            var nextToken = findNextToken(text, i, text.length() - 1);
-            if (!nextToken.isString())
-                throw new IllegalStateException();
-            final var key = text.substring(nextToken.startInclusive + 1, nextToken.endInclusive + 1 - 1);
-            var separatorIndex = text.indexOf(':', nextToken.endInclusive + 1);
-            nextToken = findNextToken(text, separatorIndex + 1, text.length());
-            if (nextToken.isArray())
-                rootNode.setArray(key, parseArray(nextToken, text));
-            else if (nextToken.isNull())
-                rootNode.setNull(key);
-            else if (nextToken.isString())
-                rootNode.setString(key, text.substring(nextToken.startInclusive + 1, nextToken.endInclusive + 1 - 1));
-            else {
-                final var tokenText = text.substring(nextToken.startInclusive, nextToken.endInclusive + 1);
-                if (nextToken.isObject())
-                    rootNode.setValues(key, parseObject(tokenText));
-                else if (nextToken.isNumber()) {
-                    try {
-                        final var possibleNumber = tokenText
-                                .replaceAll(" ", "")
-                                .trim();
-                        if (possibleNumber.contains(".")){
-                            rootNode.setDouble(key, Double.parseDouble(possibleNumber));
-                        }
-                        else {
-                            rootNode.setLong(key, Long.parseLong(possibleNumber));
-                        }
-                    }
-                    catch (Exception e){
-                        throw e;
-                    }
-                }
-                else if(nextToken.isBoolean()){
-                    final var possibleBoolean = tokenText
-                            .replaceAll(" ", "")
-                            .trim()
-                            .toLowerCase();
-                    if ("true".equals(possibleBoolean))
-                        rootNode.setBoolean(key, true);
-                    else if ("false".equals(possibleBoolean))
-                        rootNode.setBoolean(key, false);
-                    else
-                        throw new IllegalArgumentException();
-                }
-            }
-            separatorIndex = text.indexOf(',', nextToken.endInclusive + 1);
-            if (separatorIndex == -1)
-                separatorIndex = text.indexOf('}',nextToken.endInclusive + 1);
-            // i will be incremented the next loop
-            i = separatorIndex;
-        }
-        return rootNode;
+    static JSONKeyValue parseObject(String text){
+        return parseObject(text, 0, text.length() - 1);
     }
 
-    private static KeyValue<Integer> parseArray(Token token, String text){
-        if (text.charAt(token.startInclusive) != '[' || text.charAt(token.endInclusive) != ']')
-            throw new IllegalStateException();
-
-        final var arrayNode = new IndexedValue();
-        var isStringEscaped = false;
-        var arrayDepth = 0;
-        main: for (int i = token.startInclusive+1; i <= token.endInclusive; i++){
-            var charToCheck = text.charAt(i);
-            if (charToCheck == ' ')
-                continue;
-            for (int y = i ; y <= token.endInclusive; y++) {
-                charToCheck = text.charAt(y);
-                if (charToCheck == '"')
-                    isStringEscaped = !isStringEscaped;
-                else if (charToCheck == '[' && !isStringEscaped)
-                    arrayDepth++;
-                if (charToCheck == ']' && !isStringEscaped){
-                    // Special: Closing Bracket should not decrease depth.
-                    if (token.endInclusive != y)
-                        arrayDepth--;
-                }
-                if ((charToCheck == ',' || charToCheck == ']') && !isStringEscaped && arrayDepth == 0) {
-                    final var elementToken = findNextToken(text, i, y );
-                    if (elementToken.isArray())
-                        arrayNode.addArray(parseArray(elementToken, text));
-                    if (elementToken.isNull())
-                        arrayNode.addNull();
-                    else {
-                        final var tokenText = text.substring(elementToken.startInclusive, elementToken.endInclusive + 1);
-                        if (elementToken.isObject())
-                            arrayNode.addValues(parseObject(tokenText));
-                        else if (elementToken.isString())
-                            arrayNode.addString(tokenText);
-                        else if (elementToken.isNumber()) {
-                            final var possibleNumber = tokenText
-                                .replaceAll(" ", "")
-                                .trim();
-                            try {
-                                if (possibleNumber.contains("."))
-                                    arrayNode.addDouble(Double.parseDouble(possibleNumber));
-                                else
-                                    arrayNode.addLong(Long.parseLong(possibleNumber));
-                            }
-                            catch (Exception e) {
-                                throw new NumberFormatException(String.format("'%s' is not a valid number", possibleNumber));
-                            }
-                        }
-                        else if (elementToken.isBoolean()) {
-                            final var possibleBoolean = tokenText
-                                    .replaceAll(" ", "")
-                                    .trim()
-                                    .toLowerCase();
-                            if ("true".equals(possibleBoolean))
-                                arrayNode.addBoolean(true);
-                            else if ("false".equals(possibleBoolean))
-                                arrayNode.addBoolean(false);
-                            else
-                                throw new IllegalArgumentException(String.format("'%s' can not be read as a boolean", possibleBoolean));
-                        }
-                    }
-
-                    i = y;
-                    continue main;
-                }
-            }
-        }
-        return arrayNode;
+    public static void main(String[] args) {
+        var obj = "{ \"key\": \"value\", \"key2\": false, \"key3\": { \"key5\": null  }, \"key3\": [ 13.2, 19, \"HelloWorld\" ] }";
+        JSONKeyValue o = parseObject(obj);
+        System.out.println(o.toString());
     }
 
-    private static Token findNextToken(String text, int startInclusive, int endInclusive){
-        for (int i = startInclusive; i <= endInclusive; i++){
-            var charToCheck = text.charAt(i);
-            if (charToCheck == ' ')
-                continue;
 
-            // String token
-            if (charToCheck == '"'){
-                for (int y = i + 1; y <= endInclusive; y++){
-                    charToCheck = text.charAt(y);
-                    if (charToCheck == '"' && text.charAt(y-1) != '\\'){
-                        return new Token(i, y, false, true, false, false, false, false);
-                    }
-                }
-                throw new IllegalStateException();
-            }
-            // Array token
-            else if (charToCheck == '[') {
-                var isStringEscaped = false;
-                var arrayDepth = 0;
-                for (int y = i + 1; y <= endInclusive; y++){
-                    charToCheck = text.charAt(y);
-                    if (charToCheck == '"')
-                        isStringEscaped = !isStringEscaped;
-                    else if(charToCheck == '[' && !isStringEscaped)
-                        arrayDepth++;
-                    else if (charToCheck == ']' && !isStringEscaped){
-                        if (arrayDepth == 0) {
-                            return new Token(i, y, true, false, false, false, false, false);
-                        }
-                        else
-                            arrayDepth--;
-                    }
-                }
-                throw new IllegalStateException();
-            }
-            // Null token || TODO: Range Check
-            else if (charToCheck == 'n' && text.indexOf("null",i) == i){
-                return new Token(i, i + 3, false, false, true, false, false, false);
-            }
-            // Object token
-            else if (charToCheck == '{'){
-                var isStringEscaped = false;
-                var objectDepth = 0;
-                for (int y = i + 1; y <= endInclusive; y++){
-                    charToCheck = text.charAt(y);
-                    if (charToCheck == '"')
-                        isStringEscaped = !isStringEscaped;
-                    else if(charToCheck == '{' && !isStringEscaped)
-                        objectDepth++;
-                    else if (charToCheck == '}' && !isStringEscaped){
-                        if (objectDepth == 0) {
-                            return new Token(i, y, false, false, false, true, false, false);
-                        }
-                        else
-                            objectDepth--;
-                    }
-                }
-                throw new IllegalStateException();
-            }
-            // Number token
-            else if (Character.isDigit(charToCheck)){
-                var endOfNumberIndex = i;
+    private static JSONKeyValue parseObject(String text, int startInclusive, int endInclusive){
+        System.out.println("ParseObject:"+text.substring(startInclusive, endInclusive + 1));
+        assert text.charAt(startInclusive) == '{' && text.charAt(endInclusive) == '}';
+        final var node = new JSONKeyValue();
 
-                for (int y = i + 1; y <= endInclusive; y++){
-                    charToCheck = text.charAt(y);
-                    if (Character.isDigit(charToCheck) || charToCheck == '.')
-                        endOfNumberIndex++;
-                    else
+        var isEntryParsingComplete = true;
+        var isNextEntryExpected = false;
+        mainLoop: for (int i = startInclusive + 1; i <= endInclusive; i++) {
+            // Skip until start of key
+            if (text.charAt(i) == '"') {
+                isNextEntryExpected = false;
+                isEntryParsingComplete = false;
+                var keyStartIndex = i;
+                var keyEndIndex = -1;
+                for (i++; i < endInclusive; i++) {
+                    if (text.charAt(i) == '"' && text.charAt(i - 1) != '\\') {
+                        keyEndIndex = i;
                         break;
-
+                    }
                 }
-                return new Token(i, endOfNumberIndex, false, false, false, false, true, false);
+
+                if (keyEndIndex == -1)
+                    throw new IllegalStateException("EndOfKeyExpected");
+
+                final var key = text.substring(keyStartIndex + 1, keyEndIndex);
+                final var separatorIndex = text.indexOf(':', keyEndIndex);
+                if (separatorIndex == -1)
+                    throw new IllegalStateException("NoSeparator");
+
+                for (i = separatorIndex + 1; i <= endInclusive; i++) {
+                    if (text.charAt(i) == '[') {
+                        final var elementStartIndex = i;
+                        var elementEndIndex = -1;
+                        var isStringEscaped = false;
+                        var objectDepth = 0;
+                        var arrayDepth = 0;
+                        for (i++; i <= endInclusive; i++) {
+                            if (text.charAt(i) == '"')
+                                isStringEscaped = !isStringEscaped;
+                            else if (text.charAt(i) == '[' && !isStringEscaped)
+                                arrayDepth++;
+                            else if (text.charAt(i) == '{' && !isStringEscaped)
+                                objectDepth++;
+                            else if (text.charAt(i) == '}' && !isStringEscaped)
+                                objectDepth--;
+                            else if (text.charAt(i) == ']' && !isStringEscaped)
+                                if (arrayDepth == 0 && objectDepth == 0) {
+                                    elementEndIndex = i;
+                                    break;
+                                }
+                                else
+                                    arrayDepth--;
+                        }
+                        if (elementEndIndex == -1)
+                            throw new IllegalStateException("EndOfArrayNotFound");
+
+                        node.setArray(key, parseArray(text, elementStartIndex, elementEndIndex));
+                        isEntryParsingComplete = true;
+
+                        var endObjectSeparatorIndex = text.indexOf('}', elementEndIndex + 1);
+                        var endCommaSeparatorIndex = text.indexOf(',', elementEndIndex + 1);
+                        var endSeparatorIndex = endObjectSeparatorIndex;
+                        if (endCommaSeparatorIndex != -1 && endCommaSeparatorIndex < endObjectSeparatorIndex) {
+                            endSeparatorIndex = endCommaSeparatorIndex;
+                            isNextEntryExpected = true;
+                        }
+                        if (endSeparatorIndex == -1)
+                            throw new IllegalStateException("NoSeparationOrEndCharacter");
+
+                        i = endSeparatorIndex;
+                        continue mainLoop;
+                    }
+                    else if (text.charAt(i) == '{') {
+                        final var elementStartIndex = i;
+                        var elementEndIndex = -1;
+                        var isStringEscaped = false;
+                        var objectDepth = 0;
+                        var arrayDepth = 0;
+                        for (i++; i <= endInclusive; i++) {
+                            if (text.charAt(i) == '"')
+                                isStringEscaped = !isStringEscaped;
+                            else if (text.charAt(i) == '[' && !isStringEscaped)
+                                arrayDepth++;
+                            else if (text.charAt(i) == '{' && !isStringEscaped)
+                                objectDepth++;
+                            else if (text.charAt(i) == ']' && !isStringEscaped)
+                                arrayDepth--;
+                            else if (text.charAt(i) == '}' && !isStringEscaped)
+                                if (arrayDepth == 0 && objectDepth == 0) {
+                                    elementEndIndex = i;
+                                    break;
+                                }
+                                else
+                                    objectDepth--;
+                        }
+                        if (elementEndIndex == -1)
+                            throw new IllegalStateException("EndOfObjectNotFound");
+
+                        node.setValues(key, parseObject(text, elementStartIndex, elementEndIndex));
+                        isEntryParsingComplete = true;
+
+                        var endObjectSeparatorIndex = text.indexOf('}', elementEndIndex + 1);
+                        var endCommaSeparatorIndex = text.indexOf(',', elementEndIndex + 1);
+                        var endSeparatorIndex = endObjectSeparatorIndex;
+                        if (endCommaSeparatorIndex != -1 && endCommaSeparatorIndex < endObjectSeparatorIndex) {
+                            endSeparatorIndex = endCommaSeparatorIndex;
+                            isNextEntryExpected = true;
+                        }
+                        if (endSeparatorIndex == -1)
+                            throw new IllegalStateException("NoSeparationOrEndCharacter");
+
+                        i = endSeparatorIndex;
+                        continue mainLoop;
+                    }
+                    else if (text.charAt(i) == '"') {
+                        final var elementStartIndex = i;
+                        var elementEndIndex = -1;
+                        for (i++; i <= endInclusive; i++) {
+                            if (text.charAt(i) == '"' && text.charAt(i - 1) != '\\') {
+                                elementEndIndex = i;
+                                break;
+                            }
+                        }
+                        if (elementEndIndex == -1)
+                            throw new IllegalStateException("EndOfStringExpected");
+                        node.setString(key, text.substring(elementStartIndex + 1, elementEndIndex));
+                        isEntryParsingComplete = true;
+
+                        var endObjectSeparatorIndex = text.indexOf('}', elementEndIndex + 1);
+                        var endCommaSeparatorIndex = text.indexOf(',', elementEndIndex + 1);
+                        var endSeparatorIndex = endObjectSeparatorIndex;
+                        if (endCommaSeparatorIndex != -1 && endCommaSeparatorIndex < endObjectSeparatorIndex) {
+                            endSeparatorIndex = endCommaSeparatorIndex;
+                            isNextEntryExpected = true;
+                        }
+                        if (endSeparatorIndex == -1)
+                            throw new IllegalStateException("NoSeparationOrEndCharacter");
+
+                        i = endSeparatorIndex;
+                        continue mainLoop;
+                    }
+                    else if (Character.toLowerCase(text.charAt(i)) == 't') {
+                        if (i + 3 > endInclusive)
+                            throw new IllegalStateException("IllegalStartOfItem");
+                        if (!(Character.toLowerCase(text.charAt(i + 1)) == 'r'))
+                            throw new IllegalStateException("IllegalCharacter");
+                        if (!(Character.toLowerCase(text.charAt(i + 2)) == 'u'))
+                            throw new IllegalStateException("IllegalCharacter");
+                        if (!(Character.toLowerCase(text.charAt(i + 3)) == 'e'))
+                            throw new IllegalStateException("IllegalCharacter");
+                        node.setBoolean(key, true);
+                        isEntryParsingComplete = true;
+                        var endObjectSeparatorIndex = text.indexOf('}', i + 4);
+                        var endCommaSeparatorIndex = text.indexOf(',', i + 4);
+                        var endSeparatorIndex = endObjectSeparatorIndex;
+                        if (endCommaSeparatorIndex != -1 && endCommaSeparatorIndex < endObjectSeparatorIndex) {
+                            endSeparatorIndex = endCommaSeparatorIndex;
+                            isNextEntryExpected = true;
+                        }
+                        if (endSeparatorIndex == -1)
+                            throw new IllegalStateException("NoSeparationOrEndCharacter");
+
+                        i = endSeparatorIndex;
+                        continue mainLoop;
+                    }
+                    else if (Character.toLowerCase(text.charAt(i)) == 'n') {
+                        if (i + 3 > endInclusive)
+                            throw new IllegalStateException("IllegalStartOfItem");
+                        if (!(Character.toLowerCase(text.charAt(i + 1)) == 'u'))
+                            throw new IllegalStateException("IllegalCharacter");
+                        if (!(Character.toLowerCase(text.charAt(i + 2)) == 'l'))
+                            throw new IllegalStateException("IllegalCharacter");
+                        if (!(Character.toLowerCase(text.charAt(i + 3)) == 'l'))
+                            throw new IllegalStateException("IllegalCharacter");
+                        node.setNull(key);
+                        isEntryParsingComplete = true;
+                        var endObjectSeparatorIndex = text.indexOf('}', i + 4);
+                        var endCommaSeparatorIndex = text.indexOf(',', i + 4);
+                        var endSeparatorIndex = endObjectSeparatorIndex;
+                        if (endCommaSeparatorIndex != -1 && endCommaSeparatorIndex < endObjectSeparatorIndex) {
+                            endSeparatorIndex = endCommaSeparatorIndex;
+                            isNextEntryExpected = true;
+                        }
+                        if (endSeparatorIndex == -1)
+                            throw new IllegalStateException("NoSeparationOrEndCharacter");
+
+                        i = endSeparatorIndex;
+                        continue mainLoop;
+                    }
+                    else if (Character.toLowerCase(text.charAt(i)) == 'f') {
+                        if (i + 4 > endInclusive)
+                            throw new IllegalStateException("IllegalStartOfItem");
+                        if (!(Character.toLowerCase(text.charAt(i + 1)) == 'a'))
+                            throw new IllegalStateException("IllegalCharacter");
+                        if (!(Character.toLowerCase(text.charAt(i + 2)) == 'l'))
+                            throw new IllegalStateException("IllegalCharacter");
+                        if (!(Character.toLowerCase(text.charAt(i + 3)) == 's'))
+                            throw new IllegalStateException("IllegalCharacter");
+                        if (!(Character.toLowerCase(text.charAt(i + 4)) == 'e'))
+                            throw new IllegalStateException("IllegalCharacter");
+                        node.setBoolean(key, false);
+                        isEntryParsingComplete = true;
+                        var endObjectSeparatorIndex = text.indexOf('}', i + 5);
+                        var endCommaSeparatorIndex = text.indexOf(',', i + 5);
+                        var endSeparatorIndex = endObjectSeparatorIndex;
+                        if (endCommaSeparatorIndex != -1 && endCommaSeparatorIndex < endObjectSeparatorIndex) {
+                            endSeparatorIndex = endCommaSeparatorIndex;
+                            isNextEntryExpected = true;
+                        }
+                        if (endSeparatorIndex == -1)
+                            throw new IllegalStateException("NoSeparationOrEndCharacter");
+
+                        i = endSeparatorIndex;
+                        continue mainLoop;
+                    }
+                    else if (Character.isDigit(text.charAt(i))) {
+                        final var elementStartIndex = i;
+                        var elementEndIndex = -1;
+                        for (i++; i <= endInclusive; i++) {
+                            if (text.charAt(i) == ',' || text.charAt(i) == '}') {
+                                elementEndIndex = i - 1;
+                                break;
+                            }
+                            if (!(text.charAt(i) == '.' || Character.isDigit(text.charAt(i))))
+                                throw new IllegalStateException("NonNumeric Character");
+                        }
+                        if (elementEndIndex == -1)
+                            throw new IllegalStateException("Number not terminated");
+                        final var possibleNumber = text.substring(elementStartIndex, elementEndIndex + 1);
+                        try {
+                            if (possibleNumber.indexOf('.') == -1)
+                                node.setLong(key, Long.parseLong(possibleNumber));
+                            else
+                                node.setDouble(key, Double.parseDouble(possibleNumber));
+                        }
+                        catch (Exception e){
+                            throw new IllegalStateException("Number not parseable");
+                        }
+                        isEntryParsingComplete = true;
+                        var endObjectSeparatorIndex = text.indexOf('}', elementEndIndex + 1);
+                        var endCommaSeparatorIndex = text.indexOf(',', elementEndIndex + 1);
+                        var endSeparatorIndex = endObjectSeparatorIndex;
+                        if (endCommaSeparatorIndex != -1 && endCommaSeparatorIndex < endObjectSeparatorIndex) {
+                            endSeparatorIndex = endCommaSeparatorIndex;
+                            isNextEntryExpected = true;
+                        }
+                        if (endSeparatorIndex == -1)
+                            throw new IllegalStateException("NoSeparationOrEndCharacter");
+
+                        i = endSeparatorIndex;
+                        continue mainLoop;
+
+                    }
+                }
             }
-            // Boolean token
-            else if ((charToCheck == 't' || charToCheck == 'T') && text.toLowerCase().indexOf("true",i) == i){
-                return new Token(i, i + 3, false, false, false, false, false, true);
+            else if (text.charAt(i) == '}') {
+                if (i < endInclusive)
+                    throw new IllegalStateException("IllegalCharacter");
             }
-            // Boolean token
-            else if ((charToCheck == 'f' || charToCheck == 'F') && text.toLowerCase().indexOf("false",i) == i){
-                return new Token(i, i + 4, false, false, false, false, false, true);
-            }
+            else if (text.charAt(i) != ' ')
+                throw new IllegalStateException("IllegalCharacter");
         }
-        System.out.println(text.substring(startInclusive, endInclusive + 1));
-        throw new IllegalStateException("No token found");
+
+        if (!isEntryParsingComplete)
+            throw new IllegalStateException("ParsingIsNotComplete");
+        if (isNextEntryExpected)
+            throw new IllegalStateException("AnotherEntryExpected");
+        return node;
     }
 
+    private static IndexedValue parseArray(String text, int startInclusive, int endInclusive){
+        System.out.println("ParseArray:"+text.substring(startInclusive, endInclusive + 1));
+        assert text.charAt(startInclusive) == '[' && text.charAt(endInclusive) == ']';
+        final var array = new IndexedValue();
+        var isElementExpected = false;
+        mainLoop: for (int i = startInclusive + 1; i <= endInclusive; i++) {
+            if (text.charAt(i) == '{') {
+                final var elementStartIndex = i;
+                var arrayOpenCount = 0;
+                var objectOpenCount = 0;
+                var isStringEscaped = false;
+                for (i++; i <= endInclusive; i++) {
+                    if (text.charAt(i) == '"')
+                        isStringEscaped = !isStringEscaped;
+                    else if (text.charAt(i) == '[' && !isStringEscaped)
+                        arrayOpenCount++;
+                    else if (text.charAt(i) == ']' && !isStringEscaped)
+                        if (arrayOpenCount == 0)
+                            throw new IllegalStateException();
+                        else
+                            arrayOpenCount--;
+                    else if (text.charAt(i) == '{' && !isStringEscaped)
+                        objectOpenCount++;
+                    else if (text.charAt(i) == '}' && !isStringEscaped)
+                        if (objectOpenCount == 0) {
+                            array.addValues(parseObject(text, elementStartIndex, i));
+                            // Skip anything from here to the spliterator
+                            for (i++; i <= endInclusive; i++) {
+                                if (text.charAt(i) == ',') {
+                                    isElementExpected = true;
+                                    continue mainLoop;
+                                }
+                                else if (text.charAt(i) == ']' && i == endInclusive) {
+                                    isElementExpected = false;
+                                    continue mainLoop;
+                                }
+                                else if (text.charAt(i) != ' ')
+                                    throw new IllegalStateException();
+                            }
+                            // No continue was reached
+                            throw new IllegalStateException();
+                        }
+                        else
+                            objectOpenCount--;
+                }
+            }
+            else if (text.charAt(i) == '[') {
+                final var elementStartIndex = i;
+                var arrayOpenCount = 0;
+                var objectOpenCount = 0;
+                var isStringEscaped = false;
+                for (i++; i <= endInclusive; i++) {
+                    if (text.charAt(i) == '"')
+                        isStringEscaped = !isStringEscaped;
+                    else if (text.charAt(i) == '[' && !isStringEscaped)
+                        arrayOpenCount++;
+                    else if (text.charAt(i) == '}' && !isStringEscaped)
+                        if (objectOpenCount == 0)
+                            throw new IllegalStateException();
+                        else
+                            objectOpenCount--;
+                    else if (text.charAt(i) == '{' && !isStringEscaped)
+                        objectOpenCount++;
+                    else if (text.charAt(i) == ']' && !isStringEscaped)
+                        if (arrayOpenCount == 0) {
+                            array.addArray(parseArray(text, elementStartIndex, i));
+                            // Skip anything from here to the spliterator
+                            for (i++; i <= endInclusive; i++) {
+                                if (text.charAt(i) == ',') {
+                                    isElementExpected = true;
+                                    continue mainLoop;
+                                }
+                                else if (text.charAt(i) == ']' && i == endInclusive) {
+                                    isElementExpected = false;
+                                    continue mainLoop;
+                                }
+                                else if (text.charAt(i) != ' ')
+                                    throw new IllegalStateException();
+                            }
+                            // No continue was reached
+                            throw new IllegalStateException();
+                        }
+                        else
+                            objectOpenCount--;
+                }
+            }
+            else if (text.charAt(i) == ',')
+                throw new IllegalStateException();
+            else if (text.charAt(i) == '}')
+                throw new IllegalStateException();
+            else if (text.charAt(i) == ']' && i < endInclusive)
+                throw new IllegalStateException();
+            else if (text.charAt(i) == '"') {
+                // String element
+                final var elementStartIndex = i;
+                for (i++; i <= endInclusive; i++) {
+                    if (text.charAt(i) == '"' && text.charAt(i - 1) != '\\') {
+                        array.addString(text.substring(elementStartIndex + 1, i));
+
+                        // Skip anything from here to the spliterator
+                        for (i++; i <= endInclusive; i++) {
+                            if (text.charAt(i) == ',') {
+                                isElementExpected = true;
+                                continue mainLoop;
+                            }
+                            else if (text.charAt(i) == ']' && i == endInclusive) {
+                                isElementExpected = false;
+                                continue mainLoop;
+                            }
+                            else if (text.charAt(i) != ' ')
+                                throw new IllegalStateException();
+                        }
+                        // No continue was reached
+                        throw new IllegalStateException();
+                    }
+                }
+                // No continue was reached
+                throw new IllegalStateException();
+            }
+            else if (Character.toLowerCase(text.charAt(i)) == 't') {
+                if (i + 3 > endInclusive || !(
+                        Character.toLowerCase(text.charAt(i + 1)) == 'r'
+                        && Character.toLowerCase(text.charAt(i + 2)) == 'u'
+                        && Character.toLowerCase(text.charAt(i + 3)) == 'e'))
+                    throw new IllegalStateException();
+                array.addBoolean(true);
+                // Skip anything from here to the spliterator
+                for (i+=4; i <= endInclusive; i++) {
+                    if (text.charAt(i) == ',') {
+                        isElementExpected = true;
+                        continue mainLoop;
+                    }
+                    else if (text.charAt(i) == ']' && i == endInclusive) {
+                        isElementExpected = false;
+                        continue mainLoop;
+                    }
+                    else if (text.charAt(i) != ' ')
+                        throw new IllegalStateException();
+                }
+                // No continue was reached
+                throw new IllegalStateException();
+            }
+            else if (Character.toLowerCase(text.charAt(i)) == 'f') {
+                if (i + 4 > endInclusive || !(
+                        Character.toLowerCase(text.charAt(i + 1)) == 'a'
+                                && Character.toLowerCase(text.charAt(i + 2)) == 'l'
+                                && Character.toLowerCase(text.charAt(i + 3)) == 's'
+                                && Character.toLowerCase(text.charAt(i + 4)) == 'e'))
+                    throw new IllegalStateException();
+                array.addBoolean(false);
+                // Skip anything from here to the spliterator
+                for (i += 5; i <= endInclusive; i++) {
+                    if (text.charAt(i) == ',') {
+                        isElementExpected = true;
+                        continue mainLoop;
+                    }
+                    else if (text.charAt(i) == ']' && i == endInclusive) {
+                        isElementExpected = false;
+                        continue mainLoop;
+                    }
+                    else if (text.charAt(i) != ' ')
+                        throw new IllegalStateException();
+                }
+                // No continue was reached
+                throw new IllegalStateException();
+            }
+            else if (Character.isDigit(text.charAt(i))) {
+                final var elementStartIndex = i;
+                for (i++; i <= endInclusive; i++) {
+                    if (!Character.isDigit(text.charAt(i)) && text.charAt(i) != '.') {
+                        try {
+                            final var possibleNumber = text.substring(elementStartIndex, i);
+                            if (possibleNumber.contains("."))
+                                array.addDouble(Double.parseDouble(possibleNumber));
+                            else
+                                array.addLong(Long.parseLong(possibleNumber));
+                        }
+                        catch (Exception ignored){
+                            throw new IllegalStateException();
+                        }
+
+
+                        // Skip anything from here to the spliterator
+                        for (; i <= endInclusive; i++) {
+                            if (text.charAt(i) == ',') {
+                                isElementExpected = true;
+                                continue mainLoop;
+                            }
+                            else if (text.charAt(i) == ']' && i == endInclusive) {
+                                isElementExpected = false;
+                                continue mainLoop;
+                            }
+                            else if (text.charAt(i) != ' ')
+                                throw new IllegalStateException();
+                        }
+                        // No continue was reached
+                        throw new IllegalStateException();
+                    }
+                }
+                // No continue was reached
+                throw new IllegalStateException();
+            }
+        }
+        if (isElementExpected)
+            throw new IllegalStateException();
+
+        return array;
+    }
 }
