@@ -93,9 +93,11 @@ public class JSONKeyValue implements KeyValue<String> {
 
     @Override
     public int getInt(String key, boolean isConversion) {
+        if (!containsKey(key))
+            throw new NoSuchElementException();
         final var value = values.get(key);
         if (value == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         if (value instanceof Integer i)
             return i;
         if (value instanceof Long l)
@@ -118,9 +120,11 @@ public class JSONKeyValue implements KeyValue<String> {
 
     @Override
     public double getDouble(String key, boolean isConversion) {
+        if (!containsKey(key))
+            throw new NoSuchElementException();
         final var value = values.get(key);
         if (value == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         if (value instanceof Double d)
             return d;
         if (!isConversion)
@@ -140,9 +144,11 @@ public class JSONKeyValue implements KeyValue<String> {
 
     @Override
     public long getLong(String key, boolean isConversion) {
+        if (!containsKey(key))
+            throw new NoSuchElementException();
         final var value = values.get(key);
         if (value == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         if (value instanceof Long l)
             return l;
         if (value instanceof Integer i)
@@ -165,9 +171,11 @@ public class JSONKeyValue implements KeyValue<String> {
 
     @Override
     public @NotNull String getString(String key, boolean isConversion) {
+        if (!containsKey(key))
+            throw new NoSuchElementException();
         final var value = values.get(key);
         if (value == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         if (value instanceof String s)
             return s;
         if (!isConversion)
@@ -177,9 +185,11 @@ public class JSONKeyValue implements KeyValue<String> {
 
     @Override
     public boolean getBoolean(String key, boolean isConversion) {
+        if (!containsKey(key))
+            throw new NoSuchElementException();
         final var value = values.get(key);
         if (value == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         if (value instanceof Boolean b)
             return b;
         if (!isConversion)
@@ -195,31 +205,19 @@ public class JSONKeyValue implements KeyValue<String> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <KeyType> @NotNull KeyValue<KeyType> getValues(@NotNull String key, @NotNull Class<KeyType> keyType) {
+    public <KeyType> @NotNull KeyValue<KeyType> getKeyValue(@NotNull String key, @NotNull Class<KeyType> keyType) {
         if (!(keyType == String.class || keyType == Integer.class))
             throw new IllegalArgumentException("JSON allows String or Integer as keys only.");
-        final var values = this.values.get(key);
-        if (values == null)
+        if (!containsKey(key))
             throw new NoSuchElementException();
+        final var value = values.get(key);
+        if (value == null)
+            throw new IllegalArgumentException();
         try {
-            return (KeyValue<KeyType>) values;
+            return (KeyValue<KeyType>) value;
         }
         catch (Exception e){
             throw new IllegalArgumentException();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public @NotNull KeyValue<Integer> getArray(@NotNull String key) {
-        final var values = this.values.get(key);
-        if (values == null)
-            throw new NoSuchElementException();
-        try {
-            return (KeyValue<Integer>) values;
-        }
-        catch (Exception e){
-            throw new IllegalArgumentException("Associated key is not an array.");
         }
     }
 
@@ -229,85 +227,12 @@ public class JSONKeyValue implements KeyValue<String> {
     }
 
     @Override
-    public boolean isArray(String key) {
+    public void getNull(String key) {
+        if (!containsKey(key))
+            throw new NoSuchElementException();
         final var values = this.values.get(key);
-        if (values == null)
-            return false;
-        try {
-            @SuppressWarnings("unchecked")
-            final var e = (KeyValue<Integer>) values;
-            return true;
-        }
-        catch (ClassCastException ignored){
-            return false;
-        }
-
-    }
-
-    @Override
-    public boolean isKeyValue(String key) {
-        final var values = this.values.get(key);
-        return values instanceof KeyValue<?>;
-    }
-
-    @Override
-    public boolean isNull(String key) {
-        final var values = this.values.get(key);
-        return values == null;
-    }
-
-    @Override
-    public boolean isLong(String key, boolean isConversion) {
-        try {
-            getLong(key, isConversion);
-            return true;
-        }
-        catch (Exception ignored){
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isDouble(String key, boolean isConversion) {
-        try {
-            getDouble(key, isConversion);
-            return true;
-        }
-        catch (Exception ignored){
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isNumber(String key, boolean isConversion) {
-        try {
-            return isLong(key, isConversion) || isDouble(key, isConversion);
-        }
-        catch (Exception ignored){
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isString(String key, boolean isConversion) {
-        try {
-           getString(key, isConversion);
-           return true;
-        }
-        catch (Exception ignored){
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isBoolean(String key, boolean isConversion) {
-        try {
-            getString(key, isConversion);
-            return true;
-        }
-        catch (Exception ignored){
-            return false;
-        }
+        if (values != null)
+            throw new IllegalArgumentException();
     }
 
     @Override
@@ -341,12 +266,12 @@ public class JSONKeyValue implements KeyValue<String> {
                 entryBuilder.append('"').append(getString(key, false)).append('"');
             else if (isArray(key))
                 entryBuilder.append(getArray(key));
-            else if (isKeyValue(key))
-                entryBuilder.append(getArray(key));
+            else if (isKeyValue(key, String.class))
+                entryBuilder.append(getKeyValue(key, String.class));
             else if (isBoolean(key))
                 entryBuilder.append(getBoolean(key));
             else
-                throw new IllegalStateException();
+                throw new IllegalStateException("Implementation error.");
             return entryBuilder.toString();
         }).collect(Collectors.joining(","));
         return '{' +

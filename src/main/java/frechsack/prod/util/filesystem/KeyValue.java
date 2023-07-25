@@ -8,8 +8,14 @@ import java.util.stream.Stream;
 
 public interface KeyValue<Key> {
 
-    static KeyValue<String> parseJSON(String text){
-        return JSONKeyValueFactory.parseObject(text);
+    static KeyValue<String> parseJSON(String text, boolean isAsync){
+        return JSONKeyValueFactory.parseObject(text, isAsync);
+    }
+
+    static <Key> KeyValue<Key> synchronizedKeyValue(@NotNull KeyValue<Key> keyValue){
+        return keyValue instanceof KeyValueFactory.SynchronizedKeyValue<Key>
+                ? keyValue
+                : new KeyValueFactory.SynchronizedKeyValue<>(keyValue);
     }
 
 
@@ -75,47 +81,115 @@ public interface KeyValue<Key> {
 
     boolean getBoolean(Key key, boolean isConversion);
 
-    @NotNull <KeyType> KeyValue<KeyType> getValues(Key key, Class<KeyType> keyType);
+    void getNull(Key key);
 
-    @NotNull KeyValue<Integer> getArray(Key key);
+    @NotNull <KeyType> KeyValue<KeyType> getKeyValue(Key key, Class<KeyType> keyType);
+
+    default @NotNull KeyValue<Integer> getArray(Key key) {
+        return getKeyValue(key, Integer.class);
+    }
 
     boolean containsKey(Key key);
 
-    boolean isArray(Key key);
+    default boolean isArray(Key key) {
+        try {
+            getArray(key);
+            return true;
+        }
+        catch (Exception ignored){
+            return false;
+        }
+    }
 
-    boolean isKeyValue(Key key);
+    default boolean isKeyValue(Key key, Class<?> type) {
+        try {
+            getKeyValue(key, type);
+            return true;
+        }
+        catch (Exception ignored) {
+            return false;
+        }
+    }
 
-    boolean isNull(Key key);
+    default boolean isNull(Key key) {
+        try {
+            getNull(key);
+            return true;
+        }
+        catch (Exception ignored) {
+            return false;
+        }
+    }
 
     default boolean isLong(Key key) {
         return isLong(key, true);
     }
 
-    boolean isLong(Key key, boolean isConversion);
+    default boolean isLong(Key key, boolean isConversion) {
+        try {
+            getLong(key, isConversion);
+            return true;
+        }
+        catch (Exception ignored){
+            return false;
+        }
+    }
 
     default boolean isDouble(Key key) {
         return isDouble(key, true);
     }
 
-    boolean isDouble(Key key, boolean isConversion);
+    default boolean isDouble(Key key, boolean isConversion) {
+        try {
+            getDouble(key, isConversion);
+            return true;
+        }
+        catch (Exception ignored){
+            return false;
+        }
+    }
 
     default boolean isNumber(Key key) {
         return isNumber(key, true);
     }
 
-    boolean isNumber(Key key, boolean isConversion);
+    default boolean isNumber(Key key, boolean isConversion) {
+        try {
+            getLong(key, isConversion);
+            return true;
+        }
+        catch (Exception ignored){
+            return false;
+        }
+    }
 
     default boolean isString(Key key) {
         return isString(key, true);
     }
 
-    boolean isString(Key key, boolean isConversion);
+    default boolean isString(Key key, boolean isConversion) {
+        try {
+            getString(key, isConversion);
+            return true;
+        }
+        catch (Exception ignored){
+            return false;
+        }
+    }
 
     default boolean isBoolean(Key key) {
         return isBoolean(key, true);
     }
 
-    boolean isBoolean(Key key, boolean isConversion);
+    default boolean isBoolean(Key key, boolean isConversion) {
+        try {
+            getBoolean(key, isConversion);
+            return true;
+        }
+        catch (Exception ignored){
+            return false;
+        }
+    }
 
     Stream<Tuple<Key, Object>> stream();
 

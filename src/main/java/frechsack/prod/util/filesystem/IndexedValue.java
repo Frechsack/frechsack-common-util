@@ -17,10 +17,6 @@ public class IndexedValue implements KeyValue<Integer> {
 
     private final ArrayList<Object> elements = new ArrayList<>();
 
-    private static RuntimeException unmatchedTypeException(Class<?> actual){
-        return new IllegalArgumentException();
-    }
-
     @Override
     public void setNull(@NotNull Integer integer) {
         elements.set(integer, null);
@@ -104,9 +100,9 @@ public class IndexedValue implements KeyValue<Integer> {
     @Override
     public int getInt(Integer key, boolean isConversion) {
         Objects.checkIndex(key, elements.size());
-        final var value = this.elements.get(key);
+        final var value = elements.get(key);
         if (value == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         if (value instanceof Integer i)
             return i;
         if (value instanceof Long l)
@@ -132,7 +128,7 @@ public class IndexedValue implements KeyValue<Integer> {
         Objects.checkIndex(key, elements.size());
         final var value = this.elements.get(key);
         if (value == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         if (value instanceof Double d)
             return d;
         if (!isConversion)
@@ -155,7 +151,7 @@ public class IndexedValue implements KeyValue<Integer> {
         Objects.checkIndex(key, elements.size());
         final var value = this.elements.get(key);
         if (value == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         if (value instanceof Long l)
             return l;
         if (value instanceof Integer i)
@@ -181,7 +177,7 @@ public class IndexedValue implements KeyValue<Integer> {
         Objects.checkIndex(key, elements.size());
         final var value = this.elements.get(key);
         if (value == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         if (value instanceof String s)
             return s;
         if (!isConversion)
@@ -194,7 +190,7 @@ public class IndexedValue implements KeyValue<Integer> {
         Objects.checkIndex(key, elements.size());
         final var value = this.elements.get(key);
         if (value == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         if (value instanceof Boolean b)
             return b;
         if (!isConversion)
@@ -208,15 +204,23 @@ public class IndexedValue implements KeyValue<Integer> {
         throw new IllegalArgumentException();
     }
 
+    @Override
+    public void getNull(Integer integer) {
+        Objects.checkIndex(integer, elements.size());
+        if (!containsKey(integer))
+            throw new NoSuchElementException();
+        final var value = elements.get(integer);
+        if (value != null)
+            throw new IllegalArgumentException();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
-    public <KeyType> @NotNull KeyValue<KeyType> getValues(@NotNull Integer key, @NotNull Class<KeyType> keyType) {
-        if (!(keyType == String.class || keyType == Integer.class))
-            throw new IllegalArgumentException("JSON allows String or Integer as keys only.");
+    public <KeyType> @NotNull KeyValue<KeyType> getKeyValue(@NotNull Integer key, @NotNull Class<KeyType> keyType) {
         Objects.checkIndex(key, elements.size());
         final var values = this.elements.get(key);
         if (values == null)
-            throw new NoSuchElementException();
+            throw new IllegalArgumentException();
         try {
             return (KeyValue<KeyType>) values;
         }
@@ -225,107 +229,9 @@ public class IndexedValue implements KeyValue<Integer> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public @NotNull KeyValue<Integer> getArray(@NotNull Integer key) {
-        Objects.checkIndex(key, elements.size());
-        final var values = this.elements.get(key);
-        if (values == null)
-            throw new NoSuchElementException();
-        try {
-            return (KeyValue<Integer>) values;
-        }
-        catch (Exception e){
-            throw new IllegalArgumentException("Associated key is not an array.");
-        }
-    }
-
     @Override
     public boolean containsKey(Integer key) {
         return key < elements.size();
-    }
-
-    @Override
-    public boolean isArray(Integer key) {
-        final var values = elements.get(key);
-        if (values == null)
-            return false;
-        try {
-            @SuppressWarnings("unchecked")
-            final var e = (KeyValue<Integer>) values;
-            return true;
-        }
-        catch (ClassCastException ignored){
-            return false;
-        }
-
-    }
-
-    @Override
-    public boolean isKeyValue(Integer key) {
-        final var values = elements.get(key);
-        return values instanceof KeyValue<?>;
-    }
-
-    @Override
-    public boolean isNull(Integer key) {
-        final var values = elements.get(key);
-        return values == null;
-    }
-
-    @Override
-    public boolean isLong(Integer key, boolean isConversion) {
-        try {
-            getLong(key, isConversion);
-            return true;
-        }
-        catch (Exception ignored){
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isDouble(Integer key, boolean isConversion) {
-        try {
-            getDouble(key, isConversion);
-            return true;
-        }
-        catch (Exception ignored){
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isNumber(Integer key, boolean isConversion) {
-        try {
-            return isLong(key, isConversion) || isDouble(key, isConversion);
-        }
-        catch (Exception ignored){
-            return false;
-        }
-    }
-
-    @Override
-    public boolean isString(Integer key, boolean isConversion) {
-        try {
-            getString(key, isConversion);
-            return true;
-        }
-        catch (Exception ignored){
-            return false;
-        }
-    }
-
-
-    @Override
-    public boolean isBoolean(Integer key, boolean isConversion) {
-        try {
-            getBoolean(key, isConversion);
-            return true;
-        }
-        catch (Exception ignored){
-            return false;
-        }
     }
 
     @Override
@@ -364,7 +270,7 @@ public class IndexedValue implements KeyValue<Integer> {
                 entryBuilder.append('"').append(getString(key, false)).append('"');
             else if (isArray(key))
                 entryBuilder.append(getArray(key));
-            else if (isKeyValue(key))
+            else if (isKeyValue(key, Object.class))
                 entryBuilder.append(getArray(key));
             else if (isBoolean(key))
                 entryBuilder.append(getBoolean(key));
