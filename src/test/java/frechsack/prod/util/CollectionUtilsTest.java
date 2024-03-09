@@ -1,6 +1,5 @@
 package frechsack.prod.util;
 
-import frechsack.prod.util.collection.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

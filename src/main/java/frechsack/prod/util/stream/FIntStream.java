@@ -8,9 +8,9 @@ import java.util.stream.IntStream;
 
 public class FIntStream implements IntStream {
 
-    private @NotNull IntStream internal;
+    @NotNull IntStream internal;
 
-    private FIntStream(@NotNull IntStream internal) {
+    FIntStream(@NotNull IntStream internal) {
         this.internal = internal;
     }
 

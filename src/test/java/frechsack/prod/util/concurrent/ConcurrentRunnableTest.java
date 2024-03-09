@@ -1,6 +1,5 @@
 package frechsack.prod.util.concurrent;
 
-import frechsack.prod.util.concurrent.execute.SingleExecutedRunnable;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,6 +1,5 @@
 package frechsack.prod.util;
 
-import frechsack.prod.util.collection.CollectionUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;

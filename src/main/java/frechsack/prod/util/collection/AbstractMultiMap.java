@@ -12,7 +12,6 @@ public abstract class AbstractMultiMap<Key, Value> implements MultiMap<Key, Valu
     protected abstract Map<Key, Collection<Value>> getModel();
     private Reference<EntrySet> entrySetRef;
 
-
     public @NotNull Stream<Value> streamValues(){
         return getModel().values().stream()
                 .flatMap(Collection::stream);

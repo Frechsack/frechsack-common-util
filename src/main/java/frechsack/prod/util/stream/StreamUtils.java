@@ -42,7 +42,6 @@ public class StreamUtils {
                 stream.close();
                 consumer.accept(element);
             }
-
         };
     }
 

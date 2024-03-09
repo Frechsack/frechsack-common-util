@@ -15,7 +15,7 @@ import java.util.function.IntSupplier;
  *
  * @param <Type> The elements class-type.
  */
-public class ComputedList<Type> extends AbstractList<Type> implements List<Type>, RandomAccess{
+public class ComputedList<Type> extends AbstractList<Type> implements List<Type>, RandomAccess {
 
     private final IntFunction<Type> getter;
 

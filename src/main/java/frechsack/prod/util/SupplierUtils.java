@@ -1,7 +1,5 @@
 package frechsack.prod.util;
 
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
 import java.util.Objects;
 import java.util.function.*;
 
