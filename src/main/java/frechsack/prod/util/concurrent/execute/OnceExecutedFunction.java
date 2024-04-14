@@ -23,7 +23,7 @@ public class OnceExecutedFunction<InputType, OutputType> implements Function<Inp
         return values.size();
     }
 
-    public void reset() {
+    public void clear() {
         values.clear();
     }
 

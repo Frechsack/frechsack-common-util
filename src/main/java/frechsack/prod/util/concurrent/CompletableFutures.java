@@ -14,6 +14,28 @@ public class CompletableFutures {
     private CompletableFutures() {}
 
 
+    private static <Type> @NotNull CompletableFuture<Type> retry(
+            @NotNull Supplier<CompletableFuture<Type>> supplier,
+            @NotNull Predicate<@NotNull Throwable> tryNext,
+            int retryCount,
+            int retryCountMax
+    ) {
+        return supplier.get()
+            .exceptionallyCompose(error -> {
+                if (!tryNext.test(error) || retryCount >= retryCountMax)
+                    return CompletableFuture.failedFuture(error);
+                return retry(supplier, tryNext, retryCount + 1, retryCountMax);
+            });
+    }
+
+    public static <Type> @NotNull CompletableFuture<Type> retry(
+            @NotNull Supplier<CompletableFuture<Type>> supplier,
+            @NotNull Predicate<@NotNull Throwable> tryNext,
+            int retryCountMax
+    ) {
+        return retry(supplier, tryNext, 0, retryCountMax);
+    }
+
     private static <Type> @NotNull CompletableFuture<Type> retryAsync(
         @NotNull Supplier<CompletableFuture<Type>> supplier,
         @NotNull Predicate<@NotNull Throwable> tryNext,
